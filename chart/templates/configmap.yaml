@@ -5,4 +5,4 @@ metadata:
   labels:
     {{- include "installer.labels" . | nindent 4 }}
 data:
-  INSTALLER_NAMESPACE: "{{ .Release.namespace }}"
+  INSTALLER_NAMESPACE: {{ .Release.Namespace }}
