@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "installer.fullname" . }}
+  labels:
+    {{- include "installer.labels" . | nindent 4 }}
+rules:
+# krateoplatformops crd
+- apiGroups:
+  - krateo.io
+  resources:
+  - krateoplatformops
+  verbs:
+  - get
+  - list
+  - watch
