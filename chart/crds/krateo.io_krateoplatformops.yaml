@@ -123,17 +123,8 @@ spec:
                   - type
                   type: object
                 type: array
-              steps:
-                additionalProperties:
-                  properties:
-                    digest:
-                      type: string
-                    err:
-                      type: string
-                    id:
-                      type: string
-                  type: object
-                type: object
+              digest:
+                type: string
             type: object
         required:
         - spec
