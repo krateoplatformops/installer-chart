@@ -5,24 +5,23 @@ metadata:
   labels:
     {{- include "installer.labels" . | nindent 4 }}
 rules:
-# krateoplatformops crd
 - apiGroups:
   - krateo.io
   resources:
   - krateoplatformops
   verbs:
-  - get
-  - list
   - watch
+  - list
   - delete
 - apiGroups:
   - ""
   resources:
   - namespaces
   verbs:
-  - get
-  - list
-  - watch
   - create
-  - update
-  - delete
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterrolebindings
+  verbs:
+  - patch
