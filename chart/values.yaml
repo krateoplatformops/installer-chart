@@ -79,7 +79,7 @@ affinity: {}
 
 krateoplatformops:
   vcluster:
-    enabled: true
+    enabled: "true"
   service:
     type: NodePort
     externalIpAvailable: false
