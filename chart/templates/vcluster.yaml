@@ -137,7 +137,7 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
-            name: krateo-vcluster
+            name: vcluster-k8s
           selector: .spec.ports[0].nodePort
 
     # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -149,7 +149,7 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
-            name: krateo-vcluster
+            name: vcluster-k8s
           selector: .spec.ports[0].nodePort
 
     {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
@@ -161,7 +161,7 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
-            name: krateo-vcluster
+            name: vcluster-k8s
           selector: .spec.ports[0].nodePort
 
     {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
@@ -174,7 +174,7 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
-            name: krateo-vcluster-lb
+            name: vcluster-k8s-lb
           selector: .status.loadBalancer.ingress[0].ip
 
     - id: extract-vcluster-lb-port
@@ -185,7 +185,7 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
-            name: krateo-vcluster-lb
+            name: vcluster-k8s-lb
           selector: .spec.ports[0].port
     {{ end }}
 
