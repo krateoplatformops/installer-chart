@@ -1,4 +1,4 @@
-{{ if eq .Values.krateoplatformops.vcluster.enabled true }}
+{{ if eq .Values.krateoplatformops.vcluster.enabled "true" }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
