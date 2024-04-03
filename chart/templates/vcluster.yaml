@@ -44,6 +44,11 @@ spec:
             value: installer
           - name: init.helm[0].release.namespace
             value: krateo-system
+          - name: init.helm[0].values
+            value: |-
+              krateoplatformops:
+                vcluster:
+                  enabled: false
 
     - id: extract-vcluster-cakey
       type: var
