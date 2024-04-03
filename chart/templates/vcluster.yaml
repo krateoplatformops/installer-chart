@@ -82,7 +82,7 @@ spec:
           namespace: krateo-system
         set:
           - name: spec.ttlSecondsAfterFinished
-            value: 10
+            value: '10'
           - name: spec.template.spec.restartPolicy
             value: OnFailure
           - name: spec.template.spec.serviceAccount
@@ -199,7 +199,7 @@ spec:
           namespace: krateo-system
         set:
           - name: spec.ttlSecondsAfterFinished
-            value: 10
+            value: '10'
           - name: spec.template.spec.restartPolicy
             value: OnFailure
           - name: spec.template.spec.serviceAccount
