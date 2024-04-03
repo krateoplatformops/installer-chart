@@ -159,7 +159,7 @@ spec:
             name: krateo-vcluster
           selector: .spec.ports[0].nodePort
 
-    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
 
     - id: extract-vcluster-lb-ip
       type: var
@@ -182,7 +182,7 @@ spec:
           metadata:
             name: krateo-vcluster-lb
           selector: .spec.ports[0].port
-    {{- end }}
+    {{ end }}
 
     - id: job-to-copy-configmap-in-vcluster
       type: object
@@ -223,19 +223,20 @@ spec:
             value: create
           - name: spec.template.spec.containers[0].args[8]
             value: configmap
-          - name: spec.template.spec.containers[0].args[10]
+          - name: spec.template.spec.containers[0].args[9]
             value: vcluster-k8s-cm
-          - name: spec.template.spec.containers[0].args[11]
+          - name: spec.template.spec.containers[0].args[10]
             value: --from-literal
-          - name: spec.template.spec.containers[0].args[12]
+          - name: spec.template.spec.containers[0].args[11]
             {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
             {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
             value: KUBECONFIG_SERVER_URL=https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
-            {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+            {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-            {{- end }}
-          - name: spec.template.spec.containers[0].args[13]
+            {{ end }}
+          - name: spec.template.spec.containers[0].args[12]
             value: --namespace
-          - name: spec.template.spec.containers[0].args[14]
+          - name: spec.template.spec.containers[0].args[13]
             value: krateo-system
+{{ end }}
