@@ -1,4 +1,4 @@
-{{ if eq .Values.krateoplatformops.vcluster.enabled "true" }}
+{{ if eq .Values.krateoplatformops.vcluster.enabled }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
@@ -37,7 +37,7 @@ spec:
           - name: init.helm[0].chart.repo
             value: https://charts.krateo.io
           - name: init.helm[0].chart.version
-            value: 0.1.7
+            value: 0.1.12
           - name: init.helm[0].chart.namespace
             value: krateo-system
           - name: init.helm[0].release.name
@@ -48,7 +48,7 @@ spec:
             value: |-
               krateoplatformops:
                 vcluster:
-                  enabled: "false"
+                  enabled: false
 
     - id: extract-vcluster-cakey
       type: var
