@@ -76,3 +76,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+krateoplatformops:
+  vcluster:
+    enabled: true
+  service:
+    type: NodePort
+    externalIpAvailable: false
+  custom:
+    enabled: false
