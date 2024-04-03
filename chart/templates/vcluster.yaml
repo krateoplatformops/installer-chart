@@ -1,4 +1,4 @@
-{{ if or (eq .Values.krateoplatformops.vcluster.enabled "true") .Values.krateoplatformops.vcluster.enabled }}
+{{ if eq .Values.krateoplatformops.vcluster.enabled true }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
@@ -48,7 +48,7 @@ spec:
             value: |-
               krateoplatformops:
                 vcluster:
-                  enabled: false
+                  enabled: "false"
 
     - id: extract-vcluster-cakey
       type: var
