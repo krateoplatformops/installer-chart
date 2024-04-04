@@ -1,0 +1,3 @@
+{{ if .Values.krateoplatformops.custom.enabled }}
+{{ toYaml .Values.krateoplatformops.custom.values | nindent 0 }}
+{{ end }}
