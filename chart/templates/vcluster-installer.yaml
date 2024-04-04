@@ -36,8 +36,8 @@ spec:
             value: installer
           - name: init.helm[0].chart.repo
             value: https://charts.krateo.io
-          - name: init.helm[0].chart.version
-            value: 0.1.12
+          # - name: init.helm[0].chart.version
+          #   value: 0.1.15
           - name: init.helm[0].chart.namespace
             value: krateo-system
           - name: init.helm[0].release.name
