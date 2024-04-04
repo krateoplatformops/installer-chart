@@ -12,6 +12,7 @@ rules:
   verbs:
   - watch
   - list
+  - get
   - delete
 - apiGroups:
   - ""
@@ -25,3 +26,11 @@ rules:
   - clusterrolebindings
   verbs:
   - patch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterroles
+  verbs:
+  - watch
+  - list
+  - get
