@@ -16,23 +16,14 @@ jobs:
         with:
           repo: https://${{ secrets.HELM_CHARTS_BOT }}@github.com/krateoplatformops/installer.git
 
+      - name: Print latest App Version
+        run: echo ${{ steps.app_version.outputs.tag }}
+
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Extract Version
-        id: tagger
-        uses: battila7/get-version-action@v2
-
-      - name: Print Version
-        run: |
-          echo ${{steps.tagger.outputs.version}}
-          echo ${{steps.tagger.outputs.version-without-v}}
-
       - name: Replace Version in Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ steps.tagger.outputs.version-without-v }}/g' ./chart/Chart.yaml
-
-      - name: Print latest App Version
-        run: echo ${{ steps.app_version.outputs.tag }}
+        run: sed -i 's/CHART_VERSION/${{ steps.app_version.outputs.tag }}/g' ./chart/Chart.yaml
 
       - name: Replace App Version in Chart.yaml
         run: sed -i 's/APP_VERSION/${{ steps.app_version.outputs.tag }}/g' ./chart/Chart.yaml
