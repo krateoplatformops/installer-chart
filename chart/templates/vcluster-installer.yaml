@@ -165,7 +165,6 @@ spec:
           selector: .spec.ports[0].nodePort
 
     {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-
     - id: extract-vcluster-lb-ip
       type: var
       with:
