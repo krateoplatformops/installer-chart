@@ -1,4 +1,4 @@
-{{ if .Values.krateoplatformops.vcluster.enabled }}
+{{- if .Values.krateoplatformops.vcluster.enabled }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
@@ -17,15 +17,15 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
-          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
           - name: service.nodePort
             value: "30090"
-          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
-          {{ end }}
+          {{- end }}
           - name: init.manifests
             value: |-
               apiVersion: v1
@@ -232,15 +232,15 @@ spec:
           - name: spec.template.spec.containers[0].args[10]
             value: --from-literal
           - name: spec.template.spec.containers[0].args[11]
-            {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+            {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-            {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+            {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
             value: KUBECONFIG_SERVER_URL=https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
-            {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+            {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-            {{ end }}
+            {{- end }}
           - name: spec.template.spec.containers[0].args[12]
             value: --namespace
           - name: spec.template.spec.containers[0].args[13]
             value: krateo-system
-{{ end }}
+{{- end }}

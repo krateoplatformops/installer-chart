@@ -1,4 +1,4 @@
-{{ if not .Values.krateoplatformops.vcluster.enabled }}
+{{- if not .Values.krateoplatformops.vcluster.enabled }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
@@ -63,15 +63,15 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
-          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
           - name: service.nodePort
             value: "30443"
-          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
-          {{ end }}
+          {{- end }}
           - name: livenessProbe
             value: "null"
           - name: readinessProbe
@@ -87,7 +87,7 @@ spec:
           - name: env.KRATEO_GATEWAY_DNS_NAMES
             value: krateo-gateway.krateo-system.svc
 
-    {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
     # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
     - id: extract-gateway-nodeport-ip
       type: var
@@ -141,7 +141,7 @@ spec:
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
 
-    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
     - id: extract-gateway-lb-ip
       type: var
       with:
@@ -193,7 +193,7 @@ spec:
             value: krateo-gateway.krateo-system.svc
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
-   {{ end }}
+   {{- end }}
 
     - id: install-authn-service
       type: chart
@@ -204,34 +204,34 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
-          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
           - name: service.nodePort
             value: "30082"
-          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
-          {{ end }}
+          {{- end }}
           - name: env.AUTHN_CORS
             value: "true"
           - name: env.AUTHN_KUBERNETES_URL
             value: $KUBECONFIG_SERVER_URL
           - name: env.AUTHN_KUBECONFIG_PROXY_URL
-            {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+            {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
             value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
-            {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+            {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
             value: https://127.0.0.1:$KRATEO_GATEWAY_PORT
-            {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+            {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
             value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
-            {{ end }}
+            {{- end }}
           - name: env.AUTHN_KUBECONFIG_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.AUTHN_DUMP_ENV
             value: "true"
 
 
-    {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
     # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
     - id: extract-authn-nodeport-ip
       type: var
@@ -255,7 +255,7 @@ spec:
             name: authn-service
           selector: .spec.ports[0].nodePort
 
-    {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
     - id: extract-authn-nodeport-port
       type: var
       with:
@@ -267,7 +267,7 @@ spec:
             name: authn-service
           selector: .spec.ports[0].nodePort
 
-    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
     - id: extract-authn-lb-ip
       type: var
       with:
@@ -289,7 +289,7 @@ spec:
           metadata:
             name: authn-service
           selector: .spec.ports[0].port
-   {{ end }}
+   {{- end }}
 
     - id: install-bff
       type: chart
@@ -300,15 +300,15 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
-          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
           - name: service.nodePort
             value: "30081"
-          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
-          {{ end }}
+          {{- end }}
           - name: env.KRATEO_BFF_CORS
             value: "true"
           - name: env.KRATEO_BFF_DUMP_ENV
@@ -316,7 +316,7 @@ spec:
           - name: env.KRATEO_BFF_DEBUG
             value: "true"
 
-    {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
     # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
     - id: extract-bff-nodeport-ip
       type: var
@@ -340,7 +340,7 @@ spec:
             name: krateo-bff
           selector: .spec.ports[0].nodePort
 
-    {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
     - id: extract-bff-nodeport-port
       type: var
       with:
@@ -352,7 +352,7 @@ spec:
             name: krateo-bff
           selector: .spec.ports[0].nodePort
 
-    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
     - id: extract-bff-lb-ip
       type: var
       with:
@@ -374,7 +374,7 @@ spec:
           metadata:
             name: krateo-bff
           selector: .spec.ports[0].port
-   {{ end }}
+   {{- end }}
 
     - id: install-frontend
       type: chart
@@ -385,30 +385,29 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
-          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
           - name: service.nodePort
             value: "30080"
-          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
-          {{ end }}
-
-          {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+          {{- end }}
+          {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
           - name: env.AUTHN_API_BASE_URL
             value: http://$AUTHN_SERVICE_IP:$AUTHN_SERVICE_PORT
           - name: env.BFF_API_BASE_URL
             value: http://$KRATEO_BFF_IP:$KRATEO_BFF_PORT
-          {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+          {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
           - name: env.AUTHN_API_BASE_URL
             value: http://127.0.0.1:$AUTHN_SERVICE_PORT
           - name: env.BFF_API_BASE_URL
             value: http://127.0.0.1:$KRATEO_BFF_PORT
-          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: env.AUTHN_API_BASE_URL
             value: http://$AUTHN_SERVICE_IP:$AUTHN_SERVICE_PORT
           - name: env.BFF_API_BASE_URL
             value: http://$KRATEO_BFF_IP:$KRATEO_BFF_PORT
-          {{ end }}
-{{ end }}
+          {{- end }}
+{{- end }}
