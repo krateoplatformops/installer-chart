@@ -1,0 +1,414 @@
+{{ if not .Values.krateoplatformops.vcluster.enabled }}
+apiVersion: krateo.io/v1alpha1
+kind: KrateoPlatformOps
+metadata:
+  annotations:
+    "krateo.io/connector-verbose": "true"
+  name: krateo
+  namespace: krateo-system
+spec:
+  steps:
+    - id: extract-vcluster-addr
+      type: var
+      with:
+        name: KUBECONFIG_SERVER_URL
+        valueFrom:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: vcluster-k8s-cm
+          selector: .data.KUBECONFIG_SERVER_URL
+
+    - id: extract-vcluster-cakey
+      type: var
+      with:
+        name: KUBECONFIG_CAKEY
+        valueFrom:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: vcluster-k8s-certs
+          selector: .data."ca.key"
+
+    - id: extract-vcluster-cacrt
+      type: var
+      with:
+        name: KUBECONFIG_CACRT
+        valueFrom:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: vcluster-k8s-certs
+          selector: .data."ca.crt"
+
+    - id: create-cakey-secret-for-gateway
+      type: object
+      with:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: krateo-gateway
+        set:
+          - name: type
+            value: Opaque
+          - name: stringData.KRATEO_GATEWAY_CAKEY
+            value: $KUBECONFIG_CAKEY
+
+    - id: install-gateway
+      type: chart
+      with:
+        name: krateo-gateway
+        version: 0.3.14
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        set:
+          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30443"
+          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{ end }}
+          - name: livenessProbe
+            value: "null"
+          - name: readinessProbe
+            value: "null"
+          - name: env.KRATEO_GATEWAY_CACRT
+            value: $KUBECONFIG_CACRT
+          - name: env.KRATEO_BFF_SERVER
+            value: http://krateo-bff.krateo-system.svc:8081
+          - name: env.KRATEO_GATEWAY_DEBUG
+            value: "true"
+          - name: env.KRATEO_GATEWAY_DUMP_ENV
+            value: "true"
+          - name: env.KRATEO_GATEWAY_DNS_NAMES
+            value: krateo-gateway.krateo-system.svc
+
+    {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    - id: extract-gateway-nodeport-ip
+      type: var
+      with:
+        name: KRATEO_GATEWAY_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-gateway
+          selector: .spec.ports[0].nodePort
+
+    - id: extract-gateway-nodeport-port
+      type: var
+      with:
+        name: KRATEO_GATEWAY_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-gateway
+          selector: .spec.ports[0].nodePort
+
+    - id: upgrade-gateway
+      type: chart
+      with:
+        name: krateo-gateway
+        version: 0.3.14
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        set:
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30443"
+          - name: livenessProbe
+            value: "null"
+          - name: readinessProbe
+            value: "null"
+          - name: env.KRATEO_GATEWAY_CACRT
+            value: $KUBECONFIG_CACRT
+          - name: env.KRATEO_BFF_SERVER
+            value: http://krateo-bff.krateo-system.svc:8081
+          - name: env.KRATEO_GATEWAY_DEBUG
+            value: "true"
+          - name: env.KRATEO_GATEWAY_DUMP_ENV
+            value: "true"
+          - name: env.KRATEO_GATEWAY_DNS_NAMES
+            value: krateo-gateway.krateo-system.svc
+          - name: env.KRATEO_GATEWAY_IP_ADDRESSES
+            value: $KRATEO_GATEWAY_IP
+
+    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    - id: extract-gateway-lb-ip
+      type: var
+      with:
+        name: KRATEO_GATEWAY_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-gateway
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-gateway-lb-port
+      type: var
+      with:
+        name: KRATEO_GATEWAY_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-gateway
+          selector: .spec.ports[0].port
+
+    - id: upgrade-gateway
+      type: chart
+      with:
+        name: krateo-gateway
+        version: 0.3.14
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        set:
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30443"
+          - name: livenessProbe
+            value: "null"
+          - name: readinessProbe
+            value: "null"
+          - name: env.KRATEO_GATEWAY_CACRT
+            value: $KUBECONFIG_CACRT
+          - name: env.KRATEO_BFF_SERVER
+            value: http://krateo-bff.krateo-system.svc:8081
+          - name: env.KRATEO_GATEWAY_DEBUG
+            value: "true"
+          - name: env.KRATEO_GATEWAY_DUMP_ENV
+            value: "true"
+          - name: env.KRATEO_GATEWAY_DNS_NAMES
+            value: krateo-gateway.krateo-system.svc
+          - name: env.KRATEO_GATEWAY_IP_ADDRESSES
+            value: $KRATEO_GATEWAY_IP
+   {{ end }}
+
+    - id: install-authn-service
+      type: chart
+      with:
+        name: authn-service
+        version: 0.10.2
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        set:
+          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30082"
+          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{ end }}
+          - name: env.AUTHN_CORS
+            value: "true"
+          - name: env.AUTHN_KUBERNETES_URL
+            value: $KUBECONFIG_SERVER_URL
+          - name: env.AUTHN_KUBECONFIG_PROXY_URL
+            {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+            value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
+            {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+            value: https://127.0.0.1:$KRATEO_GATEWAY_PORT
+            {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+            value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
+            {{ end }}
+          - name: env.AUTHN_KUBECONFIG_CACRT
+            value: $KUBECONFIG_CACRT
+          - name: env.AUTHN_DUMP_ENV
+            value: "true"
+
+
+    {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    - id: extract-authn-nodeport-ip
+      type: var
+      with:
+        name: AUTHN_SERVICE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].nodePort
+
+    - id: extract-authn-nodeport-port
+      type: var
+      with:
+        name: AUTHN_SERVICE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].nodePort
+
+    {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    - id: extract-authn-nodeport-port
+      type: var
+      with:
+        name: AUTHN_SERVICE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].nodePort
+
+    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    - id: extract-authn-lb-ip
+      type: var
+      with:
+        name: AUTHN_SERVICE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-gateway-lb-port
+      type: var
+      with:
+        name: AUTHN_SERVICE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].port
+   {{ end }}
+
+    - id: install-bff
+      type: chart
+      with:
+        name: krateo-bff
+        version: 0.14.3
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        set:
+          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30081"
+          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{ end }}
+          - name: env.KRATEO_BFF_CORS
+            value: "true"
+          - name: env.KRATEO_BFF_DUMP_ENV
+            value: "true"
+          - name: env.KRATEO_BFF_DEBUG
+            value: "true"
+
+    {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    - id: extract-bff-nodeport-ip
+      type: var
+      with:
+        name: KRATEO_BFF_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-bff
+          selector: .spec.ports[0].nodePort
+
+    - id: extract-bff-nodeport-port
+      type: var
+      with:
+        name: KRATEO_BFF_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-bff
+          selector: .spec.ports[0].nodePort
+
+    {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    - id: extract-bff-nodeport-port
+      type: var
+      with:
+        name: KRATEO_BFF_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-bff
+          selector: .spec.ports[0].nodePort
+
+    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    - id: extract-bff-lb-ip
+      type: var
+      with:
+        name: KRATEO_BFF_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-bff
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-bff-lb-port
+      type: var
+      with:
+        name: KRATEO_BFF_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-bff
+          selector: .spec.ports[0].port
+   {{ end }}
+
+    - id: install-frontend
+      type: chart
+      with:
+        name: krateo-frontend
+        version: 2.0.6
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        set:
+          {{ if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30080"
+          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{ end }}
+
+          {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+          - name: env.AUTHN_API_BASE_URL
+            value: http://$AUTHN_SERVICE_IP:$AUTHN_SERVICE_PORT
+          - name: env.BFF_API_BASE_URL
+            value: http://$KRATEO_BFF_IP:$KRATEO_BFF_PORT
+          {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+          - name: env.AUTHN_API_BASE_URL
+            value: http://127.0.0.1:$AUTHN_SERVICE_PORT
+          - name: env.BFF_API_BASE_URL
+            value: http://127.0.0.1:$KRATEO_BFF_PORT
+          {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: env.AUTHN_API_BASE_URL
+            value: http://$AUTHN_SERVICE_IP:$AUTHN_SERVICE_PORT
+          - name: env.BFF_API_BASE_URL
+            value: http://$KRATEO_BFF_IP:$KRATEO_BFF_PORT
+          {{ end }}
+{{ end }}
