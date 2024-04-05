@@ -107,7 +107,7 @@ spec:
             name: krateo-gateway
           selector: .spec.ports[0].nodePort
 
-    - id: update-gateway-nodeport
+    - id: upgrade-gateway-nodeport
       type: chart
       with:
         name: krateo-gateway
