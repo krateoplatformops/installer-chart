@@ -1,0 +1,16 @@
+{{- if not .Values.krateoplatformops.vcluster.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "installer.fullname" . }}-krateo
+  labels:
+    {{- include "installer.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "installer.fullname" . }}-krateo
+subjects:
+- kind: ServiceAccount
+  name: {{ include "installer.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
