@@ -1,4 +1,4 @@
-{{- if not .Values.krateoplatformops.vcluster.enabled }}
+{{- if and (not .Values.krateoplatformops.vcluster.enabled) (not .Values.krateoplatformops.custom.enabled )  }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
@@ -58,7 +58,7 @@ spec:
       type: chart
       with:
         name: krateo-gateway
-        version: 0.3.14
+        version: 0.3.15
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
@@ -72,10 +72,6 @@ spec:
           - name: service.type
             value: LoadBalancer
           {{- end }}
-          - name: livenessProbe
-            value: "null"
-          - name: readinessProbe
-            value: "null"
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.KRATEO_BFF_SERVER
@@ -124,10 +120,6 @@ spec:
             value: NodePort
           - name: service.nodePort
             value: "30443"
-          - name: livenessProbe
-            value: "null"
-          - name: readinessProbe
-            value: "null"
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.KRATEO_BFF_SERVER
@@ -177,10 +169,6 @@ spec:
             value: NodePort
           - name: service.nodePort
             value: "30443"
-          - name: livenessProbe
-            value: "null"
-          - name: readinessProbe
-            value: "null"
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.KRATEO_BFF_SERVER
@@ -380,7 +368,7 @@ spec:
       type: chart
       with:
         name: krateo-frontend
-        version: 2.0.6
+        version: 2.0.11
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
@@ -410,4 +398,13 @@ spec:
           - name: env.BFF_API_BASE_URL
             value: http://$KRATEO_BFF_IP:$KRATEO_BFF_PORT
           {{- end }}
+
+    - id: install-core-provider
+      type: chart
+      with:
+        name: core-provider
+        version: 0.9.3
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
 {{- end }}

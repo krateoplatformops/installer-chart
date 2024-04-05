@@ -1,0 +1,401 @@
+{{- if .Values.krateoplatformops.init.enabled }}
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/basic-auth
+metadata:
+  name: cyberjoker-password
+  namespace: krateo-system
+stringData:
+  password: "123456"
+---
+apiVersion: basic.authn.krateo.io/v1alpha1
+kind: User
+metadata:
+  name: cyberjoker
+  namespace: krateo-system
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  displayName: Cyber Joker
+  avatarURL: https://i.pravatar.cc/256?img=70
+  groups:
+    - devs
+  passwordRef:
+    namespace: krateo-system
+    name: cyberjoker-password
+    key: password
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo-system
+  annotations:
+    "helm.sh/hook": pre-install
+---
+apiVersion: layout.ui.krateo.io/v1alpha1
+kind: Row
+metadata:
+  name: two
+  namespace: demo-system
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  columnListRef:
+    - name: three
+      namespace: demo-system
+    - name: eleven
+      namespace: demo-system
+---
+apiVersion: layout.ui.krateo.io/v1alpha1
+kind: Column
+metadata:
+  name: three
+  namespace: demo-system
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  app:
+    props:
+      width: "12"
+  cardTemplateListRef:
+    - name: three
+      namespace: demo-system
+---
+apiVersion: layout.ui.krateo.io/v1alpha1
+kind: Column
+metadata:
+  name: eleven
+  namespace: demo-system
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  app:
+    props:
+      width: "12"
+  cardTemplateListRef:
+    - name: one
+      namespace: demo-system
+    - name: ten
+      namespace: demo-system
+---
+apiVersion: widgets.ui.krateo.io/v1alpha1
+kind: CardTemplate
+metadata:
+  name: one
+  namespace: demo-system
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  app:
+    icon: fa-solid fa-truck-fast
+    color: green
+    title: \${ .api2.items[0] | (.name  + " -> " + .email) }
+    content: \${ .api2.items[0].body }
+    date: Sep 15th 2023 08:15:43
+  formTemplateRef:
+    name: fireworksapp
+  api:
+  - name: api1
+    path: "/todos/1"
+    endpointRef:
+      name: typicode-endpoint
+      namespace: demo-system
+    verb: GET
+    headers:
+    - 'Accept: application/json'
+  - name: api2
+    dependOn: api1
+    path: \${ "/todos/" + (.api1.id|tostring) +  "/comments" }
+    endpointRef:
+      name: typicode-endpoint
+      namespace: demo-system
+    verb: GET
+    headers:
+    - 'Accept: application/json'
+---
+apiVersion: widgets.ui.krateo.io/v1alpha1
+kind: CardTemplate
+metadata:
+  name: three
+  namespace: demo-system
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  iterator: .api1.products[:3]
+  app:
+    icon: fa-solid fa-mobile-button
+    color: blue
+    title: \${ .title }
+    content: \${ .description }
+    tags: \${ .brand }
+  formTemplateRef:
+    name: fireworksapp
+  api:
+  - name: api1
+    path: "/products"
+    endpointRef:
+      name: dummyjson-endpoint
+      namespace: demo-system
+    verb: GET
+    headers:
+    - 'Accept: application/json'
+---
+apiVersion: widgets.ui.krateo.io/v1alpha1
+kind: CardTemplate
+metadata:
+  name: ten
+  namespace: demo-system
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  iterator: .api2.items[:10]
+  app:
+    icon: \${ "fa-solid fa-" + (.id|tostring)}
+    color: darkBlue
+    title: \${ .name }
+    content: \${ .body }
+    tags: \${ .email }
+  formTemplateRef:
+    name: fireworksapp
+  api:
+  - name: api1
+    path: "/todos/1"
+    endpointRef:
+      name: typicode-endpoint
+      namespace: demo-system
+    verb: GET
+    headers:
+    - 'Accept: application/json'
+  - name: api2
+    dependOn: api1
+    path: \${ "/todos/" + (.api1.id|tostring) +  "/comments" }
+    endpointRef:
+      name: typicode-endpoint
+      namespace: demo-system
+    verb: GET
+    headers:
+    - 'Accept: application/json'
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: typicode-endpoint
+  namespace: demo-system
+stringData:
+  server-url: https://jsonplaceholder.typicode.com
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: dummyjson-endpoint
+  namespace: demo-system
+stringData:
+  server-url: https://dummyjson.com
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dev-get-any-layout-in-demosystem-namespace
+  namespace: demo-system
+rules:
+- apiGroups:
+  - layout.ui.krateo.io
+  resources:
+  - rows
+  - columns
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-get-any-layout-in-demosystem-namespace
+  namespace: demo-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dev-get-any-layout-in-demosystem-namespace
+subjects:
+- kind: Group
+  name: devs
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dev-get-cardtemplate-one-three-ten-in-demosystem-namespace
+  namespace: demo-system
+rules:
+- apiGroups:
+  - widgets.ui.krateo.io
+  resources:
+  - cardtemplates
+  resourceNames:
+  - one
+  - three
+  - ten
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-get-cardtemplate-one-three-ten-in-demosystem-namespace
+  namespace: demo-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dev-get-cardtemplate-one-three-ten-in-demosystem-namespace
+subjects:
+- kind: Group
+  name: devs
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dev-get-formtemplate-fireworksapp-in-demosystem-namespace
+  namespace: demo-system
+rules:
+- apiGroups:
+  - widgets.ui.krateo.io
+  resources:
+  - formtemplates
+  resourceNames:
+  - fireworksapp
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-get-formtemplate-fireworksapp-in-demosystem-namespace
+  namespace: demo-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dev-get-formtemplate-fireworksapp-in-demosystem-namespace
+subjects:
+- kind: Group
+  name: devs
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dev-delete-cardtemplate-one-in-demosystem-namespace
+  namespace: demo-system
+rules:
+- apiGroups:
+  - widgets.ui.krateo.io
+  resources:
+  - cardtemplates
+  resourceNames:
+  - one
+  verbs:
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-delete-cardtemplate-one-in-demosystem-namespace
+  namespace: demo-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dev-delete-cardtemplate-one-in-demosystem-namespace
+subjects:
+- kind: Group
+  name: devs
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: widgets.ui.krateo.io/v1alpha1
+kind: FormTemplate
+metadata:
+  name: fireworksapp
+  namespace: demo-system
+spec:
+  schemaDefinitionRef:
+    name: fireworksapp
+    namespace: demo-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dev-create-formtemplate-fireworksapp-in-demosystem-namespace
+  namespace: demo-system
+rules:
+- apiGroups:
+  - apps.krateo.io
+  resources:
+  - fireworksapps
+  verbs:
+  - create
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-create-formtemplate-fireworksapp-in-demosystem-namespace
+  namespace: demo-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dev-create-formtemplate-fireworksapp-in-demosystem-namespace
+subjects:
+- kind: Group
+  name: devs
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: core.krateo.io/v1alpha1
+kind: SchemaDefinition
+metadata:
+  annotations:
+    "helm.sh/hook": post-install
+  name: fireworksapp
+  namespace: demo-system
+spec:
+  schema:
+    version: v1alpha1
+    kind: Fireworksapp
+    url: https://raw.githubusercontent.com/krateoplatformops/krateo-v2-template-fireworksapp/main/chart/values.schema.json
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: apps-viewer
+rules:
+- apiGroups:
+  - apps.krateo.io
+  resources:
+  - '*'
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: apps-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name:  apps-viewer
+subjects:
+- kind: Group
+  name: devs
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: core.krateo.io/v1alpha1
+kind: CompositionDefinition
+metadata:
+  annotations:
+    "helm.sh/hook": post-install
+  name: fireworksapp
+  namespace: demo-system
+spec:
+  chart:
+    url: https://github.com/krateoplatformops/krateo-v2-template-fireworksapp/releases/download/0.0.1/fireworks-app-0.1.0.tgz
+{{- end }}
