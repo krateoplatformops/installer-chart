@@ -49,6 +49,20 @@ spec:
               krateoplatformops:
                 vcluster:
                   enabled: false
+                init:
+                  enabled: true
+                {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+                service:
+                  type: NodePort
+                  externalIpAvailable: false
+                {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+                service:
+                  type: NodePort
+                  externalIpAvailable: true
+                {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+                service:
+                  type: LoadBalancer
+                {{- end }}
 
     - id: extract-vcluster-cakey
       type: var
