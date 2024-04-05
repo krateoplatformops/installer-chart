@@ -59,7 +59,7 @@ spec:
           kind: Secret
           metadata:
             name: vcluster-k8s-certs
-          selector: .data."ca.key"
+          selector: .data."ca.key" | @base64d
 
     - id: extract-vcluster-cacrt
       type: var
@@ -70,7 +70,7 @@ spec:
           kind: Secret
           metadata:
             name: vcluster-k8s-certs
-          selector: .data."ca.crt"
+          selector: .data."ca.crt" | @base64d
 
     - id: job-to-copy-secret-in-vcluster
       type: object

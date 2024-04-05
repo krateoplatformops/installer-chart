@@ -35,3 +35,4 @@ rules:
   - watch
   - list
   - get
+  - create
