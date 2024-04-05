@@ -88,3 +88,5 @@ krateoplatformops:
     externalIpAvailable: false
   custom:
     enabled: false
+  init:
+    enabled: true
