@@ -6,3 +6,4 @@ metadata:
     {{- include "installer.labels" . | nindent 4 }}
 data:
   INSTALLER_NAMESPACE: {{ .Release.Namespace }}
+  INSTALLER_DEBUG: "{{ .Values.env.INSTALLER_DEBUG }}"
