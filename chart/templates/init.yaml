@@ -316,6 +316,8 @@ kind: FormTemplate
 metadata:
   name: fireworksapp
   namespace: demo-system
+  annotations:
+    "helm.sh/hook": post-install
 spec:
   schemaDefinitionRef:
     name: fireworksapp
