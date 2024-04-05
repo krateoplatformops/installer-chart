@@ -111,7 +111,7 @@ spec:
       type: chart
       with:
         name: krateo-gateway
-        version: 0.3.14
+        version: 0.3.15
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
@@ -160,7 +160,7 @@ spec:
       type: chart
       with:
         name: krateo-gateway
-        version: 0.3.14
+        version: 0.3.15
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
