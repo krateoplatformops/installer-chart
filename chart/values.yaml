@@ -78,7 +78,7 @@ tolerations: []
 affinity: {}
 
 env:
-  KRATEO_GATEWAY_DEBUG: "true"
+  INSTALLER_DEBUG: "true"
 
 krateoplatformops:
   vcluster:
