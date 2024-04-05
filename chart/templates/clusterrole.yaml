@@ -25,6 +25,7 @@ rules:
   resources:
   - clusterrolebindings
   verbs:
+  - get
   - patch
 - apiGroups:
   - rbac.authorization.k8s.io
