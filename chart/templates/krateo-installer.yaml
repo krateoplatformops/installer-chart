@@ -283,7 +283,7 @@ spec:
       type: chart
       with:
         name: krateo-bff
-        version: 0.17.0
+        version: 0.17.1
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
