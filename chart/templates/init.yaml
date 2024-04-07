@@ -14,7 +14,7 @@ metadata:
   name: cyberjoker
   namespace: krateo-system
   annotations:
-    helm.sh/hook: post-install
+    helm.sh/hook: post-install, post-upgrade
     helm.sh/resource-policy: keep
 spec:
   displayName: Cyber Joker
