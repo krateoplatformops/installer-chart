@@ -59,9 +59,14 @@ spec:
                 service:
                   type: NodePort
                   externalIpAvailable: false
-                {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+                {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") .Values.krateoplatformops.service.externalIpAvailable }}
                 service:
                   type: LoadBalancer
+                  externalIpAvailable: true
+                {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+                service:
+                  type: LoadBalancer
+                  externalIpAvailable: false
                 {{- end }}
 
     - id: extract-vcluster-cakey
