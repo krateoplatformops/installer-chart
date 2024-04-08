@@ -400,10 +400,10 @@ spec:
           {{- end }}
 
     {{- if .Values.krateoplatformops.init.enabled }}
-    - id: installer-starter-kit
+    - id: installer-starter-pack
       type: chart
       with:
-        name: installer-starter-kit
+        name: installer-starter-pack
         version: 0.1.1
         repository: https://charts.krateo.io
         wait: true
