@@ -399,6 +399,16 @@ spec:
             value: http://$KRATEO_BFF_IP:$KRATEO_BFF_PORT
           {{- end }}
 
+    - id: install-core-provider
+      type: chart
+      with:
+        name: core-provider
+        version: 0.9.3
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+
+
     {{- if .Values.krateoplatformops.init.enabled }}
     - id: installer-starter-pack
       type: chart
@@ -410,12 +420,4 @@ spec:
         waitTimeout: 5m
     {{- end }}
 
-    - id: install-core-provider
-      type: chart
-      with:
-        name: core-provider
-        version: 0.9.3
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
 {{- end }}
