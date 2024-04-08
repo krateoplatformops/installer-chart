@@ -27,4 +27,7 @@ rules:
   - apiGroups: ["basic.authn.krateo.io"]
     resources: ["users"]
     verbs: ["get"]
+  - apiGroups: ["core.krateo.io"]
+    resources: ["compositiondefinitions","schemadefinitions"]
+    verbs: ["get"]
 {{- end }}
