@@ -95,8 +95,8 @@ spec:
   app:
     icon: fa-solid fa-truck-fast
     color: green
-    title: \${ .api2.items[0] | (.name  + " -> " + .email) }
-    content: \${ .api2.items[0].body }
+    title: ${ .api2.items[0] | (.name  + " -> " + .email) }
+    content: ${ .api2.items[0].body }
     date: Sep 15th 2023 08:15:43
   formTemplateRef:
     name: fireworksapp
@@ -111,7 +111,7 @@ spec:
     - 'Accept: application/json'
   - name: api2
     dependOn: api1
-    path: \${ "/todos/" + (.api1.id|tostring) +  "/comments" }
+    path: ${ "/todos/" + (.api1.id|tostring) +  "/comments" }
     endpointRef:
       name: typicode-endpoint
       namespace: demo-system
@@ -132,9 +132,9 @@ spec:
   app:
     icon: fa-solid fa-mobile-button
     color: blue
-    title: \${ .title }
-    content: \${ .description }
-    tags: \${ .brand }
+    title: ${ .title }
+    content: ${ .description }
+    tags: ${ .brand }
   formTemplateRef:
     name: fireworksapp
   api:
@@ -158,11 +158,11 @@ metadata:
 spec:
   iterator: .api2.items[:10]
   app:
-    icon: \${ "fa-solid fa-" + (.id|tostring)}
+    icon: ${ "fa-solid fa-" + (.id|tostring)}
     color: darkBlue
-    title: \${ .name }
-    content: \${ .body }
-    tags: \${ .email }
+    title: ${ .name }
+    content: ${ .body }
+    tags: { .email }
   formTemplateRef:
     name: fireworksapp
   api:
@@ -176,7 +176,7 @@ spec:
     - 'Accept: application/json'
   - name: api2
     dependOn: api1
-    path: \${ "/todos/" + (.api1.id|tostring) +  "/comments" }
+    path: ${ "/todos/" + (.api1.id|tostring) +  "/comments" }
     endpointRef:
       name: typicode-endpoint
       namespace: demo-system
