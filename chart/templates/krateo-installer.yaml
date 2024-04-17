@@ -368,7 +368,7 @@ spec:
       type: chart
       with:
         name: krateo-frontend
-        version: 2.0.12
+        version: 2.0.13
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
