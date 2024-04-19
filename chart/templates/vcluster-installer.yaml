@@ -49,8 +49,13 @@ spec:
               krateoplatformops:
                 vcluster:
                   enabled: false
+                {{- if .Values.krateoplatformops.init.enabled }}
                 init:
                   enabled: true
+                {{- else }}
+                init:
+                  enabled: false
+                {{- end }}
                 {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
                 service:
                   type: NodePort
