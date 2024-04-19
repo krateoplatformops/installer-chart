@@ -89,4 +89,4 @@ krateoplatformops:
   custom:
     enabled: false
   init:
-    enabled: false
+    enabled: true
