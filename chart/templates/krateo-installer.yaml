@@ -5,7 +5,7 @@ metadata:
   annotations:
     "krateo.io/connector-verbose": "true"
   name: krateo
-  namespace: krateo-system
+  namespace: {{ .Release.Namespace }}
 spec:
   steps:
     - id: extract-vcluster-addr
@@ -75,13 +75,13 @@ spec:
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.KRATEO_BFF_SERVER
-            value: http://krateo-bff.krateo-system.svc:8081
+            value: http://krateo-bff.{{ .Release.Namespace }}.svc:8081
           - name: env.KRATEO_GATEWAY_DEBUG
             value: "true"
           - name: env.KRATEO_GATEWAY_DUMP_ENV
             value: "true"
           - name: env.KRATEO_GATEWAY_DNS_NAMES
-            value: krateo-gateway.krateo-system.svc
+            value: krateo-gateway.{{ .Release.Namespace }}.svc
 
     {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
     # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -123,13 +123,13 @@ spec:
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.KRATEO_BFF_SERVER
-            value: http://krateo-bff.krateo-system.svc:8081
+            value: http://krateo-bff.{{ .Release.Namespace }}.svc:8081
           - name: env.KRATEO_GATEWAY_DEBUG
             value: "true"
           - name: env.KRATEO_GATEWAY_DUMP_ENV
             value: "true"
           - name: env.KRATEO_GATEWAY_DNS_NAMES
-            value: krateo-gateway.krateo-system.svc
+            value: krateo-gateway.{{ .Release.Namespace }}.svc
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
 
@@ -172,13 +172,13 @@ spec:
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.KRATEO_BFF_SERVER
-            value: http://krateo-bff.krateo-system.svc:8081
+            value: http://krateo-bff.{{ .Release.Namespace }}.svc:8081
           - name: env.KRATEO_GATEWAY_DEBUG
             value: "true"
           - name: env.KRATEO_GATEWAY_DUMP_ENV
             value: "true"
           - name: env.KRATEO_GATEWAY_DNS_NAMES
-            value: krateo-gateway.krateo-system.svc
+            value: krateo-gateway.{{ .Release.Namespace }}.svc
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
    {{- end }}
