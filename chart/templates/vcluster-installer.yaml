@@ -5,7 +5,7 @@ metadata:
   annotations:
     "krateo.io/connector-verbose": "true"
   name: vcluster
-  namespace: krateo-system
+  namespace: {{ .Release.Namespace }}
 spec:
   steps:
     - id: install-vcluster
@@ -31,7 +31,7 @@ spec:
               apiVersion: v1
               kind: Namespace
               metadata:
-                name: krateo-system
+                name: {{ .Release.Namespace }}
           - name: init.helm[0].chart.name
             value: installer
           - name: init.helm[0].chart.repo
@@ -39,11 +39,11 @@ spec:
           # - name: init.helm[0].chart.version
           #   value: 0.1.15
           - name: init.helm[0].chart.namespace
-            value: krateo-system
+            value: {{ .Release.Namespace }}
           - name: init.helm[0].release.name
             value: installer
           - name: init.helm[0].release.namespace
-            value: krateo-system
+            value: {{ .Release.Namespace }}
           - name: init.helm[0].values
             value: |-
               krateoplatformops:
@@ -103,7 +103,7 @@ spec:
         kind: Job
         metadata:
           name: vcluster-job-secret
-          namespace: krateo-system
+          namespace: {{ .Release.Namespace }}
         set:
           - name: spec.ttlSecondsAfterFinished
             value: '10'
@@ -124,7 +124,7 @@ spec:
           - name: spec.template.spec.containers[0].args[2]
             value: --namespace
           - name: spec.template.spec.containers[0].args[3]
-            value: krateo-system
+            value: {{ .Release.Namespace }}
           - name: spec.template.spec.containers[0].args[4]
             value: --debug
           - name: spec.template.spec.containers[0].args[5]
@@ -150,7 +150,7 @@ spec:
           - name: spec.template.spec.containers[0].args[15]
             value: --namespace
           - name: spec.template.spec.containers[0].args[16]
-            value: krateo-system
+            value: {{ .Release.Namespace }}
 
     {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
     - id: extract-vcluster-nodeport-port
@@ -219,7 +219,7 @@ spec:
         kind: Job
         metadata:
           name: vcluster-job-configmap
-          namespace: krateo-system
+          namespace: {{ .Release.Namespace }}
         set:
           - name: spec.ttlSecondsAfterFinished
             value: '10'
@@ -240,7 +240,7 @@ spec:
           - name: spec.template.spec.containers[0].args[2]
             value: --namespace
           - name: spec.template.spec.containers[0].args[3]
-            value: krateo-system
+            value: {{ .Release.Namespace }}
           - name: spec.template.spec.containers[0].args[4]
             value: --debug
           - name: spec.template.spec.containers[0].args[5]
@@ -266,5 +266,5 @@ spec:
           - name: spec.template.spec.containers[0].args[12]
             value: --namespace
           - name: spec.template.spec.containers[0].args[13]
-            value: krateo-system
+            value: {{ .Release.Namespace }}
 {{- end }}
