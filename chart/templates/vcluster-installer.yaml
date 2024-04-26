@@ -90,13 +90,13 @@ spec:
                 {{- if eq .Values.krateoplatformops.ingress.enabled true }}
                 ingress:
                   krateo-frontend:
-                    {{ toYaml .Values.krateoplatformops.ingress.krateo-frontend | nindent 20 }}
+                    {{ toYaml index .Values.krateoplatformops.ingress "krateo-frontend" | nindent 20 }}
                   krateo-gateway:
-                    {{ toYaml .Values.krateoplatformops.ingress.krateo-gateway | nindent 20 }}
+                    {{ toYaml index .Values.krateoplatformops.ingress "krateo-gateway" | nindent 20 }}
                   krateo-bff:
-                    {{ toYaml .Values.krateoplatformops.ingress.krateo-bff | nindent 20 }}
+                    {{ toYaml index .Values.krateoplatformops.ingress "krateo-bff" | nindent 20 }}
                   authn-service:
-                    {{ toYaml .Values.krateoplatformops.ingress.authn-service | nindent 20 }}
+                    {{ toYaml index .Values.krateoplatformops.ingress "authn-service" | nindent 20 }}
                 {{- end }}
 
     - id: extract-vcluster-cakey
