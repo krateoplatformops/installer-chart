@@ -72,6 +72,22 @@ spec:
           - name: service.type
             value: LoadBalancer
           {{- end }}
+          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.className
+            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.className }}
+          - name: ingress.annotations
+            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.annotations }}
+          - name: ingress.hosts[0].host
+            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.hosts[0].host }}
+          - name: ingress.hosts[0].paths[0].path
+            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.hosts[0].paths[0].path }}
+          - name: ingress.hosts[0].paths[0].pathType
+            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.hosts[0].paths[0].pathType }}
+          - name: ingress.tls[0].secretName
+            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.tls[0].secretName }}
+          - name: ingress.tls[0].hosts[0]
+            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.tls[0].hosts[0] }}
+          {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
           - name: env.KRATEO_BFF_SERVER
@@ -181,7 +197,19 @@ spec:
             value: krateo-gateway.{{ .Release.Namespace }}.svc
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
-   {{- end }}
+
+    # {{- else if .Values.krateoplatformops.ingress.enabled }}
+    # - id: extract-gateway-ingress-host
+    #   type: var
+    #   with:
+    #     name: KRATEO_GATEWAY_INGRESS_HOST
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: krateo-gateway
+    #       selector: .status.loadBalancer.ingress[0].ip
+    {{- end }}
 
     - id: install-authn-service
       type: chart
