@@ -26,6 +26,20 @@ spec:
           - name: service.type
             value: LoadBalancer
           {{- end }}
+          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.host
+            value: {{ .Values.krateoplatformops.ingress.vcluster.host }}
+          - name: ingress.ingressClassName
+            value: {{ .Values.krateoplatformops.ingress.vcluster.ingressClassName }}
+          - name: ingress.pathType
+            value: {{ .Values.krateoplatformops.ingress.vcluster.pathType }}
+          - name: ingress.annotations
+            value: {{ .Values.krateoplatformops.ingress.vcluster.annotations }}
+          - name: ingress.tls
+            value: {{ .Values.krateoplatformops.ingress.vcluster.tls }}
+          - name: sync.ingresses.enabled
+            value: true
+          {{- end }}
           - name: init.manifests
             value: |-
               apiVersion: v1
@@ -72,6 +86,17 @@ spec:
                 service:
                   type: LoadBalancer
                   externalIpAvailable: false
+                {{- end }}
+                {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+                ingress:
+                  krateo-frontend:
+                    {{ toYaml .Values.krateoplatformops.ingress.frontend | nindent 20 }}
+                  krateo-gateway:
+                    {{ toYaml .Values.krateoplatformops.ingress.gateway | nindent 20 }}
+                  krateo-bff:
+                    {{ toYaml .Values.krateoplatformops.ingress.bff | nindent 20 }}
+                  authn-service:
+                    {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
                 {{- end }}
 
     - id: extract-vcluster-cakey
