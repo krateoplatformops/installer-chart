@@ -74,19 +74,19 @@ spec:
           {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.className
-            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.className }}
+            value: {{ .Values.krateoplatformops.ingress.gateway.className }}
           - name: ingress.annotations
-            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.annotations }}
+            value: {{ .Values.krateoplatformops.ingress.gateway.annotations }}
           - name: ingress.hosts[0].host
-            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.hosts[0].host }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "host" }}
           - name: ingress.hosts[0].paths[0].path
-            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.hosts[0].paths[0].path }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
-            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.hosts[0].paths[0].pathType }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "pathType" }}
           - name: ingress.tls[0].secretName
-            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.tls[0].secretName }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.krateo-gateway.tls[0].hosts[0] }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
