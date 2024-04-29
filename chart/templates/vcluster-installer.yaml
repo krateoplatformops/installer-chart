@@ -102,6 +102,17 @@ spec:
                   authn:
                     {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
                 {{- end }}
+                {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+                ingress:
+                  krateo-frontend:
+                    {{ toYaml .Values.krateoplatformops.ingress.frontend | nindent 20 }}
+                  krateo-gateway:
+                    {{ toYaml .Values.krateoplatformops.ingress.gateway | nindent 20 }}
+                  krateo-bff:
+                    {{ toYaml .Values.krateoplatformops.ingress.bff | nindent 20 }}
+                  authn-service:
+                    {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
+                {{- end }}
 
     - id: extract-vcluster-cakey
       type: var
