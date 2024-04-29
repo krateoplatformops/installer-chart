@@ -26,7 +26,7 @@ spec:
           - name: service.type
             value: LoadBalancer
           {{- end }}
-          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          {{- if .Values.krateoplatformops.ingress.enabled }}
           - name: ingress.host
             value: {{ .Values.krateoplatformops.ingress.vcluster.host }}
           - name: ingress.ingressClassName
@@ -86,6 +86,21 @@ spec:
                 service:
                   type: LoadBalancer
                   externalIpAvailable: false
+                {{- else }}
+                  type: ClusterIP
+                  externalIpAvailable: false
+                {{- end }}
+                {{- if .Values.krateoplatformops.ingress.enabled }}
+                ingress:
+                  enabled: true
+                  frontend:
+                    {{ toYaml .Values.krateoplatformops.ingress.frontend | nindent 20 }}
+                  gateway:
+                    {{ toYaml .Values.krateoplatformops.ingress.gateway | nindent 20 }}
+                  bff:
+                    {{ toYaml .Values.krateoplatformops.ingress.bff | nindent 20 }}
+                  authn:
+                    {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
                 {{- end }}
                 {{- if eq .Values.krateoplatformops.ingress.enabled true }}
                 ingress:
@@ -235,6 +250,7 @@ spec:
           metadata:
             name: vcluster-k8s-lb
           selector: .spec.ports[0].port
+    # {{ else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
     {{ end }}
 
     - id: job-to-copy-configmap-in-vcluster
@@ -280,12 +296,14 @@ spec:
             value: vcluster-k8s-cm
           - name: spec.template.spec.containers[0].args[10]
             value: --from-literal
-          - name: spec.template.spec.containers[0].args[11]
-            {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+          - {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+            name: spec.template.spec.containers[0].args[11]
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
             {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+            name: spec.template.spec.containers[0].args[11]
             value: KUBECONFIG_SERVER_URL=https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
             {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+            name: spec.template.spec.containers[0].args[11]
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
             {{- end }}
           - name: spec.template.spec.containers[0].args[12]
