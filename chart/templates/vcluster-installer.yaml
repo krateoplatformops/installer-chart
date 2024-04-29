@@ -296,16 +296,20 @@ spec:
             value: vcluster-k8s-cm
           - name: spec.template.spec.containers[0].args[10]
             value: --from-literal
-          - {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-            name: spec.template.spec.containers[0].args[11]
+          {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+          - name: spec.template.spec.containers[0].args[11]
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-            {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-            name: spec.template.spec.containers[0].args[11]
+          {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+          - name: spec.template.spec.containers[0].args[11]
             value: KUBECONFIG_SERVER_URL=https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
-            {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-            name: spec.template.spec.containers[0].args[11]
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: spec.template.spec.containers[0].args[11]
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-            {{- end }}
+          {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
+          # TBD
+          - name: spec.template.spec.containers[0].args[11]
+            value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
+          {{- end }}
           - name: spec.template.spec.containers[0].args[12]
             value: --namespace
           - name: spec.template.spec.containers[0].args[13]
