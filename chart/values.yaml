@@ -83,6 +83,8 @@ env:
 krateoplatformops:
   vcluster:
     enabled: true
+    storage:
+      className: ""
   service:
     type: NodePort
     externalIpAvailable: false
