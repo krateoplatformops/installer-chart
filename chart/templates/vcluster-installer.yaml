@@ -19,7 +19,7 @@ spec:
         set:
           {{- if .Values.krateoplatformops.vcluster.storage.className }}
           - name: syncer.storage.className
-            value: {{ .Values.krateoplatformops.vcluster.storage.className }}          
+            value: {{ .Values.krateoplatformops.vcluster.storage.className }}
           {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
@@ -47,6 +47,22 @@ spec:
             value: "true"
           - name: sync.ingresses.enabled
             value: "true"
+          {{- end }}
+          - name: openshift.enable
+            value: {{ .Values.krateoplatformops.vcluster.openshift.enable }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation }}
+          {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsGroup }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsNonRoot }}
           {{- end }}
           - name: init.manifests
             value: |-
