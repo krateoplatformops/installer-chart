@@ -73,10 +73,15 @@ spec:
             value: LoadBalancer
           {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.enabled
+            value: true
           - name: ingress.className
             value: {{ .Values.krateoplatformops.ingress.gateway.className }}
-          - name: ingress.annotations
-            value: {{ .Values.krateoplatformops.ingress.gateway.annotations }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.gateway.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           - name: ingress.hosts[0].host
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "host" }}
           - name: ingress.hosts[0].paths[0].path
