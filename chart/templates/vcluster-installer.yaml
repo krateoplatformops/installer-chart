@@ -17,6 +17,10 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.vcluster.storage.className }}
+          - name: syncer.storage.className
+            value: {{ .Values.krateoplatformops.vcluster.storage.className }}          
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
