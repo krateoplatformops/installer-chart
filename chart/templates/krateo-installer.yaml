@@ -686,4 +686,26 @@ spec:
         waitTimeout: 5m
     {{- end }}
 
+    {{- if index .Values.krateoplatformops "patch-provider" "enabled" }}
+    - id: install-patch-provider
+      type: chart
+      with:
+        name: patch-provider
+        version: 0.1.7
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+    {{- end }}
+
+    {{- if .Values.krateoplatformops.eventrouter.enabled }}
+    - id: install-eventrouter
+      type: chart
+      with:
+        name: eventrouter
+        version: 0.3.1
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+    {{- end }}
+
 {{- end }}
