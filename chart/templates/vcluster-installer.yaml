@@ -29,20 +29,24 @@ spec:
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
-          {{- end }}
-          {{- if .Values.krateoplatformops.ingress.enabled }}
+          {{- else if .Values.krateoplatformops.ingress.enabled }}
+          - name: service.type
+            value: ClusterIP
           - name: ingress.host
             value: {{ .Values.krateoplatformops.ingress.vcluster.host }}
           - name: ingress.ingressClassName
             value: {{ .Values.krateoplatformops.ingress.vcluster.ingressClassName }}
           - name: ingress.pathType
             value: {{ .Values.krateoplatformops.ingress.vcluster.pathType }}
-          - name: ingress.annotations
-            value: {{ .Values.krateoplatformops.ingress.vcluster.annotations }}
-          - name: ingress.tls
-            value: {{ .Values.krateoplatformops.ingress.vcluster.tls }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.vcluster.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          - name: ingress.enabled
+            value: "true"
           - name: sync.ingresses.enabled
-            value: true
+            value: "true"
           {{- end }}
           - name: init.manifests
             value: |-
@@ -54,8 +58,6 @@ spec:
             value: installer
           - name: init.helm[0].chart.repo
             value: https://charts.krateo.io
-          # - name: init.helm[0].chart.version
-          #   value: 0.1.15
           - name: init.helm[0].chart.namespace
             value: {{ .Release.Namespace }}
           - name: init.helm[0].release.name
@@ -91,31 +93,15 @@ spec:
                   type: LoadBalancer
                   externalIpAvailable: false
                 {{- else }}
+                service:
                   type: ClusterIP
                   externalIpAvailable: false
                 {{- end }}
                 {{- if .Values.krateoplatformops.ingress.enabled }}
+                {{- with .Values.krateoplatformops.ingress }}
                 ingress:
-                  enabled: true
-                  frontend:
-                    {{ toYaml .Values.krateoplatformops.ingress.frontend | nindent 20 }}
-                  gateway:
-                    {{ toYaml .Values.krateoplatformops.ingress.gateway | nindent 20 }}
-                  bff:
-                    {{ toYaml .Values.krateoplatformops.ingress.bff | nindent 20 }}
-                  authn:
-                    {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
+                  {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- if eq .Values.krateoplatformops.ingress.enabled true }}
-                ingress:
-                  krateo-frontend:
-                    {{ toYaml .Values.krateoplatformops.ingress.frontend | nindent 20 }}
-                  krateo-gateway:
-                    {{ toYaml .Values.krateoplatformops.ingress.gateway | nindent 20 }}
-                  krateo-bff:
-                    {{ toYaml .Values.krateoplatformops.ingress.bff | nindent 20 }}
-                  authn-service:
-                    {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
                 {{- end }}
 
     - id: extract-vcluster-cakey
@@ -254,7 +240,17 @@ spec:
           metadata:
             name: vcluster-k8s-lb
           selector: .spec.ports[0].port
-    # {{ else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
+    {{ else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
+    - id: extract-vcluster-host
+      type: var
+      with:
+        name: KUBECONFIG_KUBERNETES_HOSTNAME
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: vcluster-k8s
+          selector: .spec.rules[0].host
     {{ end }}
 
     - id: job-to-copy-configmap-in-vcluster
@@ -310,9 +306,8 @@ spec:
           - name: spec.template.spec.containers[0].args[11]
             value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
           {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
-          # TBD
           - name: spec.template.spec.containers[0].args[11]
-            value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
+            value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_HOSTNAME
           {{- end }}
           - name: spec.template.spec.containers[0].args[12]
             value: --namespace
