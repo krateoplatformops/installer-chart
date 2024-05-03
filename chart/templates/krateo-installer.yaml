@@ -686,7 +686,7 @@ spec:
         waitTimeout: 5m
     {{- end }}
 
-    {{- if index .Values.krateoplatformops.patch-provider "enabled" }}
+    {{- if index .Values.krateoplatformops "patch-provider" "enabled" }}
     - id: install-patch-provider
       type: chart
       with:
