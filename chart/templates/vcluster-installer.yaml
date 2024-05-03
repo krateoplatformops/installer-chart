@@ -33,285 +33,284 @@ spec:
             value: {{ .Values.krateoplatformops.ingress.vcluster.ingressClassName }}
           - name: ingress.pathType
             value: {{ .Values.krateoplatformops.ingress.vcluster.pathType }}
-          - name: ingress.annotations
-            value: {{ .Values.krateoplatformops.ingress.vcluster.annotations }}
-          - name: ingress.tls
-            value: {{ .Values.krateoplatformops.ingress.vcluster.tls }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.vcluster.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: \''{{ $value }}\''
+          {{- end }}
+          - name: ingress.enabled
+            value: "true"
           - name: sync.ingresses.enabled
-            value: true
+            value: "true"
           {{- end }}
-          - name: init.manifests
-            value: |-
-              apiVersion: v1
-              kind: Namespace
-              metadata:
-                name: {{ .Release.Namespace }}
-          - name: init.helm[0].chart.name
-            value: installer
-          - name: init.helm[0].chart.repo
-            value: https://charts.krateo.io
-          # - name: init.helm[0].chart.version
-          #   value: 0.1.15
-          - name: init.helm[0].chart.namespace
-            value: {{ .Release.Namespace }}
-          - name: init.helm[0].release.name
-            value: installer
-          - name: init.helm[0].release.namespace
-            value: {{ .Release.Namespace }}
-          - name: init.helm[0].values
-            value: |-
-              krateoplatformops:
-                vcluster:
-                  enabled: false
-                {{- if .Values.krateoplatformops.init.enabled }}
-                init:
-                  enabled: true
-                {{- else }}
-                init:
-                  enabled: false
-                {{- end }}
-                {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-                service:
-                  type: NodePort
-                  externalIpAvailable: true
-                {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-                service:
-                  type: NodePort
-                  externalIpAvailable: false
-                {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") .Values.krateoplatformops.service.externalIpAvailable }}
-                service:
-                  type: LoadBalancer
-                  externalIpAvailable: true
-                {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-                service:
-                  type: LoadBalancer
-                  externalIpAvailable: false
-                {{- else }}
-                  type: ClusterIP
-                  externalIpAvailable: false
-                {{- end }}
-                {{- if .Values.krateoplatformops.ingress.enabled }}
-                ingress:
-                  enabled: true
-                  frontend:
-                    {{ toYaml .Values.krateoplatformops.ingress.frontend | nindent 20 }}
-                  gateway:
-                    {{ toYaml .Values.krateoplatformops.ingress.gateway | nindent 20 }}
-                  bff:
-                    {{ toYaml .Values.krateoplatformops.ingress.bff | nindent 20 }}
-                  authn:
-                    {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
-                {{- end }}
-                {{- if eq .Values.krateoplatformops.ingress.enabled true }}
-                ingress:
-                  krateo-frontend:
-                    {{ toYaml .Values.krateoplatformops.ingress.frontend | nindent 20 }}
-                  krateo-gateway:
-                    {{ toYaml .Values.krateoplatformops.ingress.gateway | nindent 20 }}
-                  krateo-bff:
-                    {{ toYaml .Values.krateoplatformops.ingress.bff | nindent 20 }}
-                  authn-service:
-                    {{ toYaml .Values.krateoplatformops.ingress.authn | nindent 20 }}
-                {{- end }}
-
-    - id: extract-vcluster-cakey
-      type: var
-      with:
-        name: KUBECONFIG_CAKEY
-        valueFrom:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: vcluster-k8s-certs
-          selector: .data."ca.key" | @base64d
-
-    - id: extract-vcluster-cacrt
-      type: var
-      with:
-        name: KUBECONFIG_CACRT
-        valueFrom:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: vcluster-k8s-certs
-          selector: .data."ca.crt" | @base64d
-
-    - id: job-to-copy-secret-in-vcluster
-      type: object
-      with:
-        apiVersion: batch/v1
-        kind: Job
-        metadata:
-          name: vcluster-job-secret
-          namespace: {{ .Release.Namespace }}
-        set:
-          - name: spec.ttlSecondsAfterFinished
-            value: '10'
-          - name: spec.template.spec.restartPolicy
-            value: OnFailure
-          - name: spec.template.spec.serviceAccount
-            value: vc-vcluster-k8s
-          - name: spec.template.spec.containers[0].name
-            value: copy-secret-in-vcluster
-          - name: spec.template.spec.containers[0].image
-            value: ghcr.io/loft-sh/vcluster-cli:0.19.5
-          - name: spec.template.spec.containers[0].command[0]
-            value: vcluster
-          - name: spec.template.spec.containers[0].args[0]
-            value: connect
-          - name: spec.template.spec.containers[0].args[1]
-            value: vcluster-k8s
-          - name: spec.template.spec.containers[0].args[2]
-            value: --namespace
-          - name: spec.template.spec.containers[0].args[3]
-            value: {{ .Release.Namespace }}
-          - name: spec.template.spec.containers[0].args[4]
-            value: --debug
-          - name: spec.template.spec.containers[0].args[5]
-            value: --
-          - name: spec.template.spec.containers[0].args[6]
-            value: kubectl
-          - name: spec.template.spec.containers[0].args[7]
-            value: create
-          - name: spec.template.spec.containers[0].args[8]
-            value: secret
-          - name: spec.template.spec.containers[0].args[9]
-            value: generic
-          - name: spec.template.spec.containers[0].args[10]
-            value: vcluster-k8s-certs
-          - name: spec.template.spec.containers[0].args[11]
-            value: --from-literal
-          - name: spec.template.spec.containers[0].args[12]
-            value: ca\.crt\=$KUBECONFIG_CACRT
-          - name: spec.template.spec.containers[0].args[13]
-            value: --from-literal
-          - name: spec.template.spec.containers[0].args[14]
-            value: ca\.key\=$KUBECONFIG_CAKEY
-          - name: spec.template.spec.containers[0].args[15]
-            value: --namespace
-          - name: spec.template.spec.containers[0].args[16]
-            value: {{ .Release.Namespace }}
-
-    {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-    - id: extract-vcluster-nodeport-port
-      type: var
-      with:
-        name: KUBECONFIG_KUBERNETES_PORT
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: vcluster-k8s
-          selector: .spec.ports[0].nodePort
-
-    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
-    - id: extract-vcluster-nodeport-ip
-      type: var
-      with:
-        name: KUBECONFIG_KUBERNETES_IP
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: vcluster-k8s
-          selector: .spec.ports[0].nodePort
-
-    {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-    - id: extract-vcluster-nodeport-port
-      type: var
-      with:
-        name: KUBECONFIG_KUBERNETES_PORT
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: vcluster-k8s
-          selector: .spec.ports[0].nodePort
-
-    {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-    - id: extract-vcluster-lb-ip
-      type: var
-      with:
-        name: KUBECONFIG_KUBERNETES_IP
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: vcluster-k8s-lb
-          selector: .status.loadBalancer.ingress[0].ip
-
-    - id: extract-vcluster-lb-port
-      type: var
-      with:
-        name: KUBECONFIG_KUBERNETES_PORT
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: vcluster-k8s-lb
-          selector: .spec.ports[0].port
+          # - name: init.manifests
+          #   value: |-
+          #     apiVersion: v1
+          #     kind: Namespace
+          #     metadata:
+          #       name: {{ .Release.Namespace }}
+          # - name: init.helm[0].chart.name
+          #   value: installer
+          # - name: init.helm[0].chart.repo
+          #   value: https://charts.krateo.io
+          # - name: init.helm[0].chart.namespace
+          #   value: {{ .Release.Namespace }}
+          # - name: init.helm[0].release.name
+          #   value: installer
+          # - name: init.helm[0].release.namespace
+          #   value: {{ .Release.Namespace }}
+          # - name: init.helm[0].values
+          #   value: |-
+          #     krateoplatformops:
+          #       vcluster:
+          #         enabled: false
+          #       {{- if .Values.krateoplatformops.init.enabled }}
+          #       init:
+          #         enabled: true
+          #       {{- else }}
+          #       init:
+          #         enabled: false
+          #       {{- end }}
+          #       {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+          #       service:
+          #         type: NodePort
+          #         externalIpAvailable: true
+          #       {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+          #       service:
+          #         type: NodePort
+          #         externalIpAvailable: false
+          #       {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") .Values.krateoplatformops.service.externalIpAvailable }}
+          #       service:
+          #         type: LoadBalancer
+          #         externalIpAvailable: true
+          #       {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+          #       service:
+          #         type: LoadBalancer
+          #         externalIpAvailable: false
+          #       {{- else }}
+          #         type: ClusterIP
+          #         externalIpAvailable: false
+          #       {{- end }}
+    #
+    # - id: extract-vcluster-cakey
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_CAKEY
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Secret
+    #       metadata:
+    #         name: vcluster-k8s-certs
+    #       selector: .data."ca.key" | @base64d
+    #
+    # - id: extract-vcluster-cacrt
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_CACRT
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Secret
+    #       metadata:
+    #         name: vcluster-k8s-certs
+    #       selector: .data."ca.crt" | @base64d
+    #
+    # - id: job-to-copy-secret-in-vcluster
+    #   type: object
+    #   with:
+    #     apiVersion: batch/v1
+    #     kind: Job
+    #     metadata:
+    #       name: vcluster-job-secret
+    #       namespace: {{ .Release.Namespace }}
+    #     set:
+    #       - name: spec.ttlSecondsAfterFinished
+    #         value: '10'
+    #       - name: spec.template.spec.restartPolicy
+    #         value: OnFailure
+    #       - name: spec.template.spec.serviceAccount
+    #         value: vc-vcluster-k8s
+    #       - name: spec.template.spec.containers[0].name
+    #         value: copy-secret-in-vcluster
+    #       - name: spec.template.spec.containers[0].image
+    #         value: ghcr.io/loft-sh/vcluster-cli:0.19.5
+    #       - name: spec.template.spec.containers[0].command[0]
+    #         value: vcluster
+    #       - name: spec.template.spec.containers[0].args[0]
+    #         value: connect
+    #       - name: spec.template.spec.containers[0].args[1]
+    #         value: vcluster-k8s
+    #       - name: spec.template.spec.containers[0].args[2]
+    #         value: --namespace
+    #       - name: spec.template.spec.containers[0].args[3]
+    #         value: {{ .Release.Namespace }}
+    #       - name: spec.template.spec.containers[0].args[4]
+    #         value: --debug
+    #       - name: spec.template.spec.containers[0].args[5]
+    #         value: --
+    #       - name: spec.template.spec.containers[0].args[6]
+    #         value: kubectl
+    #       - name: spec.template.spec.containers[0].args[7]
+    #         value: create
+    #       - name: spec.template.spec.containers[0].args[8]
+    #         value: secret
+    #       - name: spec.template.spec.containers[0].args[9]
+    #         value: generic
+    #       - name: spec.template.spec.containers[0].args[10]
+    #         value: vcluster-k8s-certs
+    #       - name: spec.template.spec.containers[0].args[11]
+    #         value: --from-literal
+    #       - name: spec.template.spec.containers[0].args[12]
+    #         value: ca\.crt\=$KUBECONFIG_CACRT
+    #       - name: spec.template.spec.containers[0].args[13]
+    #         value: --from-literal
+    #       - name: spec.template.spec.containers[0].args[14]
+    #         value: ca\.key\=$KUBECONFIG_CAKEY
+    #       - name: spec.template.spec.containers[0].args[15]
+    #         value: --namespace
+    #       - name: spec.template.spec.containers[0].args[16]
+    #         value: {{ .Release.Namespace }}
+    #
+    # {{ if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # - id: extract-vcluster-nodeport-port
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_KUBERNETES_PORT
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: vcluster-k8s
+    #       selector: .spec.ports[0].nodePort
+    #
+    # # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    # - id: extract-vcluster-nodeport-ip
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_KUBERNETES_IP
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: vcluster-k8s
+    #       selector: .spec.ports[0].nodePort
+    #
+    # {{ else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    # - id: extract-vcluster-nodeport-port
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_KUBERNETES_PORT
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: vcluster-k8s
+    #       selector: .spec.ports[0].nodePort
+    #
+    # {{ else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    # - id: extract-vcluster-lb-ip
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_KUBERNETES_IP
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: vcluster-k8s-lb
+    #       selector: .status.loadBalancer.ingress[0].ip
+    #
+    # - id: extract-vcluster-lb-port
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_KUBERNETES_PORT
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: vcluster-k8s-lb
+    #       selector: .spec.ports[0].port
     # {{ else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
-    {{ end }}
+    # #TBD
+    # - id: extract-vcluster-lb-ip
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_KUBERNETES_IP
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: vcluster-k8s-lb
+    #       selector: .status.loadBalancer.ingress[0].ip
+    #
+    # - id: extract-vcluster-lb-port
+    #   type: var
+    #   with:
+    #     name: KUBECONFIG_KUBERNETES_PORT
+    #     valueFrom:
+    #       apiVersion: v1
+    #       kind: Service
+    #       metadata:
+    #         name: vcluster-k8s-lb
+    #       selector: .spec.ports[0].port
+    # {{ end }}
 
-    - id: job-to-copy-configmap-in-vcluster
-      type: object
-      with:
-        apiVersion: batch/v1
-        kind: Job
-        metadata:
-          name: vcluster-job-configmap
-          namespace: {{ .Release.Namespace }}
-        set:
-          - name: spec.ttlSecondsAfterFinished
-            value: '10'
-          - name: spec.template.spec.restartPolicy
-            value: OnFailure
-          - name: spec.template.spec.serviceAccount
-            value: vc-vcluster-k8s
-          - name: spec.template.spec.containers[0].name
-            value: copy-configmap-in-vcluster
-          - name: spec.template.spec.containers[0].image
-            value: ghcr.io/loft-sh/vcluster-cli:0.19.5
-          - name: spec.template.spec.containers[0].command[0]
-            value: vcluster
-          - name: spec.template.spec.containers[0].args[0]
-            value: connect
-          - name: spec.template.spec.containers[0].args[1]
-            value: vcluster-k8s
-          - name: spec.template.spec.containers[0].args[2]
-            value: --namespace
-          - name: spec.template.spec.containers[0].args[3]
-            value: {{ .Release.Namespace }}
-          - name: spec.template.spec.containers[0].args[4]
-            value: --debug
-          - name: spec.template.spec.containers[0].args[5]
-            value: --
-          - name: spec.template.spec.containers[0].args[6]
-            value: kubectl
-          - name: spec.template.spec.containers[0].args[7]
-            value: create
-          - name: spec.template.spec.containers[0].args[8]
-            value: configmap
-          - name: spec.template.spec.containers[0].args[9]
-            value: vcluster-k8s-cm
-          - name: spec.template.spec.containers[0].args[10]
-            value: --from-literal
-          {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-          - name: spec.template.spec.containers[0].args[11]
-            value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-          {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-          - name: spec.template.spec.containers[0].args[11]
-            value: KUBECONFIG_SERVER_URL=https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
-          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-          - name: spec.template.spec.containers[0].args[11]
-            value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-          {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
-          # TBD
-          - name: spec.template.spec.containers[0].args[11]
-            value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-          {{- end }}
-          - name: spec.template.spec.containers[0].args[12]
-            value: --namespace
-          - name: spec.template.spec.containers[0].args[13]
-            value: {{ .Release.Namespace }}
+    # - id: job-to-copy-configmap-in-vcluster
+    #   type: object
+    #   with:
+    #     apiVersion: batch/v1
+    #     kind: Job
+    #     metadata:
+    #       name: vcluster-job-configmap
+    #       namespace: {{ .Release.Namespace }}
+    #     set:
+    #       - name: spec.ttlSecondsAfterFinished
+    #         value: '10'
+    #       - name: spec.template.spec.restartPolicy
+    #         value: OnFailure
+    #       - name: spec.template.spec.serviceAccount
+    #         value: vc-vcluster-k8s
+    #       - name: spec.template.spec.containers[0].name
+    #         value: copy-configmap-in-vcluster
+    #       - name: spec.template.spec.containers[0].image
+    #         value: ghcr.io/loft-sh/vcluster-cli:0.19.5
+    #       - name: spec.template.spec.containers[0].command[0]
+    #         value: vcluster
+    #       - name: spec.template.spec.containers[0].args[0]
+    #         value: connect
+    #       - name: spec.template.spec.containers[0].args[1]
+    #         value: vcluster-k8s
+    #       - name: spec.template.spec.containers[0].args[2]
+    #         value: --namespace
+    #       - name: spec.template.spec.containers[0].args[3]
+    #         value: {{ .Release.Namespace }}
+    #       - name: spec.template.spec.containers[0].args[4]
+    #         value: --debug
+    #       - name: spec.template.spec.containers[0].args[5]
+    #         value: --
+    #       - name: spec.template.spec.containers[0].args[6]
+    #         value: kubectl
+    #       - name: spec.template.spec.containers[0].args[7]
+    #         value: create
+    #       - name: spec.template.spec.containers[0].args[8]
+    #         value: configmap
+    #       - name: spec.template.spec.containers[0].args[9]
+    #         value: vcluster-k8s-cm
+    #       - name: spec.template.spec.containers[0].args[10]
+    #         value: --from-literal
+    #       {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    #       - name: spec.template.spec.containers[0].args[11]
+    #         value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
+    #       {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    #       - name: spec.template.spec.containers[0].args[11]
+    #         value: KUBECONFIG_SERVER_URL=https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
+    #       {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    #       - name: spec.template.spec.containers[0].args[11]
+    #         value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
+    #       {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
+    #       # TBD
+    #       - name: spec.template.spec.containers[0].args[11]
+    #         value: KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
+    #       {{- end }}
+    #       - name: spec.template.spec.containers[0].args[12]
+    #         value: --namespace
+    #       - name: spec.template.spec.containers[0].args[13]
+    #         value: {{ .Release.Namespace }}
 {{- end }}
