@@ -103,6 +103,10 @@ krateoplatformops:
         #   hosts:
         #     - vcluster.local
     frontend:
+      overrideconf: false
+      env:
+        AUTHN_API_BASE_URL: ""
+        BFF_API_BASE_URL: ""
       className: ""
       annotations: {}
         # kubernetes.io/ingress.class: nginx
