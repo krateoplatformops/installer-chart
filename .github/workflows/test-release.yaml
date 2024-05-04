@@ -48,7 +48,7 @@ jobs:
 
       - name: Connect to vCluster
         run: |
-          curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-darwin-amd64" && chmod +x vcluster
+          curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-linux-amd64" && chmod +x vcluster
           ./vcluster connect vcluster-k8s
 
       - name: Wait for krateoplatformops krateo to become ready
