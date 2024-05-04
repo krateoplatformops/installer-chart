@@ -33,3 +33,35 @@ jobs:
 
       - name: Helm lint
         run: helm lint ./chart
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1
+
+      - name: Install Krateo PlatformOps with standard configuration
+        run: helm install installer ./chart --create-namespace -n krateo-system --wait
+
+      - name: Wait for krateoplatformops vcluster to become ready
+        run: kubectl wait krateoplatformops vcluster --for condition=Ready=True --timeout=300s --namespace krateo-system
+
+      - name: Wait for vCluster deployment to become ready
+        run: kubectl wait deployment vcluster-k8s --for condition=Available=True --timeout=300s --namespace krateo-system
+
+      - name: Connect to vCluster
+        run: |
+          curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-linux-amd64" && chmod +x vcluster
+          ./vcluster connect vcluster-k8s
+
+      - name: Wait for krateoplatformops krateo to become ready
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
+
+      - name: Wait for krateo-gateway pod to become ready
+        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/krateo-gateway') -n krateo-system
+
+      - name: Wait for authn-service pod to become ready
+        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/authn-service') -n krateo-system
+
+      - name: Wait for krateo-bff pod to become ready
+        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/krateo-bff') -n krateo-system
+
+      - name: Wait for krateo-frontend pod to become ready
+        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/krateo-frontend') -n krateo-system
