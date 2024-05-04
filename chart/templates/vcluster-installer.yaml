@@ -50,8 +50,10 @@ spec:
           {{- end }}
           - name: openshift.enable
             value: {{ .Values.krateoplatformops.vcluster.openshift.enable }}
+            asString: true
           - name: securityContext.allowPrivilegeEscalation
             value: {{ .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation }}
+            asString: true
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
           - name: securityContext.runAsUser
             value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
