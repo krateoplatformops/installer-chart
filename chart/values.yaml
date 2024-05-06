@@ -123,10 +123,6 @@ krateoplatformops:
         #   hosts:
         #     - vcluster.local
     frontend:
-      overrideconf: false
-      env:
-        AUTHN_API_BASE_URL: ""
-        BFF_API_BASE_URL: ""
       className: ""
       annotations: {}
         # kubernetes.io/ingress.class: nginx
@@ -182,6 +178,11 @@ krateoplatformops:
       #  - secretName: chart-example-tls
       #    hosts:
       #      - chart-example.local
+  frontend:
+    overrideconf: false
+    env:
+      AUTHN_API_BASE_URL: ""
+      BFF_API_BASE_URL: ""
   custom:
     enabled: false
   init:

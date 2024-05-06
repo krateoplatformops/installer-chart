@@ -49,9 +49,11 @@ spec:
             value: "true"
           {{- end }}
           - name: openshift.enable
-            value: {{ .Values.krateoplatformops.vcluster.openshift.enable }}
+            value: {{ .Values.krateoplatformops.vcluster.openshift.enable | quote }}
+            asString: true
           - name: securityContext.allowPrivilegeEscalation
-            value: {{ .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation }}
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation | quote }}
+            asString: true
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
           - name: securityContext.runAsUser
             value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
@@ -118,6 +120,15 @@ spec:
                 ingress:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
+                {{- end }}
+                {{- if .Values.krateoplatformops.frontend.overrideconf }}
+                {{- with .Values.krateoplatformops.frontend }}
+                frontend:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- else}}
+                frontend:
+                  overrideconf: false
                 {{- end }}
 
     - id: extract-vcluster-cakey

@@ -329,6 +329,7 @@ spec:
             value: krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
+            asString: true
     {{- end }}
 
     - id: install-authn-service
