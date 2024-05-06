@@ -11,6 +11,6 @@ roleRef:
   name: {{ include "installer.fullname" . }}-vcluster
 subjects:
 - kind: ServiceAccount
-  name: {{ include "installer.fullname" . }}
+  name: {{ include "installer.serviceAccountName" . }}
   namespace: {{ .Release.Namespace }}
 {{- end }}

@@ -53,15 +53,3 @@ jobs:
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
-
-      - name: Wait for krateo-gateway pod to become ready
-        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/krateo-gateway') -n krateo-system
-
-      - name: Wait for authn-service pod to become ready
-        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/authn-service') -n krateo-system
-
-      - name: Wait for krateo-bff pod to become ready
-        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/krateo-bff') -n krateo-system
-
-      - name: Wait for krateo-frontend pod to become ready
-        run: kubectl wait --for=condition=Ready $(kubectl get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed --output=name -n krateo-system | grep '^pod/krateo-frontend') -n krateo-system
