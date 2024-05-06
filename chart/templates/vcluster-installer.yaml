@@ -121,6 +121,15 @@ spec:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- end }}
+                {{- if .Values.krateoplatformops.frontend.overrideconf }}
+                {{- with .Values.krateoplatformops.frontend }}
+                frontend:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- else}}
+                frontend:
+                  overrideconf: false
+                {{- end }}
 
     - id: extract-vcluster-cakey
       type: var

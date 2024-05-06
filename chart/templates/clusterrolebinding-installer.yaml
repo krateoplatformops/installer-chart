@@ -10,5 +10,5 @@ roleRef:
   name: {{ include "installer.fullname" . }}
 subjects:
 - kind: ServiceAccount
-  name: {{ include "installer.fullname" . }}
+  name: {{ include "installer.serviceAccountName" . }}
   namespace: {{ .Release.Namespace }}
