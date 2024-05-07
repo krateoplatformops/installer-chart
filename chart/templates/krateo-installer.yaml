@@ -288,7 +288,7 @@ spec:
           kind: Ingress
           metadata:
             name: krateo-gateway
-          selector: .spec.rules[0].host | gsub("\\."; "\\\\.")
+          selector: .spec.rules[0].host | gsub("\\."; "-")
 
     - id: upgrade-gateway-ingress
       type: chart
