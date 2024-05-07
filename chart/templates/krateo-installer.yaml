@@ -342,7 +342,7 @@ spec:
           - name: env.KRATEO_GATEWAY_DUMP_ENV
             value: "true"
           - name: env.KRATEO_GATEWAY_DNS_NAMES
-            value: krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST
+            value: "krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST"
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
     {{- end }}
