@@ -288,7 +288,7 @@ spec:
           kind: Ingress
           metadata:
             name: krateo-gateway
-          selector: .spec.rules[0].host
+          selector: .spec.rules[0].host | gsub("\\."; "\\\\.")
 
     - id: upgrade-gateway-ingress
       type: chart
@@ -341,8 +341,8 @@ spec:
             value: "true"
           - name: env.KRATEO_GATEWAY_DUMP_ENV
             value: "true"
-          # - name: env.KRATEO_GATEWAY_DNS_NAMES
-          #   value: krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST
+          - name: env.KRATEO_GATEWAY_DNS_NAMES
+            value: krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
     {{- end }}
