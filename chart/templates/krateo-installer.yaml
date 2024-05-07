@@ -75,8 +75,10 @@ spec:
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
+          {{- if .Values.krateoplatformops.ingress.gateway.className }}
           - name: ingress.className
             value: {{ .Values.krateoplatformops.ingress.gateway.className }}
+          {{- end }}
           {{- range $key, $value := .Values.krateoplatformops.ingress.gateway.annotations }}
           - name: ingress.annotations.{{ $key | replace "." "\\." }}
             value: {{ $value | quote }}
@@ -88,10 +90,12 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.gateway.tls (gt (len .Values.krateoplatformops.ingress.gateway.tls) 0) }}
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+          {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
@@ -149,8 +153,10 @@ spec:
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
+          {{- if .Values.krateoplatformops.ingress.gateway.className }}
           - name: ingress.className
             value: {{ .Values.krateoplatformops.ingress.gateway.className }}
+          {{- end }}
           {{- range $key, $value := .Values.krateoplatformops.ingress.gateway.annotations }}
           - name: ingress.annotations.{{ $key | replace "." "\\." }}
             value: {{ $value | quote }}
@@ -162,10 +168,12 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.gateway.tls (gt (len .Values.krateoplatformops.ingress.gateway.tls) 0) }}
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+          {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
@@ -224,8 +232,10 @@ spec:
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
+          {{- if .Values.krateoplatformops.ingress.gateway.className }}
           - name: ingress.className
             value: {{ .Values.krateoplatformops.ingress.gateway.className }}
+          {{- end }}
           {{- range $key, $value := .Values.krateoplatformops.ingress.gateway.annotations }}
           - name: ingress.annotations.{{ $key | replace "." "\\." }}
             value: {{ $value | quote }}
@@ -237,10 +247,12 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.gateway.tls (gt (len .Values.krateoplatformops.ingress.gateway.tls) 0) }}
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+          {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
@@ -299,8 +311,10 @@ spec:
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
+          {{- if .Values.krateoplatformops.ingress.gateway.className }}
           - name: ingress.className
             value: {{ .Values.krateoplatformops.ingress.gateway.className }}
+          {{- end }}
           {{- range $key, $value := .Values.krateoplatformops.ingress.gateway.annotations }}
           - name: ingress.annotations.{{ $key | replace "." "\\." }}
             value: {{ $value | quote }}
@@ -312,10 +326,12 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
             value: {{ index .Values.krateoplatformops.ingress.gateway.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.gateway.tls (gt (len .Values.krateoplatformops.ingress.gateway.tls) 0) }}
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+          {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
             value: $KUBECONFIG_CACRT
@@ -329,7 +345,6 @@ spec:
             value: krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
-            asString: true
     {{- end }}
 
     - id: install-authn-service
