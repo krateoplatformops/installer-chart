@@ -289,7 +289,6 @@ spec:
           metadata:
             name: krateo-gateway
           selector: .spec.rules[0].host | gsub("\\."; "\\\\.")
-<<<<<<< HEAD
 
     - id: extract-gateway-ingress-host-tmp
       type: var
@@ -301,8 +300,6 @@ spec:
           metadata:
             name: krateo-gateway
           selector: .spec.rules[0].host | gsub("\\."; "-")
-=======
->>>>>>> main
 
     - id: extract-gateway-ingress-host-tmp
       type: var
