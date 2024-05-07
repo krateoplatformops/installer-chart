@@ -304,6 +304,17 @@ spec:
 =======
 >>>>>>> main
 
+    - id: extract-gateway-ingress-host-tmp
+      type: var
+      with:
+        name: KRATEO_GATEWAY_INGRESS_HOST_TMP
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: krateo-gateway
+          selector: .spec.rules[0].host | gsub("\\."; "-")
+
     - id: upgrade-gateway-ingress
       type: chart
       with:
