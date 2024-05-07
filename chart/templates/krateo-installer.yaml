@@ -288,6 +288,8 @@ spec:
           kind: Ingress
           metadata:
             name: krateo-gateway
+<<<<<<< HEAD
+=======
           selector: .spec.rules[0].host | gsub("\\."; "\\\\.")
 
     - id: extract-gateway-ingress-host-tmp
@@ -299,18 +301,9 @@ spec:
           kind: Ingress
           metadata:
             name: krateo-gateway
+>>>>>>> main
           selector: .spec.rules[0].host | gsub("\\."; "-")
 
-    - id: extract-gateway-ingress-host-tmp
-      type: var
-      with:
-        name: KRATEO_GATEWAY_INGRESS_HOST_TMP
-        valueFrom:
-          apiVersion: networking.k8s.io/v1
-          kind: Ingress
-          metadata:
-            name: krateo-gateway
-          selector: .spec.rules[0].host | gsub("\\."; "-")
 
     - id: upgrade-gateway-ingress
       type: chart
@@ -364,9 +357,7 @@ spec:
           - name: env.KRATEO_GATEWAY_DUMP_ENV
             value: "true"
           - name: env.KRATEO_GATEWAY_DNS_NAMES
-            value: 'krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST'
-          - name: env.KRATEO_GATEWAY_DNS_NAMES_TMP
-            value: krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST-TMP
+            value: krateo-gateway.{{ .Release.Namespace }}.svc,$KRATEO_GATEWAY_INGRESS_HOST
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
     {{- end }}
