@@ -84,6 +84,13 @@ spec:
             value: {{ .Release.Namespace }}
           - name: init.helm[0].values
             value: |-
+              {{- if eq .Values.env.INSTALLER_DEBUG "true" }}
+              env:
+                INSTALLER_DEBUG: "true"
+              {{- else }}
+              env:
+                INSTALLER_DEBUG: "false"
+              {{- end }}
               krateoplatformops:
                 vcluster:
                   enabled: false
