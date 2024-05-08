@@ -691,46 +691,46 @@ spec:
             value: {{ .Values.krateoplatformops.ingress.frontend.env.BFF_API_BASE_URL }}
           {{- end }}
 
-   #  - id: install-core-provider
-   #    type: chart
-   #    with:
-   #      name: core-provider
-   #      version: 0.10.6
-   #      repository: https://charts.krateo.io
-   #      wait: true
-   #      waitTimeout: 5m
-   #
-   #  {{- if .Values.krateoplatformops.init.enabled }}
-   #  - id: installer-starter-pack
-   #    type: chart
-   #    with:
-   #      name: installer-starter-pack
-   #      version: 0.1.2
-   #      repository: https://charts.krateo.io
-   #      wait: true
-   #      waitTimeout: 5m
-   #  {{- end }}
-   #
-   #  {{- if index .Values.krateoplatformops "patch-provider" "enabled" }}
-   #  - id: install-patch-provider
-   #    type: chart
-   #    with:
-   #      name: patch-provider
-   #      version: 0.1.7
-   #      repository: https://charts.krateo.io
-   #      wait: true
-   #      waitTimeout: 5m
-   #  {{- end }}
-   #
-   #  {{- if .Values.krateoplatformops.eventrouter.enabled }}
-   #  - id: install-eventrouter
-   #    type: chart
-   #    with:
-   #      name: eventrouter
-   #      version: 0.3.1
-   #      repository: https://charts.krateo.io
-   #      wait: true
-   #      waitTimeout: 5m
-   #  {{- end }}
+    - id: install-core-provider
+      type: chart
+      with:
+        name: core-provider
+        version: 0.10.6
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+
+    {{- if .Values.krateoplatformops.init.enabled }}
+    - id: installer-starter-pack
+      type: chart
+      with:
+        name: installer-starter-pack
+        version: 0.1.2
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+    {{- end }}
+
+    {{- if index .Values.krateoplatformops "patch-provider" "enabled" }}
+    - id: install-patch-provider
+      type: chart
+      with:
+        name: patch-provider
+        version: 0.1.7
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+    {{- end }}
+
+    {{- if .Values.krateoplatformops.eventrouter.enabled }}
+    - id: install-eventrouter
+      type: chart
+      with:
+        name: eventrouter
+        version: 0.3.1
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+    {{- end }}
 
 {{- end }}
