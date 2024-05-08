@@ -1,4 +1,4 @@
-g{{- if and (not .Values.krateoplatformops.vcluster.enabled) (not .Values.krateoplatformops.custom.enabled )  }}
+{{- if and (not .Values.krateoplatformops.vcluster.enabled) (not .Values.krateoplatformops.custom.enabled )  }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
