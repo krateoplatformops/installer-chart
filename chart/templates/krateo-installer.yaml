@@ -349,150 +349,150 @@ spec:
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
             value: $KRATEO_GATEWAY_IP
     {{- end }}
-   #
-   #  - id: install-authn-service
-   #    type: chart
-   #    with:
-   #      name: authn-service
-   #      version: 0.10.2
-   #      repository: https://charts.krateo.io
-   #      wait: true
-   #      waitTimeout: 5m
-   #      set:
-   #        {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
-   #        - name: service.type
-   #          value: NodePort
-   #        - name: service.nodePort
-   #          value: "30082"
-   #        {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-   #        - name: service.type
-   #          value: LoadBalancer
-   #        {{- end }}
-   #        {{- if eq .Values.krateoplatformops.ingress.enabled true }}
-   #        - name: ingress.enabled
-   #          value: "true"
-   #        - name: ingress.className
-   #          value: {{ .Values.krateoplatformops.ingress.authn.className }}
-   #        {{- range $key, $value := .Values.krateoplatformops.ingress.authn.annotations }}
-   #        - name: ingress.annotations.{{ $key | replace "." "\\." }}
-   #          value: {{ $value | quote }}
-   #          asString: true
-   #        {{- end }}
-   #        - name: ingress.hosts[0].host
-   #          value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "host" }}
-   #        - name: ingress.hosts[0].paths[0].path
-   #          value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "paths" 0 "path" }}
-   #        - name: ingress.hosts[0].paths[0].pathType
-   #          value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "paths" 0 "pathType" }}
-   #        {{- if and .Values.krateoplatformops.ingress.authn.tls (gt (len .Values.krateoplatformops.ingress.authn.tls) 0) }}
-   #        - name: ingress.tls[0].secretName
-   #          value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "secretName" }}
-   #        - name: ingress.tls[0].hosts[0]
-   #          value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "hosts" 0 }}
-   #        {{- end }}
-   #        {{- end }}
-   #        - name: env.AUTHN_CORS
-   #          value: "true"
-   #        - name: env.AUTHN_KUBERNETES_URL
-   #          value: $KUBECONFIG_SERVER_URL
-   #        - name: env.AUTHN_KUBECONFIG_PROXY_URL
-   #          {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-   #          value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
-   #          {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-   #          value: https://127.0.0.1:$KRATEO_GATEWAY_PORT
-   #          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-   #          value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
-   #          {{- else if .Values.krateoplatformops.ingress.enabled }}
-   #          value: https://$KRATEO_GATEWAY_INGRESS_HOST
-   #          {{- end }}
-   #        - name: env.AUTHN_KUBECONFIG_CACRT
-   #          value: $KUBECONFIG_CACRT
-   #        - name: env.AUTHN_DUMP_ENV
-   #          value: "true"
-   #
-   #  {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-   #  # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
-   #  - id: extract-authn-nodeport-ip
-   #    type: var
-   #    with:
-   #      name: AUTHN_SERVICE_IP
-   #      valueFrom:
-   #        apiVersion: v1
-   #        kind: Service
-   #        metadata:
-   #          name: authn-service
-   #        selector: .spec.ports[0].nodePort
-   #
-   #  - id: extract-authn-nodeport-port
-   #    type: var
-   #    with:
-   #      name: AUTHN_SERVICE_PORT
-   #      valueFrom:
-   #        apiVersion: v1
-   #        kind: Service
-   #        metadata:
-   #          name: authn-service
-   #        selector: .spec.ports[0].nodePort
-   #
-   #  {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-   #  - id: extract-authn-nodeport-port
-   #    type: var
-   #    with:
-   #      name: AUTHN_SERVICE_PORT
-   #      valueFrom:
-   #        apiVersion: v1
-   #        kind: Service
-   #        metadata:
-   #          name: authn-service
-   #        selector: .spec.ports[0].nodePort
-   #
-   #  {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-   #  - id: extract-authn-lb-ip
-   #    type: var
-   #    with:
-   #      name: AUTHN_SERVICE_IP
-   #      valueFrom:
-   #        apiVersion: v1
-   #        kind: Service
-   #        metadata:
-   #          name: authn-service
-   #        selector: .status.loadBalancer.ingress[0].ip
-   #
-   #  - id: extract-authn-lb-port
-   #    type: var
-   #    with:
-   #      name: AUTHN_SERVICE_PORT
-   #      valueFrom:
-   #        apiVersion: v1
-   #        kind: Service
-   #        metadata:
-   #          name: authn-service
-   #        selector: .spec.ports[0].port
-   #
-   #  {{- else if .Values.krateoplatformops.ingress.enabled }}
-   #  - id: extract-authn-ingress-ip
-   #    type: var
-   #    with:
-   #      name: AUTHN_SERVICE_IP
-   #      valueFrom:
-   #        apiVersion: networking.k8s.io/v1
-   #        kind: Ingress
-   #        metadata:
-   #          name: authn-service
-   #        selector: .status.loadBalancer.ingress[0].ip
-   #
-   #  - id: extract-authn-ingress-host
-   #    type: var
-   #    with:
-   #      name: AUTHN_SERVICE_INGRESS_HOST
-   #      valueFrom:
-   #        apiVersion: networking.k8s.io/v1
-   #        kind: Ingress
-   #        metadata:
-   #          name: authn-service
-   #        selector: .spec.rules[0].host
-   #  {{- end }}
-   #
+   
+    - id: install-authn-service
+      type: chart
+      with:
+        name: authn-service
+        version: 0.10.2
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        set:
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30082"
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.enabled
+            value: "true"
+          - name: ingress.className
+            value: {{ .Values.krateoplatformops.ingress.authn.className }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.authn.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          - name: ingress.hosts[0].host
+            value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "host" }}
+          - name: ingress.hosts[0].paths[0].path
+            value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "paths" 0 "path" }}
+          - name: ingress.hosts[0].paths[0].pathType
+            value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.authn.tls (gt (len .Values.krateoplatformops.ingress.authn.tls) 0) }}
+          - name: ingress.tls[0].secretName
+            value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "secretName" }}
+          - name: ingress.tls[0].hosts[0]
+            value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "hosts" 0 }}
+          {{- end }}
+          {{- end }}
+          - name: env.AUTHN_CORS
+            value: "true"
+          - name: env.AUTHN_KUBERNETES_URL
+            value: $KUBECONFIG_SERVER_URL
+          - name: env.AUTHN_KUBECONFIG_PROXY_URL
+            {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+            value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
+            {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+            value: https://127.0.0.1:$KRATEO_GATEWAY_PORT
+            {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+            value: https://$KRATEO_GATEWAY_IP:$KRATEO_GATEWAY_PORT
+            {{- else if .Values.krateoplatformops.ingress.enabled }}
+            value: https://$KRATEO_GATEWAY_INGRESS_HOST
+            {{- end }}
+          - name: env.AUTHN_KUBECONFIG_CACRT
+            value: $KUBECONFIG_CACRT
+          - name: env.AUTHN_DUMP_ENV
+            value: "true"
+
+    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    - id: extract-authn-nodeport-ip
+      type: var
+      with:
+        name: AUTHN_SERVICE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].nodePort
+
+    - id: extract-authn-nodeport-port
+      type: var
+      with:
+        name: AUTHN_SERVICE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].nodePort
+
+    {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    - id: extract-authn-nodeport-port
+      type: var
+      with:
+        name: AUTHN_SERVICE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].nodePort
+
+    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+    - id: extract-authn-lb-ip
+      type: var
+      with:
+        name: AUTHN_SERVICE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-authn-lb-port
+      type: var
+      with:
+        name: AUTHN_SERVICE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .spec.ports[0].port
+
+    {{- else if .Values.krateoplatformops.ingress.enabled }}
+    - id: extract-authn-ingress-ip
+      type: var
+      with:
+        name: AUTHN_SERVICE_IP
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: authn-service
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-authn-ingress-host
+      type: var
+      with:
+        name: AUTHN_SERVICE_INGRESS_HOST
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: authn-service
+          selector: .spec.rules[0].host
+    {{- end }}
+
    #  - id: install-bff
    #    type: chart
    #    with:
