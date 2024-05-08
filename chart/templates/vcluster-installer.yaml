@@ -84,7 +84,7 @@ spec:
             value: {{ .Release.Namespace }}
           - name: init.helm[0].values
             value: |-
-              {{- if eq .Values.env.service.INSTALLER_DEBUG "true" }}
+              {{- if eq .Values.env.INSTALLER_DEBUG "true" }}
               env:
                 INSTALLER_DEBUG: "true"
               {{- else }}
