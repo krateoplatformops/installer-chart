@@ -186,7 +186,8 @@ spec:
           - name: env.KRATEO_GATEWAY_DNS_NAMES
             value: krateo-gateway.{{ .Release.Namespace }}.svc
           - name: env.KRATEO_GATEWAY_IP_ADDRESSES
-            value: $KRATEO_GATEWAY_IP
+            value: "$KRATEO_GATEWAY_IP"
+            asString: true
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
     - id: extract-gateway-lb-ip
