@@ -94,7 +94,7 @@ spec:
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
@@ -172,7 +172,7 @@ spec:
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
@@ -252,7 +252,7 @@ spec:
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
@@ -331,7 +331,7 @@ spec:
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
+            value: {{ index .Values.krateoplatformops.ingress.gateway.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
           - name: env.KRATEO_GATEWAY_CACRT
@@ -388,7 +388,7 @@ spec:
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.authn.tls 0 "hosts" 0 }}
+            value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
           - name: env.AUTHN_CORS
@@ -531,7 +531,7 @@ spec:
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.bff.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.bff.tls 0 "hosts" 0 }}
+            value: {{ index .Values.krateoplatformops.ingress.bff.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
           - name: env.KRATEO_BFF_CORS
@@ -661,7 +661,7 @@ spec:
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.frontend.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ .Values.krateoplatformops.ingress.frontend.tls 0 "hosts" 0 }}
+            value: {{ index .Values.krateoplatformops.ingress.frontend.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
           {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
