@@ -384,10 +384,12 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
             value: {{ index .Values.krateoplatformops.ingress.authn.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.authn.tls (gt (len .Values.krateoplatformops.ingress.authn.tls) 0) }}
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "hosts" 0 }}
+            value: {{ .Values.krateoplatformops.ingress.authn.tls 0 "hosts" 0 }}
+          {{- end }}
           {{- end }}
           - name: env.AUTHN_CORS
             value: "true"
@@ -525,10 +527,12 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.bff.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
             value: {{ index .Values.krateoplatformops.ingress.bff.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.bff.tls (gt (len .Values.krateoplatformops.ingress.bff.tls) 0) }}
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.bff.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.bff.tls 0 "hosts" 0 }}
+            value: {{ .Values.krateoplatformops.ingress.bff.tls 0 "hosts" 0 }}
+          {{- end }}
           {{- end }}
           - name: env.KRATEO_BFF_CORS
             value: "true"
@@ -653,10 +657,12 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.frontend.hosts 0 "paths" 0 "path" }}
           - name: ingress.hosts[0].paths[0].pathType
             value: {{ index .Values.krateoplatformops.ingress.frontend.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.frontend.tls (gt (len .Values.krateoplatformops.ingress.frontend.tls) 0) }}
           - name: ingress.tls[0].secretName
             value: {{ index .Values.krateoplatformops.ingress.frontend.tls 0 "secretName" }}
           - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.frontend.tls 0 "hosts" 0 }}
+            value: {{ .Values.krateoplatformops.ingress.frontend.tls 0 "hosts" 0 }}
+          {{- end }}
           {{- end }}
           {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
           - name: env.AUTHN_API_BASE_URL
