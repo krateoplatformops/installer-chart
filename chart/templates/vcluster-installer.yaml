@@ -48,23 +48,36 @@ spec:
           - name: sync.ingresses.enabled
             value: "true"
           {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.openshift.enable }}
           - name: openshift.enable
             value: {{ .Values.krateoplatformops.vcluster.openshift.enable | quote }}
             # asString: true
+          {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation }}
           - name: securityContext.allowPrivilegeEscalation
             value: {{ .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation | quote }}
             # asString: true
-          {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
-          - name: securityContext.runAsUser
-            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
           {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.securityContext.capabilities }}
+          - name: securityContext.capabilities.drop[0]
+            value: {{ index .Values.krateoplatformops.vcluster.securityContext.capabilities.drop 0 }}
+          {{- end }}
+          # {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
+          # - name: securityContext.runAsUser
+          #   value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
+          #   asString: true
+          # {{- else }}
+          - name: securityContext.runAsUser
+            value: null
+            asString: true
+          # {{- end }}
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsGroup }}
           - name: securityContext.runAsGroup
-            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsGroup }}
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsGroup | quote }}
           {{- end }}
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsNonRoot }}
           - name: securityContext.runAsNonRoot
-            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsNonRoot }}
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsNonRoot | quote }}
           {{- end }}
           - name: init.manifests
             value: |-
