@@ -62,15 +62,15 @@ spec:
           - name: securityContext.capabilities.drop[0]
             value: {{ index .Values.krateoplatformops.vcluster.securityContext.capabilities.drop 0 }}
           {{- end }}
-          # {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
-          # - name: securityContext.runAsUser
-          #   value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
-          #   asString: true
-          # {{- else }}
+          {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser | quote }}
+            asString: true
+          {{- else }}
           - name: securityContext.runAsUser
             value: null
             asString: true
-          # {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsGroup }}
           - name: securityContext.runAsGroup
             value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsGroup | quote }}

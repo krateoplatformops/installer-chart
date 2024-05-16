@@ -190,6 +190,8 @@ spec:
             asString: true
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+
+    {{- if .Values.krateoplatformops.service.externalIpAvailable }}
     - id: extract-gateway-lb-ip
       type: var
       with:
@@ -200,6 +202,18 @@ spec:
           metadata:
             name: krateo-gateway
           selector: .status.loadBalancer.ingress[0].ip
+    {{- else }}
+    - id: extract-gateway-lb-hostname
+      type: var
+      with:
+        name: KRATEO_GATEWAY_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-gateway
+          selector: .status.loadBalancer.ingress[0].hostname
+    {{- end }}
 
     - id: extract-gateway-lb-port
       type: var
@@ -447,6 +461,8 @@ spec:
           selector: .spec.ports[0].nodePort
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+
+    {{- if .Values.krateoplatformops.service.externalIpAvailable }}
     - id: extract-authn-lb-ip
       type: var
       with:
@@ -457,6 +473,18 @@ spec:
           metadata:
             name: authn-service
           selector: .status.loadBalancer.ingress[0].ip
+    {{- else }}
+    - id: extract-authn-lb-ip
+      type: var
+      with:
+        name: AUTHN_SERVICE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: authn-service
+          selector: .status.loadBalancer.ingress[0].hostname
+    {{- end }}
 
     - id: extract-authn-lb-port
       type: var
@@ -578,6 +606,8 @@ spec:
           selector: .spec.ports[0].nodePort
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+
+    {{- if .Values.krateoplatformops.service.externalIpAvailable }}
     - id: extract-bff-lb-ip
       type: var
       with:
@@ -588,6 +618,18 @@ spec:
           metadata:
             name: krateo-bff
           selector: .status.loadBalancer.ingress[0].ip
+    {{- else }}
+    - id: extract-bff-lb-ip
+      type: var
+      with:
+        name: KRATEO_BFF_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: krateo-bff
+          selector: .status.loadBalancer.ingress[0].hostname
+    {{- end }}
 
     - id: extract-bff-lb-port
       type: var
