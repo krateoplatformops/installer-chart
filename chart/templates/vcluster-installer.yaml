@@ -14,7 +14,7 @@ spec:
         name: vcluster-k8s
         version: 0.19.5
         repository: https://charts.loft.sh
-        wait: false
+        wait: true
         waitTimeout: 5m
         set:
           {{- if .Values.krateoplatformops.vcluster.storage.className }}
@@ -71,6 +71,9 @@ spec:
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsGroup }}
           - name: syncer.podSecurityContext.runAsGroup
             value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsGroup | quote }}
+          {{- else }}
+          - name: syncer.podSecurityContext.runAsGroup
+            value: "null"
           {{- end }}
           - name: init.manifests
             value: |-

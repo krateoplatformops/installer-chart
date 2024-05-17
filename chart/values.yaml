@@ -89,8 +89,8 @@ krateoplatformops:
       enable: false
     securityContext:
       allowPrivilegeEscalation: false
-      runAsUser: 0
-      runAsGroup: 0
+      # runAsUser: 0
+      # runAsGroup: 0
   service:
     type: NodePort
     externalIpAvailable: false
