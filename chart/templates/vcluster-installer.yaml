@@ -14,11 +14,13 @@ spec:
         name: vcluster-k8s
         version: 0.19.5
         repository: https://charts.loft.sh
-        wait: true
+        wait: false
         waitTimeout: 5m
         set:
           {{- if .Values.krateoplatformops.vcluster.storage.className }}
           - name: syncer.storage.className
+            value: {{ .Values.krateoplatformops.vcluster.storage.className }}
+          - name: etcd.storage.className
             value: {{ .Values.krateoplatformops.vcluster.storage.className }}
           {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
@@ -54,30 +56,21 @@ spec:
             # asString: true
           {{- end }}
           {{- if .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation }}
-          - name: securityContext.allowPrivilegeEscalation
+          - name: syncer.securityContext.allowPrivilegeEscalation
             value: {{ .Values.krateoplatformops.vcluster.securityContext.allowPrivilegeEscalation | quote }}
             # asString: true
           {{- end }}
-          {{- if .Values.krateoplatformops.vcluster.securityContext.capabilities }}
-          - name: securityContext.capabilities.drop[0]
-            value: {{ index .Values.krateoplatformops.vcluster.securityContext.capabilities.drop 0 }}
-          {{- end }}
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsUser }}
-          - name: securityContext.runAsUser
+          - name: syncer.podSecurityContext.runAsUser
             value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsUser | quote }}
-            asString: true
+            # asString: true
           {{- else }}
-          - name: securityContext.runAsUser
-            value: null
-            asString: true
+          - name: syncer.podSecurityContext.runAsUser
+            value: "null"
           {{- end }}
           {{- if .Values.krateoplatformops.vcluster.securityContext.runAsGroup }}
-          - name: securityContext.runAsGroup
+          - name: syncer.podSecurityContext.runAsGroup
             value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsGroup | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.vcluster.securityContext.runAsNonRoot }}
-          - name: securityContext.runAsNonRoot
-            value: {{ .Values.krateoplatformops.vcluster.securityContext.runAsNonRoot | quote }}
           {{- end }}
           - name: init.manifests
             value: |-
