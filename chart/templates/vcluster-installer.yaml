@@ -17,6 +17,10 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.vcluster.defaultImageRegistry }}
+          - name: defaultImageRegistry
+            value: {{ .Values.krateoplatformops.vcluster.defaultImageRegistry}}
+          {{- end }}
           {{- if .Values.krateoplatformops.vcluster.storage.className }}
           - name: syncer.storage.className
             value: {{ .Values.krateoplatformops.vcluster.storage.className }}
@@ -137,14 +141,33 @@ spec:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- end }}
-                {{- if .Values.krateoplatformops.frontend.overrideconf }}
                 {{- with .Values.krateoplatformops.frontend }}
                 frontend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- else}}
-                frontend:
-                  overrideconf: false
+                {{- with .Values.krateoplatformops.bff }}
+                bff:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.gateway }}
+                gateway:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.authn }}
+                authn:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with index .Values.krateoplatformops "core-provider" }}
+                core-provider:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with index .Values.krateoplatformops "patch-provider" }}
+                patch-provider:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with index .Values.krateoplatformops "event-router" }}
+                event-router:
+                  {{- toYaml . | nindent 18 }}
                 {{- end }}
 
     - id: extract-vcluster-cakey
