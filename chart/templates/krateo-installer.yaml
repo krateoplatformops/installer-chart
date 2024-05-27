@@ -63,6 +63,18 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.gateway.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.gateway.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.gateway.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.gateway.image.tag }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
@@ -141,6 +153,18 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.gateway.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.gateway.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.gateway.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.gateway.image.tag }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
@@ -235,6 +259,18 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.gateway.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.gateway.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.gateway.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.gateway.image.tag }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
@@ -314,6 +350,18 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.gateway.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.gateway.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.gateway.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.gateway.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.gateway.image.tag }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
@@ -373,6 +421,18 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.authn.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.authn.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.authn.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.authn.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.authn.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.authn.image.tag }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
@@ -530,6 +590,18 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.bff.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.bff.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.bff.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.bff.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.bff.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.bff.image.tag }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
@@ -674,6 +746,18 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.frontend.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.frontend.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.frontend.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.frontend.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.frontend.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.frontend.image.tag }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
@@ -737,10 +821,23 @@ spec:
       type: chart
       with:
         name: core-provider
-        version: 0.13.6
+        version: 0.14.0
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
+        set:
+          {{- if index .Values.krateoplatformops "core-provider" "image" "repository" }}
+          - name: image.repository
+            value: {{ index .Values.krateoplatformops "core-provider" "image" "repository" }}
+          {{- end }}
+          {{- if index .Values.krateoplatformops "core-provider" "image" "pullPolicy" }}
+          - name: image.pullPolicy
+            value: {{ index .Values.krateoplatformops "core-provider" "image" "pullPolicy" }}
+          {{- end }}
+          {{- if index .Values.krateoplatformops "core-provider" "image" "tag" }}
+          - name: image.tag
+            value: {{ index .Values.krateoplatformops "core-provider" "image" "tag" }}
+          {{- end }}
 
     {{- if .Values.krateoplatformops.init.enabled }}
     - id: installer-starter-pack
@@ -762,6 +859,19 @@ spec:
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
+        set:
+          {{- if index .Values.krateoplatformops "patch-provider" "image" "repository" }}
+          - name: image.repository
+            value: {{ index .Values.krateoplatformops "patch-provider" "image" "repository" }}
+          {{- end }}
+          {{- if index .Values.krateoplatformops "patch-provider" "image" "pullPolicy" }}
+          - name: image.pullPolicy
+            value: {{ index .Values.krateoplatformops "patch-provider" "image" "pullPolicy" }}
+          {{- end }}
+          {{- if index .Values.krateoplatformops "patch-provider" "image" "tag" }}
+          - name: image.tag
+            value: {{ index .Values.krateoplatformops "patch-provider" "image" "tag" }}
+          {{- end }}
     {{- end }}
 
     {{- if .Values.krateoplatformops.eventrouter.enabled }}
@@ -773,6 +883,19 @@ spec:
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
+        set:
+          {{- if index .Values.krateoplatformops "event-router" "image" "repository" }}
+          - name: image.repository
+            value: {{ index .Values.krateoplatformops "event-router" "image" "repository" }}
+          {{- end }}
+          {{- if index .Values.krateoplatformops "event-router" "image" "pullPolicy" }}
+          - name: image.pullPolicy
+            value: {{ index .Values.krateoplatformops "event-router" "image" "pullPolicy" }}
+          {{- end }}
+          {{- if index .Values.krateoplatformops "event-router" "image" "tag" }}
+          - name: image.tag
+            value: {{ index .Values.krateoplatformops "event-router" "image" "tag" }}
+          {{- end }}
     {{- end }}
 
 {{- end }}
