@@ -82,6 +82,7 @@ env:
 
 krateoplatformops:
   vcluster:
+    defaultImageRegistry: ""
     enabled: true
     storage:
       className: ""
@@ -167,15 +168,54 @@ krateoplatformops:
       #    hosts:
       #      - chart-example.local
   frontend:
+    image:
+      repository: ghcr.io/krateoplatformops/krateo-frontend
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
     overrideconf: false
     env:
       AUTHN_API_BASE_URL: ""
       BFF_API_BASE_URL: ""
+  bff:
+    image:
+      repository: ghcr.io/krateoplatformops/bff
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+  authn:
+    image:
+      repository: ghcr.io/krateoplatformops/authn
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+  backend:
+    image:
+      repository: ghcr.io/krateoplatformops/backend
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+  core-provider:
+    image:
+      repository: ghcr.io/krateoplatformops/core-provider
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+  patch-provider:
+    enabled: true
+    image:
+      repository: ghcr.io/krateoplatformops/patch-provider
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+  eventrouter:
+    enabled: true
+    image:
+      repository: ghcr.io/krateoplatformops/eventrouter
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
   custom:
     enabled: false
   init:
-    enabled: true
-  patch-provider:
-    enabled: true
-  eventrouter:
     enabled: true
