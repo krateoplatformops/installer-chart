@@ -250,6 +250,10 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.vcluster.defaultImageRegistry }}
+          - name: defaultImageRegistry
+            value: {{ .Values.krateoplatformops.vcluster.defaultImageRegistry}}
+          {{- end }}
           {{- if .Values.krateoplatformops.vcluster.storage.className }}
           - name: syncer.storage.className
             value: {{ .Values.krateoplatformops.vcluster.storage.className }}
@@ -318,8 +322,8 @@ spec:
             value: installer
           - name: init.helm[0].chart.repo
             value: https://charts.krateo.io
-          - name: init.helm[0].chart.namespace
-            value: {{ .Release.Namespace }}
+          - name: init.helm[0].chart.version
+            value: {{ .Chart.Version }}
           - name: init.helm[0].release.name
             value: installer
           - name: init.helm[0].release.namespace
@@ -382,9 +386,21 @@ spec:
                 gateway:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.authn }}
+                {{- if .Values.krateoplatformops.authn }}
                 authn:
-                  {{- toYaml . | nindent 18 }}
+                  {{- with .Values.krateoplatformops.authn.image }}
+                  image:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
+                  {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+                  KUBECONFIG_SERVER_URL: https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
+                  {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+                  KUBECONFIG_SERVER_URL: https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
+                  {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+                  KUBECONFIG_SERVER_URL: https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
+                  {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
+                  KUBECONFIG_SERVER_URL: https://$KUBECONFIG_KUBERNETES_HOSTNAME
+                  {{- end }}
                 {{- end }}
                 {{- with index .Values.krateoplatformops "core-provider" }}
                 core-provider:
@@ -394,18 +410,8 @@ spec:
                 patch-provider:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "event-router" }}
-                event-router:
+                {{- with .Values.krateoplatformops.eventrouter }}
+                eventrouter:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                authn:
-                  {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-                  KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-                  {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-                  KUBECONFIG_SERVER_URL=https://127.0.0.1:$KUBECONFIG_KUBERNETES_PORT
-                  {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-                  KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
-                  {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
-                  KUBECONFIG_SERVER_URL=https://$KUBECONFIG_KUBERNETES_HOSTNAME
-                  {{- end }}
 {{- end }}
