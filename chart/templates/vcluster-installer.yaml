@@ -79,6 +79,16 @@ spec:
           - name: syncer.podSecurityContext.runAsGroup
             value: "null"
           {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.sync.persistentvolumes.enabled }}
+          - name: sync.persistentvolumes.enabled
+            value: "true"
+            asString: true
+          {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.sync.storageclasses.enabled }}
+          - name: sync.storageclasses.enabled
+            value: "true"
+            asString: true
+          {{- end }}  
           - name: init.manifests
             value: |-
               apiVersion: v1
@@ -149,8 +159,8 @@ spec:
                 bff:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.gateway }}
-                gateway:
+                {{- with .Values.krateoplatformops.backend }}
+                backend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.krateoplatformops.authn }}
@@ -382,8 +392,8 @@ spec:
                 bff:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.gateway }}
-                gateway:
+                {{- with .Values.krateoplatformops.backend }}
+                backend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- if .Values.krateoplatformops.authn }}
