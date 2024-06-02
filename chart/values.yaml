@@ -83,7 +83,7 @@ env:
 krateoplatformops:
   vcluster:
     defaultImageRegistry: ""
-    enabled: false
+    enabled: true
     storage:
       className: ""
     sync:
