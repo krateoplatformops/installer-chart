@@ -15,4 +15,10 @@ rules:
   - apiGroups: ["networking.k8s.io"]
     resources: ["ingressclasses"]
     verbs: ["get","watch","list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["create", "delete", "patch", "update", "get", "watch", "list"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["create", "delete", "patch", "update", "watch"]
 {{- end }}

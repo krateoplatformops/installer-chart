@@ -83,9 +83,16 @@ env:
 krateoplatformops:
   vcluster:
     defaultImageRegistry: ""
-    enabled: true
+    enabled: false
     storage:
       className: ""
+    sync:
+      persistentvolumes:
+        enabled: true
+      # If you want to create custom storage classes
+      # inside the vCluster.
+      storageclasses:
+        enabled: true
     openshift:
       enable: false
     securityContext:
@@ -112,20 +119,6 @@ krateoplatformops:
         #   hosts:
         #     - vcluster.local
     frontend:
-      className: ""
-      annotations: {}
-        # kubernetes.io/ingress.class: nginx
-        # kubernetes.io/tls-acme: "true"
-      hosts:
-        - host: chart-example.local
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-      tls: []
-      #  - secretName: chart-example-tls
-      #    hosts:
-      #      - chart-example.local
-    gateway:
       className: ""
       annotations: {}
         # kubernetes.io/ingress.class: nginx
@@ -189,12 +182,22 @@ krateoplatformops:
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    KUBECONFIG_SERVER_URL: https://127.0.0.1:6443
   backend:
     image:
       repository: ghcr.io/krateoplatformops/backend
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    etcd:
+      global:
+        imageRegistry: ""
+        storageClass: ""
+      image:
+        registry: docker.io
+        repository: bitnami/etcd
+        tag: 3.5.14-debian-12-r0
+        pullPolicy: IfNotPresent
   core-provider:
     image:
       repository: ghcr.io/krateoplatformops/core-provider
