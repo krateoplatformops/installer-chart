@@ -20,5 +20,5 @@ rules:
     verbs: ["create", "delete", "patch", "update", "get", "watch", "list"]
   - apiGroups: ["storage.k8s.io"]
     resources: ["storageclasses"]
-    verbs: ["create", "delete", "patch", "update", "watch"]
+    verbs: ["create", "delete", "patch", "update", "watch", "get", "list"]
 {{- end }}
