@@ -321,11 +321,47 @@ spec:
           selector: .spec.rules[0].host
     {{- end }}
 
+    - id: install-backend-etcd
+      type: chart
+      with:
+        name: etcd
+        version: 10.1.2
+        repository: https://charts.bitnami.com/bitnami
+        wait: true
+        waitTimeout: 5m
+        set:
+          - name: auth.rbac.create
+            value: "false"
+          {{- if .Values.krateoplatformops.backend.etcd.image.registry }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.backend.etcd.image.registry }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.backend.etcd.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.backend.etcd.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.backend.etcd.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
+          - name: global.imageRegistry
+            value: {{ .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.global.storageClass }}
+          - name: global.storageClass
+            value: {{ .Values.krateoplatformops.backend.etcd.global.storageClass }}
+          {{- end }}
+
     - id: install-backend
       type: chart
       with:
         name: backend
-        version: 0.3.1
+        version: 0.4.0
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
@@ -341,30 +377,6 @@ spec:
           {{- if .Values.krateoplatformops.backend.image.tag }}
           - name: image.tag
             value: {{ .Values.krateoplatformops.backend.image.tag }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.image.registry }}
-          - name: etcd.image.repository
-            value: {{ .Values.krateoplatformops.backend.etcd.image.registry }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.image.repository }}
-          - name: etcd.image.repository
-            value: {{ .Values.krateoplatformops.backend.etcd.image.repository }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.image.pullPolicy }}
-          - name: etcd.image.pullPolicy
-            value: {{ .Values.krateoplatformops.backend.etcd.image.pullPolicy }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.image.tag }}
-          - name: etcd.image.tag
-            value: {{ .Values.krateoplatformops.backend.etcd.image.tag }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
-          - name: etcd.global.imageRegistry
-            value: {{ .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.global.storageClass }}
-          - name: etcd.global.storageClass
-            value: {{ .Values.krateoplatformops.backend.etcd.global.storageClass }}
           {{- end }}
 
     - id: install-frontend
