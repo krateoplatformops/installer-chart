@@ -190,9 +190,15 @@ krateoplatformops:
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
     etcd:
+      auth:
+        rbac:
+          create: false
       global:
         imageRegistry: ""
         storageClass: ""
+        compatibility:
+          openshift:
+            adaptSecurityContext: auto
       image:
         registry: docker.io
         repository: bitnami/etcd
@@ -205,14 +211,14 @@ krateoplatformops:
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
   patch-provider:
-    enabled: true
+    enabled: false
     image:
       repository: ghcr.io/krateoplatformops/patch-provider
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
   eventrouter:
-    enabled: true
+    enabled: false
     image:
       repository: ghcr.io/krateoplatformops/eventrouter
       pullPolicy: IfNotPresent
