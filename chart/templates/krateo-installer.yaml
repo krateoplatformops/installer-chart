@@ -330,8 +330,17 @@ spec:
         wait: true
         waitTimeout: 5m
         set:
+          {{- if .Values.krateoplatformops.backend.etcd.auth.rbac.create }}
+          - name: auth.rbac.create
+            value: "true"
+          {{- else }}
           - name: auth.rbac.create
             value: "false"
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.global.compatibility.openshift.adaptSecurityContext }}
+          - name: global.compatibility.openshift.adaptSecurityContext
+            value: {{ .Values.krateoplatformops.backend.etcd.global.compatibility.openshift.adaptSecurityContext }}
+          {{- end }}
           {{- if .Values.krateoplatformops.backend.etcd.image.registry }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.backend.etcd.image.registry }}
