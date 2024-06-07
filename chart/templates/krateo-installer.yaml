@@ -370,7 +370,7 @@ spec:
       type: chart
       with:
         name: backend
-        version: 0.4.0
+        version: 0.4.1
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
@@ -392,7 +392,7 @@ spec:
       type: chart
       with:
         name: krateo-frontend
-        version: 2.0.17
+        version: 2.0.18
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
