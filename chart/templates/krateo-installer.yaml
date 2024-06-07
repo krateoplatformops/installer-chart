@@ -472,7 +472,7 @@ spec:
       type: chart
       with:
         name: core-provider
-        version: 0.14.1
+        version: 0.15.0
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
