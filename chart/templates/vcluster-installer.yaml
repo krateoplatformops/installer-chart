@@ -11,12 +11,26 @@ spec:
     - id: install-vcluster
       type: chart
       with:
-        name: vcluster-k8s
-        version: 0.19.5
-        repository: https://charts.loft.sh
-        wait: true
-        waitTimeout: 5m
+        name: {{ .Values.krateoplatformops.vcluster.chart.name }}
+        version: {{ .Values.krateoplatformops.vcluster.chart.version }}
+        repository: {{ .Values.krateoplatformops.vcluster.chart.repository }}
+        wait: {{ .Values.krateoplatformops.vcluster.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.vcluster.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.vcluster.chart.credentials (gt (len .Values.krateoplatformops.vcluster.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.vcluster.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.namespace }}
+        {{- end }}
         set:
+          {{- if .Values.krateoplatformops.vcluster.serviceAccount.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.vcluster.serviceAccount.imagePullSecrets }}
+          - name: serviceAccount.imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.vcluster.defaultImageRegistry }}
           - name: defaultImageRegistry
             value: {{ .Values.krateoplatformops.vcluster.defaultImageRegistry}}
@@ -117,13 +131,6 @@ spec:
               krateoplatformops:
                 vcluster:
                   enabled: false
-                {{- if .Values.krateoplatformops.init.enabled }}
-                init:
-                  enabled: true
-                {{- else }}
-                init:
-                  enabled: false
-                {{- end }}
                 {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
                 service:
                   type: NodePort
@@ -159,12 +166,12 @@ spec:
                 bff:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.backend }}
-                backend:
-                  {{- toYaml . | nindent 18 }}
-                {{- end }}
                 {{- with .Values.krateoplatformops.authn }}
                 authn:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.backend }}
+                backend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with index .Values.krateoplatformops "core-provider" }}
@@ -177,6 +184,14 @@ spec:
                 {{- end }}
                 {{- with .Values.krateoplatformops.eventrouter }}
                 eventrouter:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.eventsse }}
+                eventsse:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with index .Values.krateoplatformops "basic-authentication" }}
+                basic-authentication:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 
@@ -350,13 +365,6 @@ spec:
               krateoplatformops:
                 vcluster:
                   enabled: false
-                {{- if .Values.krateoplatformops.init.enabled }}
-                init:
-                  enabled: true
-                {{- else }}
-                init:
-                  enabled: false
-                {{- end }}
                 {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
                 service:
                   type: NodePort
@@ -392,16 +400,9 @@ spec:
                 bff:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.backend }}
-                backend:
-                  {{- toYaml . | nindent 18 }}
-                {{- end }}
                 {{- if .Values.krateoplatformops.authn }}
                 authn:
-                  {{- with .Values.krateoplatformops.authn.image }}
-                  image:
-                    {{- toYaml . | nindent 20 }}
-                  {{- end }}
+                  {{- toYaml . | nindent 18 }}
                   {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
                   KUBECONFIG_SERVER_URL: https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
                   {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
@@ -411,6 +412,10 @@ spec:
                   {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
                   KUBECONFIG_SERVER_URL: https://$KUBECONFIG_KUBERNETES_HOSTNAME
                   {{- end }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.backend }}
+                backend:
+                  {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with index .Values.krateoplatformops "core-provider" }}
                 core-provider:
@@ -422,6 +427,14 @@ spec:
                 {{- end }}
                 {{- with .Values.krateoplatformops.eventrouter }}
                 eventrouter:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.eventsse }}
+                eventsse:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with index .Values.krateoplatformops "basic-authentication" }}
+                basic-authentication:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 {{- end }}

@@ -1,3 +1,0 @@
-{{- if and (not .Values.krateoplatformops.vcluster.enabled) ( .Values.krateoplatformops.custom.enabled )  }}
-{{ toYaml .Values.krateoplatformops.custom.values | nindent 0 }}
-{{ end }}
