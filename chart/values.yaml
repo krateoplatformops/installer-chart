@@ -86,7 +86,7 @@ krateoplatformops:
       name: vcluster-k8s
       version: 0.19.6
       repository: https://charts.krateo.io
-      wait: true
+      wait: false
       waitTimeout: 5m
       # # Use with private helm registry
       # credentials:
@@ -95,7 +95,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
-    defaultImageRegistry: ghcr.io
+    # defaultImageRegistry: ""
     enabled: false
     storage:
       className: ""
@@ -112,9 +112,9 @@ krateoplatformops:
       allowPrivilegeEscalation: false
       # runAsUser: 0
       # runAsGroup: 0
-    serviceAccount:
-      # imagePullSecrets:
-      #   - name: image-registry-secret
+    # serviceAccount:
+    #   imagePullSecrets:
+    #     - name: image-registry-secret
   service:
     type: NodePort
     externalIpAvailable: false
