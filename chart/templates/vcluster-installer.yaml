@@ -1,4 +1,4 @@
-{{- if and ( .Values.krateoplatformops.vcluster.enabled) (not .Values.krateoplatformops.custom.enabled )  }}
+{{- if .Values.krateoplatformops.vcluster.enabled }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
@@ -25,7 +25,7 @@ spec:
             namespace: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.namespace }}
         {{- end }}
         set:
-          {{- if .Values.krateoplatformops.vcluster.serviceAccount.imagePullSecrets }}
+          {{- if .Values.krateoplatformops.vcluster.serviceAccount }}
           {{- range $index, $secret := .Values.krateoplatformops.vcluster.serviceAccount.imagePullSecrets }}
           - name: serviceAccount.imagePullSecrets.{{ $index }}.name
             value: {{ $secret.name }}
@@ -190,8 +190,8 @@ spec:
                 eventsse:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "basic-authentication" }}
-                basic-authentication:
+                {{- with index .Values.krateoplatformops "composable-portal-basic" }}
+                composable-portal-basic:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 
@@ -269,12 +269,26 @@ spec:
     - id: update-vcluster
       type: chart
       with:
-        name: vcluster-k8s
-        version: 0.19.5
-        repository: https://charts.loft.sh
-        wait: true
-        waitTimeout: 5m
+        name: {{ .Values.krateoplatformops.vcluster.chart.name }}
+        version: {{ .Values.krateoplatformops.vcluster.chart.version }}
+        repository: {{ .Values.krateoplatformops.vcluster.chart.repository }}
+        wait: {{ .Values.krateoplatformops.vcluster.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.vcluster.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.vcluster.chart.credentials (gt (len .Values.krateoplatformops.vcluster.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.vcluster.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.namespace }}
+        {{- end }}
         set:
+          {{- if .Values.krateoplatformops.vcluster.serviceAccount }}
+          {{- range $index, $secret := .Values.krateoplatformops.vcluster.serviceAccount.imagePullSecrets }}
+          - name: serviceAccount.imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.vcluster.defaultImageRegistry }}
           - name: defaultImageRegistry
             value: {{ .Values.krateoplatformops.vcluster.defaultImageRegistry}}
@@ -288,8 +302,8 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
-          - name: service.nodePort
-            value: "30090"
+          - name: service.httpsNodePort
+            value: "31443"
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
@@ -336,6 +350,16 @@ spec:
           {{- else }}
           - name: syncer.podSecurityContext.runAsGroup
             value: "null"
+          {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.sync.persistentvolumes.enabled }}
+          - name: sync.persistentvolumes.enabled
+            value: "true"
+            asString: true
+          {{- end }}
+          {{- if .Values.krateoplatformops.vcluster.sync.storageclasses.enabled }}
+          - name: sync.storageclasses.enabled
+            value: "true"
+            asString: true
           {{- end }}
           - name: init.manifests
             value: |-
@@ -433,8 +457,8 @@ spec:
                 eventsse:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "basic-authentication" }}
-                basic-authentication:
+                {{- with index .Values.krateoplatformops "composable-portal-basic" }}
+                composable-portal-basic:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 {{- end }}
