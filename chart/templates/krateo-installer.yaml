@@ -1,4 +1,4 @@
-{{- if and (not .Values.krateoplatformops.vcluster.enabled) (not .Values.krateoplatformops.custom.enabled )  }}
+{{- if not .Values.krateoplatformops.vcluster.enabled }}
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
@@ -11,12 +11,26 @@ spec:
     - id: install-authn
       type: chart
       with:
-        name: authn
-        version: 0.13.0
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
+        name: {{ .Values.krateoplatformops.authn.chart.name }}
+        version: {{ .Values.krateoplatformops.authn.chart.version }}
+        repository: {{ .Values.krateoplatformops.authn.chart.repository }}
+        wait: {{ .Values.krateoplatformops.authn.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.authn.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.authn.chart.credentials (gt (len .Values.krateoplatformops.authn.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.authn.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.authn.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.authn.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.authn.chart.credentials.passwordRef.namespace }}
+        {{- end }}
         set:
+          {{- if .Values.krateoplatformops.authn.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.authn.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.authn.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.authn.image.repository }}
@@ -61,12 +75,8 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.authn.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
-          - name: env.AUTHN_CORS
-            value: "true"
           - name: env.AUTHN_KUBECONFIG_SERVER_URL
             value: {{ .Values.krateoplatformops.authn.KUBECONFIG_SERVER_URL }}
-          - name: env.AUTHN_DUMP_ENV
-            value: "true"
 
     {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
     # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -168,12 +178,26 @@ spec:
     - id: install-bff
       type: chart
       with:
-        name: bff
-        version: 0.2.1
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
+        name: {{ .Values.krateoplatformops.bff.chart.name }}
+        version: {{ .Values.krateoplatformops.bff.chart.version }}
+        repository: {{ .Values.krateoplatformops.bff.chart.repository }}
+        wait: {{ .Values.krateoplatformops.bff.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.bff.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.bff.chart.credentials (gt (len .Values.krateoplatformops.bff.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.bff.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.bff.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.bff.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.bff.chart.credentials.passwordRef.namespace }}
+        {{- end }}
         set:
+          {{- if .Values.krateoplatformops.bff.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.bff.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.bff.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.bff.image.repository }}
@@ -218,12 +242,6 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.bff.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
-          - name: env.BFF_CORS
-            value: "true"
-          - name: env.BFF_DUMP_ENV
-            value: "true"
-          - name: env.BFF_DEBUG
-            value: "true"
 
     {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
     # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -324,11 +342,19 @@ spec:
     - id: install-backend-etcd
       type: chart
       with:
-        name: etcd
-        version: 10.1.2
-        repository: https://charts.bitnami.com/bitnami
-        wait: true
-        waitTimeout: 5m
+        name: {{ .Values.krateoplatformops.backend.etcd.chart.name }}
+        version: {{ .Values.krateoplatformops.backend.etcd.chart.version }}
+        repository: {{ .Values.krateoplatformops.backend.etcd.chart.repository }}
+        wait: {{ .Values.krateoplatformops.backend.etcd.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.backend.etcd.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.backend.etcd.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.backend.etcd.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.backend.etcd.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.backend.etcd.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.backend.etcd.chart.credentials.passwordRef.namespace }}
+        {{- end }}
         set:
           {{- if .Values.krateoplatformops.backend.etcd.auth.rbac.create }}
           - name: auth.rbac.create
@@ -337,13 +363,23 @@ spec:
           - name: auth.rbac.create
             value: "false"
           {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.global.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.backend.etcd.global.imagePullSecrets }}
+          - name: global.imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.backend.etcd.global.compatibility.openshift.adaptSecurityContext }}
           - name: global.compatibility.openshift.adaptSecurityContext
             value: {{ .Values.krateoplatformops.backend.etcd.global.compatibility.openshift.adaptSecurityContext }}
           {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.image.registry }}
-          - name: image.repository
-            value: {{ .Values.krateoplatformops.backend.etcd.image.registry }}
+          {{- if .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
+          - name: global.imageRegistry
+            value: {{ .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.global.defaultStorageClass }}
+          - name: global.defaultStorageClass
+            value: {{ .Values.krateoplatformops.backend.etcd.global.defaultStorageClass }}
           {{- end }}
           {{- if .Values.krateoplatformops.backend.etcd.image.repository }}
           - name: image.repository
@@ -357,24 +393,30 @@ spec:
           - name: image.tag
             value: {{ .Values.krateoplatformops.backend.etcd.image.tag }}
           {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
-          - name: global.imageRegistry
-            value: {{ .Values.krateoplatformops.backend.etcd.global.imageRegistry }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.backend.etcd.global.storageClass }}
-          - name: global.storageClass
-            value: {{ .Values.krateoplatformops.backend.etcd.global.storageClass }}
-          {{- end }}
 
     - id: install-backend
       type: chart
       with:
-        name: backend
-        version: 0.4.1
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
+        name: {{ .Values.krateoplatformops.backend.chart.name }}
+        version: {{ .Values.krateoplatformops.backend.chart.version }}
+        repository: {{ .Values.krateoplatformops.backend.chart.repository }}
+        wait: {{ .Values.krateoplatformops.backend.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.backend.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.backend.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.backend.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.backend.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.backend.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.backend.chart.credentials.passwordRef.namespace }}
+        {{- end }}
         set:
+          {{- if .Values.krateoplatformops.backend.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.backend.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.backend.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.backend.image.repository }}
@@ -388,15 +430,229 @@ spec:
             value: {{ .Values.krateoplatformops.backend.image.tag }}
           {{- end }}
 
+    - id: install-eventrouter
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.eventrouter.chart.name }}
+        version: {{ .Values.krateoplatformops.eventrouter.chart.version }}
+        repository: {{ .Values.krateoplatformops.eventrouter.chart.repository }}
+        wait: {{ .Values.krateoplatformops.eventrouter.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.eventrouter.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.eventrouter.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.eventrouter.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.eventrouter.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.eventrouter.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.eventrouter.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.eventrouter.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.eventrouter.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventrouter.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.eventrouter.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventrouter.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.eventrouter.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventrouter.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.eventrouter.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+
+    - id: install-eventsse
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.eventsse.chart.name }}
+        version: {{ .Values.krateoplatformops.eventsse.chart.version }}
+        repository: {{ .Values.krateoplatformops.eventsse.chart.repository }}
+        wait: {{ .Values.krateoplatformops.eventsse.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.eventsse.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.eventsse.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.eventsse.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.eventsse.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.eventsse.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.eventsse.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.eventsse.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.eventsse.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.eventsse.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.eventsse.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.eventsse.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30083"
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.enabled
+            value: "true"
+          - name: ingress.className
+            value: {{ .Values.krateoplatformops.ingress.eventsse.className }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.eventsse.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          - name: ingress.hosts[0].host
+            value: {{ index .Values.krateoplatformops.ingress.eventsse.hosts 0 "host" }}
+          - name: ingress.hosts[0].paths[0].path
+            value: {{ index .Values.krateoplatformops.ingress.eventsse.hosts 0 "paths" 0 "path" }}
+          - name: ingress.hosts[0].paths[0].pathType
+            value: {{ index .Values.krateoplatformops.ingress.eventsse.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.eventsse.tls (gt (len .Values.krateoplatformops.ingress.eventsse.tls) 0) }}
+          - name: ingress.tls[0].secretName
+            value: {{ index .Values.krateoplatformops.ingress.eventsse.tls 0 "secretName" }}
+          - name: ingress.tls[0].hosts[0]
+            value: {{ index .Values.krateoplatformops.ingress.eventsse.tls 0 "hosts" 0 }}
+          {{- end }}
+          {{- end }}
+
+    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    - id: extract-eventsse-nodeport-ip
+      type: var
+      with:
+        name: EVENTSSE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: eventsse-external
+          selector: .spec.ports[0].nodePort
+
+    - id: extract-eventsse-nodeport-port
+      type: var
+      with:
+        name: EVENTSSE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: eventsse-external
+          selector: .spec.ports[0].nodePort
+
+    {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    - id: extract-eventsse-nodeport-port
+      type: var
+      with:
+        name: EVENTSSE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: eventsse-external
+          selector: .spec.ports[0].nodePort
+
+    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+
+    {{- if .Values.krateoplatformops.service.externalIpAvailable }}
+    - id: extract-eventsse-lb-ip
+      type: var
+      with:
+        name: EVENTSSE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: eventsse-external
+          selector: .status.loadBalancer.ingress[0].ip
+    {{- else }}
+    - id: extract-eventsse-lb-ip
+      type: var
+      with:
+        name: EVENTSSE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: eventsse-external
+          selector: .status.loadBalancer.ingress[0].hostname
+    {{- end }}
+
+    - id: extract-eventsse-lb-port
+      type: var
+      with:
+        name: EVENTSSE_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: eventsse-external
+          selector: .spec.ports[0].port
+    {{- else if .Values.krateoplatformops.ingress.enabled }}
+    - id: extract-eventsse-ingress-ip
+      type: var
+      with:
+        name: EVENTSSE_IP
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: eventsse
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-eventsse-ingress-host
+      type: var
+      with:
+        name: EVENTSSE_INGRESS_HOST
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: eventsse
+          selector: .spec.rules[0].host
+    {{- end }}
+
     - id: install-frontend
       type: chart
       with:
-        name: krateo-frontend
-        version: 2.0.18
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
+        name: {{ .Values.krateoplatformops.frontend.chart.name }}
+        version: {{ .Values.krateoplatformops.frontend.chart.version }}
+        repository: {{ .Values.krateoplatformops.frontend.chart.repository }}
+        wait: {{ .Values.krateoplatformops.frontend.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.frontend.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.frontend.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.frontend.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.frontend.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.frontend.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.frontend.chart.credentials.passwordRef.namespace }}
+        {{- end }}
         set:
+          {{- if .Values.krateoplatformops.frontend.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.frontend.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.frontend.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.frontend.image.repository }}
@@ -446,37 +702,71 @@ spec:
             value: {{ .Values.krateoplatformops.frontend.env.AUTHN_API_BASE_URL }}
           - name: env.BFF_API_BASE_URL
             value: {{ .Values.krateoplatformops.frontend.env.BFF_API_BASE_URL }}
+          - name: env.EVENTS_PUSH_API_BASE_URL
+            value: {{ .Values.krateoplatformops.frontend.env.EVENTS_PUSH_API_BASE_URL }}
+          - name: env.EVENTS_API_BASE_URL
+            value: {{ .Values.krateoplatformops.frontend.env.EVENTS_API_BASE_URL }}
           {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
           - name: env.AUTHN_API_BASE_URL
             value: http://$AUTHN_IP:$AUTHN_PORT
           - name: env.BFF_API_BASE_URL
             value: http://$BFF_IP:$BFF_PORT
+          - name: env.EVENTS_PUSH_API_BASE_URL
+            value: http://$EVENTSSE_IP:$EVENTSSE_PORT
+          - name: env.EVENTS_API_BASE_URL
+            value: http://$EVENTSSE_IP:$EVENTSSE_PORT
           {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
           - name: env.AUTHN_API_BASE_URL
             value: http://127.0.0.1:$AUTHN_PORT
           - name: env.BFF_API_BASE_URL
             value: http://127.0.0.1:$BFF_PORT
+          - name: env.EVENTS_PUSH_API_BASE_URL
+            value: http://127.0.0.1:$EVENTSSE_PORT
+          - name: env.EVENTS_API_BASE_URL
+            value: http://127.0.0.1:$EVENTSSE_PORT
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: env.AUTHN_API_BASE_URL
             value: http://$AUTHN_IP:$AUTHN_PORT
           - name: env.BFF_API_BASE_URL
             value: http://$BFF_IP:$BFF_PORT
+          - name: env.EVENTS_PUSH_API_BASE_URL
+            value: http://$EVENTSSE_IP:$EVENTSSE_PORT
+          - name: env.EVENTS_API_BASE_URL
+            value: http://$EVENTSSE_IP:$EVENTSSE_PORT
           {{- else if .Values.krateoplatformops.ingress.enabled }}
           - name: env.AUTHN_API_BASE_URL
             value: https://$AUTHN_INGRESS_HOST
           - name: env.BFF_API_BASE_URL
             value: https://$BFF_INGRESS_HOST
+          - name: env.EVENTS_PUSH_API_BASE_URL
+            value: https://$EVENTSSE_INGRESS_HOST
+          - name: env.EVENTS_API_BASE_URL
+            value: https://$EVENTSSE_INGRESS_HOST
           {{- end }}
 
     - id: install-core-provider
       type: chart
       with:
-        name: core-provider
-        version: 0.15.0
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
+        name: {{ index .Values.krateoplatformops "core-provider" "chart" "name" }}
+        version: {{ index .Values.krateoplatformops "core-provider" "chart" "version" }}
+        repository: {{ index .Values.krateoplatformops "core-provider" "chart" "repository" }}
+        wait: {{ index .Values.krateoplatformops "core-provider" "chart" "wait" }}
+        waitTimeout: {{ index .Values.krateoplatformops "core-provider" "chart" "waitTimeout" }}
+        {{- if index .Values.krateoplatformops "core-provider" "chart" "credentials" }}
+        credentials:
+          username: {{ index .Values.krateoplatformops "core-provider" "chart" "credentials" "username" }}
+          passwordRef: # reference to a secret
+            key: {{ index .Values.krateoplatformops "core-provider" "chart" "credentials" "passwordRef" "key" }}
+            name: {{ index .Values.krateoplatformops "core-provider" "chart" "credentials" "passwordRef" "name" }}
+            namespace: {{ index .Values.krateoplatformops "core-provider" "chart" "credentials" "passwordRef" "namespace" }}
+        {{- end }}
         set:
+          {{- if index .Values.krateoplatformops "core-provider" "imagePullSecrets" }}
+          {{- range $index, $secret := index .Values.krateoplatformops "core-provider" "imagePullSecrets" }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if index .Values.krateoplatformops "core-provider" "image" "repository" }}
           - name: image.repository
             value: {{ index .Values.krateoplatformops "core-provider" "image" "repository" }}
@@ -490,28 +780,29 @@ spec:
             value: {{ index .Values.krateoplatformops "core-provider" "image" "tag" }}
           {{- end }}
 
-    {{- if .Values.krateoplatformops.init.enabled }}
-    - id: installer-starter-pack
-      type: chart
-      with:
-        name: installer-starter-pack
-        version: 0.1.4
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
-    {{- end }}
-
-    {{- $krateo := .Values.krateoplatformops }}
-    {{- if index $krateo "patch-provider" "enabled" }}
     - id: install-patch-provider
       type: chart
       with:
-        name: patch-provider
-        version: 0.1.7
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
+        name: {{ index .Values.krateoplatformops "patch-provider" "chart" "name" }}
+        version: {{ index .Values.krateoplatformops "patch-provider" "chart" "version" }}
+        repository: {{ index .Values.krateoplatformops "patch-provider" "chart" "repository" }}
+        wait: {{ index .Values.krateoplatformops "patch-provider" "chart" "wait" }}
+        waitTimeout: {{ index .Values.krateoplatformops "patch-provider" "chart" "waitTimeout" }}
+        {{- if index .Values.krateoplatformops "patch-provider" "chart" "credentials" }}
+        credentials:
+          username: {{ index .Values.krateoplatformops "patch-provider" "chart" "credentials" "username" }}
+          passwordRef: # reference to a secret
+            key: {{ index .Values.krateoplatformops "patch-provider" "chart" "credentials" "passwordRef" "key" }}
+            name: {{ index .Values.krateoplatformops "patch-provider" "chart" "credentials" "passwordRef" "name" }}
+            namespace: {{ index .Values.krateoplatformops "patch-provider" "chart" "credentials" "passwordRef" "namespace" }}
+        {{- end }}
         set:
+          {{- if index .Values.krateoplatformops "patch-provider" "imagePullSecrets" }}
+          {{- range $index, $secret := index .Values.krateoplatformops "patch-provider" "imagePullSecrets" }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
           {{- if index .Values.krateoplatformops "patch-provider" "image" "repository" }}
           - name: image.repository
             value: {{ index .Values.krateoplatformops "patch-provider" "image" "repository" }}
@@ -524,30 +815,24 @@ spec:
           - name: image.tag
             value: {{ index .Values.krateoplatformops "patch-provider" "image" "tag" }}
           {{- end }}
-    {{- end }}
 
-    {{- if .Values.krateoplatformops.eventrouter.enabled }}
-    - id: install-eventrouter
+    {{- if index .Values.krateoplatformops "composable-portal-basic" "enabled" }}
+    - id: composable-portal-basic
       type: chart
       with:
-        name: eventrouter
-        version: 0.3.1
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
-        set:
-          {{- if .Values.krateoplatformops.eventrouter.image.repository }}
-          - name: image.repository
-            value: {{ .Values.krateoplatformops.eventrouter.image.repository }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventrouter.image.pullPolicy }}
-          - name: image.pullPolicy
-            value: {{ .Values.krateoplatformops.eventrouter.image.pullPolicy }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventrouter.image.tag }}
-          - name: image.tag
-            value: {{ .Values.krateoplatformops.eventrouter.image.tag }}
-          {{- end }}
+        name: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "name" }}
+        version: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "version" }}
+        repository: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "repository" }}
+        wait: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "wait" }}
+        waitTimeout: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "waitTimeout" }}
+        {{- if index .Values.krateoplatformops "composable-portal-basic" "chart" "credentials" }}
+        credentials:
+          username: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "credentials" "username" }}
+          passwordRef: # reference to a secret
+            key: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "credentials" "passwordRef" "key" }}
+            name: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "credentials" "passwordRef" "name" }}
+            namespace: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "credentials" "passwordRef" "namespace" }}
+        {{- end }}
     {{- end }}
 
 {{- end }}

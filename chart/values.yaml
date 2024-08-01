@@ -82,7 +82,20 @@ env:
 
 krateoplatformops:
   vcluster:
-    defaultImageRegistry: ""
+    chart:
+      name: vcluster-k8s
+      version: 0.19.6
+      repository: https://charts.krateo.io
+      wait: false
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    # defaultImageRegistry: ""
     enabled: false
     storage:
       className: ""
@@ -99,6 +112,9 @@ krateoplatformops:
       allowPrivilegeEscalation: false
       # runAsUser: 0
       # runAsGroup: 0
+    # serviceAccount:
+    #   imagePullSecrets:
+    #     - name: image-registry-secret
   service:
     type: NodePort
     externalIpAvailable: false
@@ -160,71 +176,236 @@ krateoplatformops:
       #  - secretName: chart-example-tls
       #    hosts:
       #      - chart-example.local
+    eventsse:
+      className: ""
+      annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+      hosts:
+        - host: chart-example.local
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls: []
+      #  - secretName: chart-example-tls
+      #    hosts:
+      #      - chart-example.local
   frontend:
+    chart:
+      name: krateo-frontend
+      version: 2.1.14
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-token
+      #     namespace: krateo-system
     image:
       repository: ghcr.io/krateoplatformops/krateo-frontend
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
     overrideconf: false
     env:
       AUTHN_API_BASE_URL: ""
       BFF_API_BASE_URL: ""
+      EVENTS_PUSH_API_BASE_URL: ""
+      EVENTS_API_BASE_URL: ""
   bff:
+    chart:
+      name: bff
+      version: 0.3.3
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-token
+      #     namespace: krateo-system
     image:
       repository: ghcr.io/krateoplatformops/bff
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
   authn:
+    chart:
+      name: authn
+      version: 0.15.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
     image:
       repository: ghcr.io/krateoplatformops/authn
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
     KUBECONFIG_SERVER_URL: https://127.0.0.1:6443
   backend:
+    chart:
+      name: backend
+      version: 0.7.3
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
     image:
       repository: ghcr.io/krateoplatformops/backend
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
     etcd:
+      chart:
+        name: etcd
+        version: 10.2.9
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        # # Use with private helm registry
+        # credentials:
+        #   username: username
+        #   passwordRef: # reference to a secret
+        #     key: token
+        #     name: helm-registry-token
+        #     namespace: krateo-system
       auth:
         rbac:
           create: false
       global:
-        imageRegistry: ""
-        storageClass: ""
+        imageRegistry: ghcr.io
+        # imagePullSecrets:
+        #   - name: image-registry-secret
+        defaultStorageClass: ""
         compatibility:
           openshift:
             adaptSecurityContext: auto
       image:
-        registry: docker.io
-        repository: bitnami/etcd
-        tag: 3.5.14-debian-12-r0
+        repository: krateoplatformops/etcd
+        tag: 3.5.15-debian-12-r3
         pullPolicy: IfNotPresent
   core-provider:
+    chart:
+      name: core-provider
+      version: 0.21.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
     image:
       repository: ghcr.io/krateoplatformops/core-provider
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
   patch-provider:
-    enabled: false
+    chart:
+      name: patch-provider
+      version: 1.0.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
     image:
       repository: ghcr.io/krateoplatformops/patch-provider
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
   eventrouter:
-    enabled: false
+    chart:
+      name: eventrouter
+      version: 0.5.1
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
     image:
       repository: ghcr.io/krateoplatformops/eventrouter
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
-  custom:
-    enabled: false
-  init:
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+  eventsse:
+    chart:
+      name: eventsse
+      version: 0.4.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    image:
+      repository: ghcr.io/krateoplatformops/eventsse
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+  composable-portal-basic:
     enabled: true
+    chart:
+      name: composable-portal-basic
+      version: 0.2.3
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
