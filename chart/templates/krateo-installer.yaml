@@ -402,7 +402,7 @@ spec:
         repository: {{ .Values.krateoplatformops.backend.chart.repository }}
         wait: {{ .Values.krateoplatformops.backend.chart.wait }}
         waitTimeout: {{ .Values.krateoplatformops.backend.chart.waitTimeout }}
-        {{- if and .Values.krateoplatformops.backend.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        {{- if and .Values.krateoplatformops.backend.chart.credentials (gt (len .Values.krateoplatformops.backend.chart.credentials) 0) }}
         credentials:
           username: {{ .Values.krateoplatformops.backend.chart.credentials.username }}
           passwordRef: # reference to a secret
@@ -438,7 +438,7 @@ spec:
         repository: {{ .Values.krateoplatformops.eventrouter.chart.repository }}
         wait: {{ .Values.krateoplatformops.eventrouter.chart.wait }}
         waitTimeout: {{ .Values.krateoplatformops.eventrouter.chart.waitTimeout }}
-        {{- if and .Values.krateoplatformops.eventrouter.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        {{- if and .Values.krateoplatformops.eventrouter.chart.credentials (gt (len .Values.krateoplatformops.eventrouter.chart.credentials) 0) }}
         credentials:
           username: {{ .Values.krateoplatformops.eventrouter.chart.credentials.username }}
           passwordRef: # reference to a secret
@@ -474,7 +474,7 @@ spec:
         repository: {{ .Values.krateoplatformops.eventsse.chart.repository }}
         wait: {{ .Values.krateoplatformops.eventsse.chart.wait }}
         waitTimeout: {{ .Values.krateoplatformops.eventsse.chart.waitTimeout }}
-        {{- if and .Values.krateoplatformops.eventsse.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        {{- if and .Values.krateoplatformops.eventsse.chart.credentials (gt (len .Values.krateoplatformops.eventsse.chart.credentials) 0) }}
         credentials:
           username: {{ .Values.krateoplatformops.eventsse.chart.credentials.username }}
           passwordRef: # reference to a secret
@@ -630,6 +630,174 @@ spec:
           selector: .spec.rules[0].host
     {{- end }}
 
+    {{- if .Values.krateoplatformops.terminal.enabled }}
+    - id: install-terminal-server
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.terminal.chart.name }}
+        version: {{ .Values.krateoplatformops.terminal.chart.version }}
+        repository: {{ .Values.krateoplatformops.terminal.chart.repository }}
+        wait: {{ .Values.krateoplatformops.terminal.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.terminal.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.terminal.chart.credentials (gt (len .Values.krateoplatformops.terminal.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.terminal.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.terminal.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.terminal.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.terminal.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.terminal.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.terminal.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.terminal.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.terminal.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.terminal.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.terminal.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.terminal.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.terminal.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30084"
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.enabled
+            value: "true"
+          - name: ingress.className
+            value: {{ .Values.krateoplatformops.ingress.terminal.className }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.terminal.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          - name: ingress.hosts[0].host
+            value: {{ index .Values.krateoplatformops.ingress.terminal.hosts 0 "host" }}
+          - name: ingress.hosts[0].paths[0].path
+            value: {{ index .Values.krateoplatformops.ingress.terminal.hosts 0 "paths" 0 "path" }}
+          - name: ingress.hosts[0].paths[0].pathType
+            value: {{ index .Values.krateoplatformops.ingress.terminal.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.terminal.tls (gt (len .Values.krateoplatformops.ingress.terminal.tls) 0) }}
+          - name: ingress.tls[0].secretName
+            value: {{ index .Values.krateoplatformops.ingress.terminal.tls 0 "secretName" }}
+          - name: ingress.tls[0].hosts[0]
+            value: {{ index .Values.krateoplatformops.ingress.terminal.tls 0 "hosts" 0 }}
+          {{- end }}
+          {{- end }}
+
+    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    - id: extract-terminal-nodeport-ip
+      type: var
+      with:
+        name: TERMINAL_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: terminal-server
+          selector: .spec.ports[0].nodePort
+
+    - id: extract-terminal-nodeport-port
+      type: var
+      with:
+        name: TERMINAL_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: terminal-server
+          selector: .spec.ports[0].nodePort
+
+    {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    - id: extract-terminal-nodeport-port
+      type: var
+      with:
+        name: TERMINAL_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: terminal-server
+          selector: .spec.ports[0].nodePort
+
+    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+
+    {{- if .Values.krateoplatformops.service.externalIpAvailable }}
+    - id: extract-terminal-lb-ip
+      type: var
+      with:
+        name: TERMINAL_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: terminal-server
+          selector: .status.loadBalancer.ingress[0].ip
+    {{- else }}
+    - id: extract-terminal-lb-ip
+      type: var
+      with:
+        name: EVENTSSE_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: terminal-server
+          selector: .status.loadBalancer.ingress[0].hostname
+    {{- end }}
+
+    - id: extract-terminal-lb-port
+      type: var
+      with:
+        name: TERMINAL_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: terminal-server
+          selector: .spec.ports[0].port
+    {{- else if .Values.krateoplatformops.ingress.enabled }}
+    - id: extract-terminal-ingress-ip
+      type: var
+      with:
+        name: TERMINAL_IP
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: terminal-server
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-terminal-ingress-host
+      type: var
+      with:
+        name: TERMINAL_INGRESS_HOST
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: terminal-server
+          selector: .spec.rules[0].host
+    {{- end }}
+
+
+    {{- end }}
+
     - id: install-frontend
       type: chart
       with:
@@ -638,7 +806,7 @@ spec:
         repository: {{ .Values.krateoplatformops.frontend.chart.repository }}
         wait: {{ .Values.krateoplatformops.frontend.chart.wait }}
         waitTimeout: {{ .Values.krateoplatformops.frontend.chart.waitTimeout }}
-        {{- if and .Values.krateoplatformops.frontend.chart.credentials (gt (len .Values.krateoplatformops.backend.etcd.chart.credentials) 0) }}
+        {{- if and .Values.krateoplatformops.frontend.chart.credentials (gt (len .Values.krateoplatformops.frontend.chart.credentials) 0) }}
         credentials:
           username: {{ .Values.krateoplatformops.frontend.chart.credentials.username }}
           passwordRef: # reference to a secret
@@ -706,6 +874,10 @@ spec:
             value: {{ .Values.krateoplatformops.frontend.env.EVENTS_PUSH_API_BASE_URL }}
           - name: env.EVENTS_API_BASE_URL
             value: {{ .Values.krateoplatformops.frontend.env.EVENTS_API_BASE_URL }}
+          {{- if .Values.krateoplatformops.terminal.enabled }}
+          - name: env.TERMINAL_SOCKET_URL
+            value: {{ .Values.krateoplatformops.frontend.env.TERMINAL_SOCKET_URL }}
+          {{- end }}
           {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
           - name: env.AUTHN_API_BASE_URL
             value: http://$AUTHN_IP:$AUTHN_PORT
@@ -715,6 +887,10 @@ spec:
             value: http://$EVENTSSE_IP:$EVENTSSE_PORT
           - name: env.EVENTS_API_BASE_URL
             value: http://$EVENTSSE_IP:$EVENTSSE_PORT
+          {{- if .Values.krateoplatformops.terminal.enabled }}
+          - name: env.TERMINAL_SOCKET_URL
+            value: http://$TERMINAL_IP:$TERMINAL_PORT
+          {{- end }}
           {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
           - name: env.AUTHN_API_BASE_URL
             value: http://127.0.0.1:$AUTHN_PORT
@@ -724,6 +900,10 @@ spec:
             value: http://127.0.0.1:$EVENTSSE_PORT
           - name: env.EVENTS_API_BASE_URL
             value: http://127.0.0.1:$EVENTSSE_PORT
+          {{- if .Values.krateoplatformops.terminal.enabled }}
+          - name: env.TERMINAL_SOCKET_URL
+            value: http://127.0.0.1:$TERMINAL_PORT
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: env.AUTHN_API_BASE_URL
             value: http://$AUTHN_IP:$AUTHN_PORT
@@ -733,6 +913,10 @@ spec:
             value: http://$EVENTSSE_IP:$EVENTSSE_PORT
           - name: env.EVENTS_API_BASE_URL
             value: http://$EVENTSSE_IP:$EVENTSSE_PORT
+          {{- if .Values.krateoplatformops.terminal.enabled }}
+          - name: env.TERMINAL_SOCKET_URL
+            value: http://$TERMINAL_IP:$TERMINAL_PORT
+          {{- end }}
           {{- else if .Values.krateoplatformops.ingress.enabled }}
           - name: env.AUTHN_API_BASE_URL
             value: https://$AUTHN_INGRESS_HOST
@@ -742,6 +926,10 @@ spec:
             value: https://$EVENTSSE_INGRESS_HOST
           - name: env.EVENTS_API_BASE_URL
             value: https://$EVENTSSE_INGRESS_HOST
+          {{- if .Values.krateoplatformops.terminal.enabled }}
+          - name: env.TERMINAL_SOCKET_URL
+            value: https://$TERMINAL_INGRESS_HOST
+          {{- end }}
           {{- end }}
 
     - id: install-core-provider
@@ -817,7 +1005,7 @@ spec:
           {{- end }}
 
     {{- if index .Values.krateoplatformops "composable-portal-basic" "enabled" }}
-    - id: composable-portal-basic
+    - id: install-composable-portal-basic
       type: chart
       with:
         name: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "name" }}
