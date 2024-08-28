@@ -177,11 +177,6 @@ spec:
                     {{- toYaml . | nindent 20 }}
                   {{- end }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.service.annotations }}
-                service:
-                  annotations:
-                    {{- toYaml . | nindent 20 }}
-                {{- end }}
                 {{- if .Values.krateoplatformops.ingress.enabled }}
                 {{- with .Values.krateoplatformops.ingress }}
                 ingress:
@@ -463,11 +458,6 @@ spec:
                   annotations:
                     {{- toYaml . | nindent 20 }}
                   {{- end }}
-                {{- end }}
-                {{- with .Values.krateoplatformops.service.annotations }}
-                service:
-                  annotations:
-                    {{- toYaml . | nindent 20 }}
                 {{- end }}
                 {{- if .Values.krateoplatformops.ingress.enabled }}
                 {{- with .Values.krateoplatformops.ingress }}
