@@ -140,27 +140,42 @@ spec:
                 service:
                   type: NodePort
                   externalIpAvailable: true
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
                 service:
                   type: NodePort
                   externalIpAvailable: false
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") .Values.krateoplatformops.service.externalIpAvailable }}
                 service:
                   type: LoadBalancer
                   externalIpAvailable: true
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") (not .Values.krateoplatformops.service.externalIpAvailable) }}
                 service:
                   type: LoadBalancer
                   externalIpAvailable: false
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else }}
                 service:
                   type: ClusterIP
                   externalIpAvailable: false
-                {{- end }}
-                {{- with .Values.krateoplatformops.service.annotations }}
-                service:
+                  {{- with .Values.krateoplatformops.service.annotations }}
                   annotations:
                     {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- end }}
                 {{- if .Values.krateoplatformops.ingress.enabled }}
                 {{- with .Values.krateoplatformops.ingress }}
@@ -407,27 +422,42 @@ spec:
                 service:
                   type: NodePort
                   externalIpAvailable: true
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
                 service:
                   type: NodePort
                   externalIpAvailable: false
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") .Values.krateoplatformops.service.externalIpAvailable }}
                 service:
                   type: LoadBalancer
                   externalIpAvailable: true
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else if and (eq .Values.krateoplatformops.service.type "LoadBalancer") (not .Values.krateoplatformops.service.externalIpAvailable) }}
                 service:
                   type: LoadBalancer
                   externalIpAvailable: false
+                  {{- with .Values.krateoplatformops.service.annotations }}
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- else }}
                 service:
                   type: ClusterIP
                   externalIpAvailable: false
-                {{- end }}
-                {{- with .Values.krateoplatformops.service.annotations }}
-                service:
+                  {{- with .Values.krateoplatformops.service.annotations }}
                   annotations:
                     {{- toYaml . | nindent 20 }}
+                  {{- end }}
                 {{- end }}
                 {{- if .Values.krateoplatformops.ingress.enabled }}
                 {{- with .Values.krateoplatformops.ingress }}
@@ -443,9 +473,10 @@ spec:
                 bff:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- if .Values.krateoplatformops.authn }}
+                {{- with .Values.krateoplatformops.authn }}
                 authn:
                   {{- toYaml . | nindent 18 }}
+                {{- end }}
                   {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
                   KUBECONFIG_SERVER_URL: https://$KUBECONFIG_KUBERNETES_IP:$KUBECONFIG_KUBERNETES_PORT
                   {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
@@ -455,7 +486,6 @@ spec:
                   {{- else if and (eq .Values.krateoplatformops.service.type "ClusterIP") ( .Values.krateoplatformops.ingress.enabled) }}
                   KUBECONFIG_SERVER_URL: https://$KUBECONFIG_KUBERNETES_HOSTNAME
                   {{- end }}
-                {{- end }}
                 {{- with .Values.krateoplatformops.backend }}
                 backend:
                   {{- toYaml . | nindent 18 }}
