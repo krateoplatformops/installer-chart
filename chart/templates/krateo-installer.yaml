@@ -219,6 +219,11 @@ spec:
           - name: service.type
             value: LoadBalancer
           {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
@@ -510,6 +515,11 @@ spec:
           - name: service.type
             value: LoadBalancer
           {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
@@ -674,6 +684,11 @@ spec:
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
+          {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
           {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
@@ -841,6 +856,11 @@ spec:
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
+          {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
           {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled

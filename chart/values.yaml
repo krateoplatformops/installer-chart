@@ -96,7 +96,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     # defaultImageRegistry: ""
-    enabled: false
+    enabled: true
     storage:
       className: ""
     sync:
@@ -116,8 +116,9 @@ krateoplatformops:
     #   imagePullSecrets:
     #     - name: image-registry-secret
   service:
-    type: NodePort
+    type: LoadBalancer
     externalIpAvailable: false
+    annotations: {}
   ingress:
     enabled: false
     vcluster:
@@ -207,7 +208,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.1.14
+      version: 2.1.16
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -235,7 +236,7 @@ krateoplatformops:
   bff:
     chart:
       name: bff
-      version: 0.3.3
+      version: 0.3.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -256,7 +257,7 @@ krateoplatformops:
   authn:
     chart:
       name: authn
-      version: 0.15.0
+      version: 0.15.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -278,7 +279,7 @@ krateoplatformops:
   backend:
     chart:
       name: backend
-      version: 0.7.6
+      version: 0.7.7
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -370,7 +371,7 @@ krateoplatformops:
   eventrouter:
     chart:
       name: eventrouter
-      version: 0.5.2
+      version: 0.5.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -391,7 +392,7 @@ krateoplatformops:
   eventsse:
     chart:
       name: eventsse
-      version: 0.4.2
+      version: 0.4.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -425,10 +426,10 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
   terminal:
-    enabled: true
+    enabled: false
     chart:
       name: terminal-server
-      version: 0.1.4
+      version: 0.1.5
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m

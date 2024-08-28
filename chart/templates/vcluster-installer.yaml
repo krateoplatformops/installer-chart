@@ -49,6 +49,11 @@ spec:
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
+          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.loadBalancerAnnotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           {{- else if .Values.krateoplatformops.ingress.enabled }}
           - name: service.type
             value: ClusterIP
@@ -152,6 +157,11 @@ spec:
                   type: ClusterIP
                   externalIpAvailable: false
                 {{- end }}
+                {{- with .Values.krateoplatformops.service.annotations }}
+                service:
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                {{- end }}
                 {{- if .Values.krateoplatformops.ingress.enabled }}
                 {{- with .Values.krateoplatformops.ingress }}
                 ingress:
@@ -192,6 +202,10 @@ spec:
                 {{- end }}
                 {{- with index .Values.krateoplatformops "composable-portal-basic" }}
                 composable-portal-basic:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.terminal }}
+                terminal:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 
@@ -410,6 +424,11 @@ spec:
                   type: ClusterIP
                   externalIpAvailable: false
                 {{- end }}
+                {{- with .Values.krateoplatformops.service.annotations }}
+                service:
+                  annotations:
+                    {{- toYaml . | nindent 20 }}
+                {{- end }}
                 {{- if .Values.krateoplatformops.ingress.enabled }}
                 {{- with .Values.krateoplatformops.ingress }}
                 ingress:
@@ -459,6 +478,10 @@ spec:
                 {{- end }}
                 {{- with index .Values.krateoplatformops "composable-portal-basic" }}
                 composable-portal-basic:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.terminal }}
+                terminal:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 {{- end }}
