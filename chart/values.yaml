@@ -96,7 +96,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     # defaultImageRegistry: ""
-    enabled: true
+    enabled: false
     storage:
       className: ""
     sync:
@@ -116,7 +116,7 @@ krateoplatformops:
     #   imagePullSecrets:
     #     - name: image-registry-secret
   service:
-    type: LoadBalancer
+    type: NodePort
     externalIpAvailable: false
     annotations: {}
   ingress:
