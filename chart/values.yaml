@@ -116,8 +116,8 @@ krateoplatformops:
     #   imagePullSecrets:
     #     - name: image-registry-secret
   service:
-    type: LoadBalancer
-    externalIpAvailable: true
+    type: NodePort
+    externalIpAvailable: false
     # annotations:
     #   service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Use "nlb" for Network Load Balancer or "clb" for Classic Load Balancer
     #   service.beta.kubernetes.io/aws-load-balancer-internal: "false" # Set to "true" if you want an internal load balancer
