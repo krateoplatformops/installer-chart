@@ -31,6 +31,10 @@ spec:
             value: {{ $secret.name }}
           {{- end }}
           {{- end }}
+          {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+          {{- end }}
           {{- if .Values.krateoplatformops.authn.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.authn.image.repository }}
@@ -93,7 +97,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     - id: extract-authn-nodeport-port
@@ -104,7 +112,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
@@ -116,7 +128,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
@@ -130,7 +146,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
     {{- else }}
     - id: extract-authn-lb-ip
@@ -141,7 +161,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].hostname
     {{- end }}
 
@@ -153,7 +177,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .spec.ports[0].port
 
     {{- else if .Values.krateoplatformops.ingress.enabled }}
@@ -165,7 +193,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
 
     - id: extract-authn-ingress-host
@@ -176,7 +208,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
+            {{- if .Values.krateoplatformops.authn.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.authn.fullnameOverride }}
+            {{- else }}
             name: authn
+            {{- end }}
           selector: .spec.rules[0].host
     {{- end }}
 
@@ -202,6 +238,10 @@ spec:
           - name: imagePullSecrets.{{ $index }}.name
             value: {{ $secret.name }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.bff.fullnameOverride }}
           {{- end }}
           {{- if .Values.krateoplatformops.bff.image.repository }}
           - name: image.repository
@@ -263,7 +303,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     - id: extract-bff-nodeport-port
@@ -274,7 +318,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
@@ -286,7 +334,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
@@ -300,7 +352,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
     {{- else }}
     - id: extract-bff-lb-ip
@@ -311,7 +367,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].hostname
     {{- end }}
 
@@ -323,7 +383,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .spec.ports[0].port
     {{- else if .Values.krateoplatformops.ingress.enabled }}
     - id: extract-bff-ingress-ip
@@ -334,7 +398,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
 
     - id: extract-bff-ingress-host
@@ -345,7 +413,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
             name: bff
+            {{- end }}
           selector: .spec.rules[0].host
     {{- end }}
 
@@ -391,6 +463,10 @@ spec:
           - name: global.defaultStorageClass
             value: {{ .Values.krateoplatformops.backend.etcd.global.defaultStorageClass }}
           {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.backend.etcd.fullnameOverride }}
+          {{- end }}
           {{- if .Values.krateoplatformops.backend.etcd.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.backend.etcd.image.repository }}
@@ -427,6 +503,14 @@ spec:
             value: {{ $secret.name }}
           {{- end }}
           {{- end }}
+          {{- if .Values.krateoplatformops.backend.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.backend.fullnameOverride }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.fullnameOverride }}
+          - name: etcd.service.name
+            value: {{ .Values.krateoplatformops.backend.etcd.fullnameOverride }}
+          {{- end }}
           {{- if .Values.krateoplatformops.backend.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.backend.image.repository }}
@@ -457,6 +541,10 @@ spec:
             namespace: {{ .Values.krateoplatformops.eventrouter.chart.credentials.passwordRef.namespace }}
         {{- end }}
         set:
+          {{- if .Values.krateoplatformops.eventrouter.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.eventrouter.fullnameOverride }}
+          {{- end }}
           {{- if .Values.krateoplatformops.eventrouter.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.eventrouter.image.repository }}
@@ -493,6 +581,14 @@ spec:
             namespace: {{ .Values.krateoplatformops.eventsse.chart.credentials.passwordRef.namespace }}
         {{- end }}
         set:
+          {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.backend.etcd.fullnameOverride }}
+          - name: etcd.service.name
+            value: {{ .Values.krateoplatformops.backend.etcd.fullnameOverride }}
+          {{- end }}
           {{- if .Values.krateoplatformops.eventsse.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.eventsse.image.repository }}
@@ -559,7 +655,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
             name: eventsse-external
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     - id: extract-eventsse-nodeport-port
@@ -570,7 +670,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
             name: eventsse-external
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
@@ -582,7 +686,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
             name: eventsse-external
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
@@ -596,7 +704,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
             name: eventsse-external
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
     {{- else }}
     - id: extract-eventsse-lb-ip
@@ -607,7 +719,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
             name: eventsse-external
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].hostname
     {{- end }}
 
@@ -619,7 +735,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
             name: eventsse-external
+            {{- end }}
           selector: .spec.ports[0].port
     {{- else if .Values.krateoplatformops.ingress.enabled }}
     - id: extract-eventsse-ingress-ip
@@ -630,7 +750,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
-            name: eventsse
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
+            name: eventsse-external
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
 
     - id: extract-eventsse-ingress-host
@@ -641,7 +765,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
-            name: eventsse
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            {{- else }}
+            name: eventsse-external
+            {{- end }}
           selector: .spec.rules[0].host
     {{- end }}
 
@@ -663,6 +791,10 @@ spec:
             namespace: {{ .Values.krateoplatformops.terminal.chart.credentials.passwordRef.namespace }}
         {{- end }}
         set:
+          {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+          {{- end }}
           {{- if .Values.krateoplatformops.terminal.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.terminal.image.repository }}
@@ -729,7 +861,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     - id: extract-terminal-nodeport-port
@@ -740,7 +876,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
@@ -752,7 +892,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .spec.ports[0].nodePort
 
     {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
@@ -766,7 +910,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
     {{- else }}
     - id: extract-terminal-lb-ip
@@ -777,7 +925,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].hostname
     {{- end }}
 
@@ -789,7 +941,11 @@ spec:
           apiVersion: v1
           kind: Service
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .spec.ports[0].port
     {{- else if .Values.krateoplatformops.ingress.enabled }}
     - id: extract-terminal-ingress-ip
@@ -800,7 +956,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
 
     - id: extract-terminal-ingress-host
@@ -811,7 +971,11 @@ spec:
           apiVersion: networking.k8s.io/v1
           kind: Ingress
           metadata:
+            {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+            {{- else }}
             name: terminal-server
+            {{- end }}
           selector: .spec.rules[0].host
     {{- end }}
 
@@ -840,6 +1004,10 @@ spec:
           - name: imagePullSecrets.{{ $index }}.name
             value: {{ $secret.name }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.frontend.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.frontend.fullnameOverride }}
           {{- end }}
           {{- if .Values.krateoplatformops.frontend.image.repository }}
           - name: image.repository
@@ -980,6 +1148,10 @@ spec:
             value: {{ $secret.name }}
           {{- end }}
           {{- end }}
+          {{- if index .Values.krateoplatformops "core-provider" "fullnameOverride" }}
+          - name: fullnameOverride
+            value: {{ index .Values.krateoplatformops "core-provider" "fullnameOverride" }}
+          {{- end }}
           {{- if index .Values.krateoplatformops "core-provider" "image" "repository" }}
           - name: image.repository
             value: {{ index .Values.krateoplatformops "core-provider" "image" "repository" }}
@@ -1015,6 +1187,10 @@ spec:
           - name: imagePullSecrets.{{ $index }}.name
             value: {{ $secret.name }}
           {{- end }}
+          {{- end }}
+          {{- if index .Values.krateoplatformops "patch-provider" "fullnameOverride" }}
+          - name: fullnameOverride
+            value: {{ index .Values.krateoplatformops "patch-provider" "fullnameOverride" }}
           {{- end }}
           {{- if index .Values.krateoplatformops "patch-provider" "image" "repository" }}
           - name: image.repository
