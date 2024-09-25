@@ -35,6 +35,22 @@ spec:
           - name: fullnameOverride
             value: {{ .Values.krateoplatformops.authn.fullnameOverride }}
           {{- end }}
+          {{- if and .Values.krateoplatformops.authn.resources.requests .Values.krateoplatformops.authn.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.authn.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.authn.resources.requests .Values.krateoplatformops.authn.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.authn.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.authn.resources.limits .Values.krateoplatformops.authn.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.authn.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.authn.resources.limits .Values.krateoplatformops.authn.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.authn.resources.limits.memory }}
+          {{- end }}
           {{- if .Values.krateoplatformops.authn.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.authn.image.repository }}
@@ -242,6 +258,22 @@ spec:
           {{- if .Values.krateoplatformops.bff.fullnameOverride }}
           - name: fullnameOverride
             value: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.bff.resources.requests .Values.krateoplatformops.bff.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.bff.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.bff.resources.requests .Values.krateoplatformops.bff.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.bff.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.bff.resources.limits .Values.krateoplatformops.bff.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.bff.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.bff.resources.limits .Values.krateoplatformops.bff.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.bff.resources.limits.memory }}
           {{- end }}
           {{- if .Values.krateoplatformops.bff.image.repository }}
           - name: image.repository
@@ -467,6 +499,22 @@ spec:
           - name: fullnameOverride
             value: {{ .Values.krateoplatformops.backend.etcd.fullnameOverride }}
           {{- end }}
+          {{- if and .Values.krateoplatformops.backend.etcd.resources.requests .Values.krateoplatformops.backend.etcd.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.backend.etcd.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.backend.etcd.resources.requests .Values.krateoplatformops.backend.etcd.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.backend.etcd.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.backend.etcd.resources.limits .Values.krateoplatformops.backend.etcd.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.backend.etcd.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.backend.etcd.resources.limits .Values.krateoplatformops.backend.etcd.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.backend.etcd.resources.limits.memory }}
+          {{- end }}
           {{- if .Values.krateoplatformops.backend.etcd.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.backend.etcd.image.repository }}
@@ -511,6 +559,22 @@ spec:
           - name: etcd.service.name
             value: {{ .Values.krateoplatformops.backend.etcd.fullnameOverride }}
           {{- end }}
+          {{- if and .Values.krateoplatformops.backend.resources.requests .Values.krateoplatformops.backend.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.backend.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.backend.resources.requests .Values.krateoplatformops.backend.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.backend.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.backend.resources.limits .Values.krateoplatformops.backend.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.backend.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.backend.resources.limits .Values.krateoplatformops.backend.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.backend.resources.limits.memory }}
+          {{- end }}
           {{- if .Values.krateoplatformops.backend.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.backend.image.repository }}
@@ -544,6 +608,22 @@ spec:
           {{- if .Values.krateoplatformops.eventrouter.fullnameOverride }}
           - name: fullnameOverride
             value: {{ .Values.krateoplatformops.eventrouter.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventrouter.resources.requests .Values.krateoplatformops.eventrouter.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.eventrouter.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventrouter.resources.requests .Values.krateoplatformops.eventrouter.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.eventrouter.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventrouter.resources.limits .Values.krateoplatformops.eventrouter.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.eventrouter.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventrouter.resources.limits .Values.krateoplatformops.eventrouter.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.eventrouter.resources.limits.memory }}
           {{- end }}
           {{- if .Values.krateoplatformops.eventrouter.image.repository }}
           - name: image.repository
@@ -588,6 +668,22 @@ spec:
           {{- if .Values.krateoplatformops.backend.etcd.fullnameOverride }}
           - name: etcd.service.name
             value: {{ .Values.krateoplatformops.backend.etcd.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.resources.requests .Values.krateoplatformops.eventsse.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.eventsse.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.resources.requests .Values.krateoplatformops.eventsse.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.eventsse.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.resources.limits .Values.krateoplatformops.eventsse.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.eventsse.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.resources.limits .Values.krateoplatformops.eventsse.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.eventsse.resources.limits.memory }}
           {{- end }}
           {{- if .Values.krateoplatformops.eventsse.image.repository }}
           - name: image.repository
@@ -794,6 +890,22 @@ spec:
           {{- if .Values.krateoplatformops.terminal.fullnameOverride }}
           - name: fullnameOverride
             value: {{ .Values.krateoplatformops.terminal.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.terminal.resources.requests .Values.krateoplatformops.terminal.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.terminal.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.terminal.resources.requests .Values.krateoplatformops.terminal.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.terminal.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.terminal.resources.limits .Values.krateoplatformops.terminal.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.terminal.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.terminal.resources.limits .Values.krateoplatformops.terminal.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.terminal.resources.limits.memory }}
           {{- end }}
           {{- if .Values.krateoplatformops.terminal.image.repository }}
           - name: image.repository
@@ -1009,6 +1121,22 @@ spec:
           - name: fullnameOverride
             value: {{ .Values.krateoplatformops.frontend.fullnameOverride }}
           {{- end }}
+          {{- if and .Values.krateoplatformops.frontend.resources.requests .Values.krateoplatformops.frontend.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.frontend.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.frontend.resources.requests .Values.krateoplatformops.frontend.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.frontend.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.frontend.resources.limits .Values.krateoplatformops.frontend.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.frontend.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.frontend.resources.limits .Values.krateoplatformops.frontend.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.frontend.resources.limits.memory }}
+          {{- end }}
           {{- if .Values.krateoplatformops.frontend.image.repository }}
           - name: image.repository
             value: {{ .Values.krateoplatformops.frontend.image.repository }}
@@ -1152,6 +1280,22 @@ spec:
           - name: fullnameOverride
             value: {{ index .Values.krateoplatformops "core-provider" "fullnameOverride" }}
           {{- end }}
+          {{- if and (index .Values.krateoplatformops "core-provider" "resources" "requests") (index .Values.krateoplatformops "core-provider" "resources" "requests" "cpu") }}
+          - name: resources.requests.cpu
+            value: {{ index .Values.krateoplatformops "core-provider" "resources" "requests" "cpu" | quote }}
+          {{- end }}
+          {{- if and (index .Values.krateoplatformops "core-provider" "resources" "requests") (index .Values.krateoplatformops "core-provider" "resources" "requests" "memory") }}
+          - name: resources.requests.memory
+            value: {{ index .Values.krateoplatformops "core-provider" "resources" "requests" "memory" }}
+          {{- end }}
+          {{- if and (index .Values.krateoplatformops "core-provider" "resources" "limits") (index .Values.krateoplatformops "core-provider" "resources" "limits" "cpu") }}
+          - name: resources.limits.cpu
+            value: {{ index .Values.krateoplatformops "core-provider" "resources" "limits" "cpu" | quote }}
+          {{- end }}
+          {{- if and (index .Values.krateoplatformops "core-provider" "resources" "limits") (index .Values.krateoplatformops "core-provider" "resources" "limits" "memory") }}
+          - name: resources.limits.memory
+            value: {{ index .Values.krateoplatformops "core-provider" "resources" "limits" "memory" }}
+          {{- end }}
           {{- if index .Values.krateoplatformops "core-provider" "image" "repository" }}
           - name: image.repository
             value: {{ index .Values.krateoplatformops "core-provider" "image" "repository" }}
@@ -1191,6 +1335,22 @@ spec:
           {{- if index .Values.krateoplatformops "patch-provider" "fullnameOverride" }}
           - name: fullnameOverride
             value: {{ index .Values.krateoplatformops "patch-provider" "fullnameOverride" }}
+          {{- end }}
+          {{- if and (index .Values.krateoplatformops "patch-provider" "resources" "requests") (index .Values.krateoplatformops "patch-provider" "resources" "requests" "cpu") }}
+          - name: resources.requests.cpu
+            value: {{ index .Values.krateoplatformops "patch-provider" "resources" "requests" "cpu" | quote }}
+          {{- end }}
+          {{- if and (index .Values.krateoplatformops "patch-provider" "resources" "requests") (index .Values.krateoplatformops "patch-provider" "resources" "requests" "memory") }}
+          - name: resources.requests.memory
+            value: {{ index .Values.krateoplatformops "patch-provider" "resources" "requests" "memory" }}
+          {{- end }}
+          {{- if and (index .Values.krateoplatformops "patch-provider" "resources" "limits") (index .Values.krateoplatformops "patch-provider" "resources" "limits" "cpu") }}
+          - name: resources.limits.cpu
+            value: {{ index .Values.krateoplatformops "patch-provider" "resources" "limits" "cpu" | quote }}
+          {{- end }}
+          {{- if and (index .Values.krateoplatformops "patch-provider" "resources" "limits") (index .Values.krateoplatformops "patch-provider" "resources" "limits" "memory") }}
+          - name: resources.limits.memory
+            value: {{ index .Values.krateoplatformops "patch-provider" "resources" "limits" "memory" }}
           {{- end }}
           {{- if index .Values.krateoplatformops "patch-provider" "image" "repository" }}
           - name: image.repository
