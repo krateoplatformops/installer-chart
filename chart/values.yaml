@@ -222,6 +222,7 @@ krateoplatformops:
       #     name: helm-registry-token
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/krateo-frontend
       pullPolicy: IfNotPresent
@@ -251,6 +252,7 @@ krateoplatformops:
       #     name: helm-registry-token
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/bff
       pullPolicy: IfNotPresent
@@ -273,6 +275,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/authn
       pullPolicy: IfNotPresent
@@ -296,6 +299,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/backend
       pullPolicy: IfNotPresent
@@ -329,6 +333,7 @@ krateoplatformops:
           openshift:
             adaptSecurityContext: auto
       fullnameOverride: ""
+      resources: {}
       image:
         repository: krateoplatformops/etcd
         tag: 3.5.15-debian-12-r3
@@ -348,6 +353,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/core-provider
       pullPolicy: IfNotPresent
@@ -370,6 +376,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/patch-provider
       pullPolicy: IfNotPresent
@@ -392,6 +399,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/eventrouter
       pullPolicy: IfNotPresent
@@ -414,6 +422,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/eventsse
       pullPolicy: IfNotPresent
@@ -452,6 +461,7 @@ krateoplatformops:
       #     name: helm-registry-secret
       #     namespace: krateo-system
     fullnameOverride: ""
+    resources: {}
     image:
       repository: ghcr.io/krateoplatformops/terminal-server
       pullPolicy: IfNotPresent
