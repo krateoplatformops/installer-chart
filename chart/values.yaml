@@ -221,6 +221,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-token
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/krateo-frontend
       pullPolicy: IfNotPresent
@@ -249,6 +250,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-token
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/bff
       pullPolicy: IfNotPresent
@@ -270,6 +272,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/authn
       pullPolicy: IfNotPresent
@@ -281,7 +284,7 @@ krateoplatformops:
   backend:
     chart:
       name: backend
-      version: 0.8.3
+      version: 0.9.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -292,6 +295,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/backend
       pullPolicy: IfNotPresent
@@ -324,6 +328,7 @@ krateoplatformops:
         compatibility:
           openshift:
             adaptSecurityContext: auto
+      fullnameOverride: ""
       image:
         repository: krateoplatformops/etcd
         tag: 3.5.15-debian-12-r3
@@ -331,7 +336,7 @@ krateoplatformops:
   core-provider:
     chart:
       name: core-provider
-      version: 0.23.5
+      version: 0.23.7
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -342,6 +347,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/core-provider
       pullPolicy: IfNotPresent
@@ -363,6 +369,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/patch-provider
       pullPolicy: IfNotPresent
@@ -373,7 +380,7 @@ krateoplatformops:
   eventrouter:
     chart:
       name: eventrouter
-      version: 0.5.3
+      version: 0.5.7
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -384,6 +391,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/eventrouter
       pullPolicy: IfNotPresent
@@ -405,6 +413,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/eventsse
       pullPolicy: IfNotPresent
@@ -442,6 +451,7 @@ krateoplatformops:
       #     key: token
       #     name: helm-registry-secret
       #     namespace: krateo-system
+    fullnameOverride: ""
     image:
       repository: ghcr.io/krateoplatformops/terminal-server
       pullPolicy: IfNotPresent
