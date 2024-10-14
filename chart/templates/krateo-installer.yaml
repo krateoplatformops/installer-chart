@@ -847,9 +847,9 @@ spec:
           kind: Ingress
           metadata:
             {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}
             {{- else }}
-            name: eventsse-external
+            name: eventsse
             {{- end }}
           selector: .status.loadBalancer.ingress[0].ip
 
@@ -862,9 +862,9 @@ spec:
           kind: Ingress
           metadata:
             {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-external
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}
             {{- else }}
-            name: eventsse-external
+            name: eventsse
             {{- end }}
           selector: .spec.rules[0].host
     {{- end }}
@@ -1383,5 +1383,295 @@ spec:
             namespace: {{ index .Values.krateoplatformops "composable-portal-basic" "chart" "credentials" "passwordRef" "namespace" }}
         {{- end }}
     {{- end }}
+
+    - id: install-resource-tree-handler
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.resourcetreehandler.chart.name }}
+        version: {{ .Values.krateoplatformops.resourcetreehandler.chart.version }}
+        repository: {{ .Values.krateoplatformops.resourcetreehandler.chart.repository }}
+        wait: {{ .Values.krateoplatformops.resourcetreehandler.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.resourcetreehandler.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.resourcetreehandler.chart.credentials (gt (len .Values.krateoplatformops.resourcetreehandler.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.requests .Values.krateoplatformops.resourcetreehandler.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.requests .Values.krateoplatformops.resourcetreehandler.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.limits .Values.krateoplatformops.resourcetreehandler.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.limits .Values.krateoplatformops.resourcetreehandler.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.limits.memory }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.resourcetreehandler.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.resourcetreehandler.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.resourcetreehandler.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.resourcetreehandler.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.resourcetreehandler.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.resourcetreehandler.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.resourcetreehandler.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.resourcetreehandler.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30085"
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.enabled
+            value: "true"
+          - name: ingress.className
+            value: {{ .Values.krateoplatformops.ingress.resourcetreehandler.className }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.resourcetreehandler.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          - name: ingress.hosts[0].host
+            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.hosts 0 "host" }}
+          - name: ingress.hosts[0].paths[0].path
+            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.hosts 0 "paths" 0 "path" }}
+          - name: ingress.hosts[0].paths[0].pathType
+            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.resourcetreehandler.tls (gt (len .Values.krateoplatformops.ingress.resourcetreehandler.tls) 0) }}
+          - name: ingress.tls[0].secretName
+            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.tls 0 "secretName" }}
+          - name: ingress.tls[0].hosts[0]
+            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.tls 0 "hosts" 0 }}
+          {{- end }}
+          {{- end }}
+
+    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
+    - id: extract-resource-tree-handler-nodeport-ip
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .spec.ports[0].nodePort
+
+    - id: extract-resource-tree-handler-nodeport-port
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .spec.ports[0].nodePort
+
+    {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+    - id: extract-resource-tree-handler-nodeport-port
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .spec.ports[0].nodePort
+
+    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+
+    {{- if .Values.krateoplatformops.service.externalIpAvailable }}
+    - id: extract-resource-tree-handler-lb-ip
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .status.loadBalancer.ingress[0].ip
+    {{- else }}
+    - id: extract-resource-tree-handler-lb-ip
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_IP
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .status.loadBalancer.ingress[0].hostname
+    {{- end }}
+
+    - id: extract-resource-tree-handler-lb-port
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .spec.ports[0].port
+    {{- else if .Values.krateoplatformops.ingress.enabled }}
+    - id: extract-resource-tree-handler-ingress-ip
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_IP
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .status.loadBalancer.ingress[0].ip
+
+    - id: extract-resource-tree-handler-ingress-host
+      type: var
+      with:
+        name: RESOURCE_TREE_HANDLER_INGRESS_HOST
+        valueFrom:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
+            {{- else }}
+            name: resource-tree-handler
+            {{- end }}
+          selector: .spec.rules[0].host
+    {{- end }}
+
+    - id: install-composition-watcher
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.compositionwatcher.chart.name }}
+        version: {{ .Values.krateoplatformops.compositionwatcher.chart.version }}
+        repository: {{ .Values.krateoplatformops.compositionwatcher.chart.repository }}
+        wait: {{ .Values.krateoplatformops.compositionwatcher.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.compositionwatcher.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.compositionwatcher.chart.credentials (gt (len .Values.krateoplatformops.resourcetreehandler.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.compositionwatcher.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.compositionwatcher.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.compositionwatcher.resources.requests .Values.krateoplatformops.compositionwatcher.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.compositionwatcher.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.compositionwatcher.resources.requests .Values.krateoplatformops.compositionwatcher.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.compositionwatcher.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.compositionwatcher.resources.limits .Values.krateoplatformops.compositionwatcher.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.compositionwatcher.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.compositionwatcher.resources.limits .Values.krateoplatformops.compositionwatcher.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.compositionwatcher.resources.limits.memory }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.compositionwatcher.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.compositionwatcher.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.compositionwatcher.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.compositionwatcher.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.compositionwatcher.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.compositionwatcher.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.compositionwatcher.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.compositionwatcher.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+          - name: env.RESOURCE_TREE_HANDLER_URL
+            value: http://$RESOURCE_TREE_HANDLER_IP:$RESOURCE_TREE_HANDLER_PORT
+          {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+          - name: env.RESOURCE_TREE_HANDLER_URL
+            value: http://127.0.0.1:$RESOURCE_TREE_HANDLER_PORT
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: env.RESOURCE_TREE_HANDLER_URL
+            value: http://$RESOURCE_TREE_HANDLER_IP:$RESOURCE_TREE_HANDLER_PORT
+          {{- else if .Values.krateoplatformops.ingress.enabled }}
+          - name: env.RESOURCE_TREE_HANDLER_URL
+            value: https://$RESOURCE_TREE_HANDLER_URL_INGRESS_HOST
+          {{- end }}
 
 {{- end }}
