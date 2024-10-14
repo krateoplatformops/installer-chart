@@ -1477,89 +1477,7 @@ spec:
           {{- end }}
           {{- end }}
 
-    {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
-    # to implement: $(kubectl get nodes --namespace krateo-system -o jsonpath="{.items[0].status.addresses[0].address}")
-    - id: extract-resource-tree-handler-nodeport-ip
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_IP
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .spec.ports[0].nodePort
-
-    - id: extract-resource-tree-handler-nodeport-port
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_PORT
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .spec.ports[0].nodePort
-
-    {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
-    - id: extract-resource-tree-handler-nodeport-port
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_PORT
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .spec.ports[0].nodePort
-
-    {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-
-    {{- if .Values.krateoplatformops.service.externalIpAvailable }}
-    - id: extract-resource-tree-handler-lb-ip
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_IP
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .status.loadBalancer.ingress[0].ip
-    {{- else }}
-    - id: extract-resource-tree-handler-lb-ip
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_IP
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .status.loadBalancer.ingress[0].hostname
-    {{- end }}
-
-    - id: extract-resource-tree-handler-lb-port
+    - id: extract-resource-tree-handler-internal-port
       type: var
       with:
         name: RESOURCE_TREE_HANDLER_PORT
@@ -1573,37 +1491,6 @@ spec:
             name: resource-tree-handler
             {{- end }}
           selector: .spec.ports[0].port
-    {{- else if .Values.krateoplatformops.ingress.enabled }}
-    - id: extract-resource-tree-handler-ingress-ip
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_IP
-        valueFrom:
-          apiVersion: networking.k8s.io/v1
-          kind: Ingress
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .status.loadBalancer.ingress[0].ip
-
-    - id: extract-resource-tree-handler-ingress-host
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_INGRESS_HOST
-        valueFrom:
-          apiVersion: networking.k8s.io/v1
-          kind: Ingress
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .spec.rules[0].host
-    {{- end }}
 
     - id: install-composition-watcher
       type: chart
@@ -1660,18 +1547,15 @@ spec:
             value: {{ $secret.name }}
           {{- end }}
           {{- end }}
-          {{- if and (eq .Values.krateoplatformops.service.type "NodePort") .Values.krateoplatformops.service.externalIpAvailable }}
+          {{- if .Values.krateoplatformops.compositionwatcher.overrideconf }}
           - name: env.RESOURCE_TREE_HANDLER_URL
-            value: http://$RESOURCE_TREE_HANDLER_IP:$RESOURCE_TREE_HANDLER_PORT
-          {{- else if and (eq .Values.krateoplatformops.service.type "NodePort") (not .Values.krateoplatformops.service.externalIpAvailable) }}
+            value: {{ .Values.krateoplatformops.compositionwatcher.env.RESOURCE_TREE_HANDLER_URL }}
+          {{- else if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
           - name: env.RESOURCE_TREE_HANDLER_URL
-            value: http://127.0.0.1:$RESOURCE_TREE_HANDLER_PORT
-          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+            value: http://{{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$RESOURCE_TREE_HANDLER_PORT
+          {{- else }}
           - name: env.RESOURCE_TREE_HANDLER_URL
-            value: http://$RESOURCE_TREE_HANDLER_IP:$RESOURCE_TREE_HANDLER_PORT
-          {{- else if .Values.krateoplatformops.ingress.enabled }}
-          - name: env.RESOURCE_TREE_HANDLER_URL
-            value: https://$RESOURCE_TREE_HANDLER_URL_INGRESS_HOST
+            value: http://resource-tree-handler.{{ .Release.Namespace }}.svc.cluster.local:$RESOURCE_TREE_HANDLER_PORT
           {{- end }}
 
 {{- end }}
