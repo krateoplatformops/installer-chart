@@ -97,6 +97,7 @@ krateoplatformops:
       #     namespace: krateo-system
     # defaultImageRegistry: ""
     enabled: false
+    fallbackHostDns: false
     storage:
       className: ""
     sync:
@@ -116,8 +117,8 @@ krateoplatformops:
     #   imagePullSecrets:
     #     - name: image-registry-secret
   service:
-    type: NodePort
-    externalIpAvailable: false
+    type: LoadBalancer
+    externalIpAvailable: true
     # annotations:
     #   service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Use "nlb" for Network Load Balancer or "clb" for Classic Load Balancer
     #   service.beta.kubernetes.io/aws-load-balancer-internal: "false" # Set to "true" if you want an internal load balancer
@@ -486,7 +487,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.1.3
+      version: 0.1.6
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -509,7 +510,7 @@ krateoplatformops:
   compositionwatcher:
     chart:
       name: composition-watcher
-      version: 0.1.3
+      version: 0.1.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m

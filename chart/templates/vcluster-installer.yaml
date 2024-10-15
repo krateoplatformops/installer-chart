@@ -25,6 +25,11 @@ spec:
             namespace: {{ .Values.krateoplatformops.vcluster.chart.credentials.passwordRef.namespace }}
         {{- end }}
         set:
+          {{- if .Values.krateoplatformops.vcluster.fallbackHostDns }}
+          - name: fallbackHostDns
+            value: {{ .Values.krateoplatformops.vcluster.fallbackHostDns | quote }}
+            asString: true
+          {{- end }}
           {{- if .Values.krateoplatformops.vcluster.serviceAccount }}
           {{- range $index, $secret := .Values.krateoplatformops.vcluster.serviceAccount.imagePullSecrets }}
           - name: serviceAccount.imagePullSecrets.{{ $index }}.name
