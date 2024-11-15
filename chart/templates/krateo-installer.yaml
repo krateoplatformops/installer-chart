@@ -77,6 +77,11 @@ spec:
             value: {{ $value | quote }}
             asString: true
           {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.authn.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
@@ -297,6 +302,11 @@ spec:
             value: LoadBalancer
           {{- end }}
           {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.bff.service.annotations }}
           - name: service.annotations.{{ $key | replace "." "\\." }}
             value: {{ $value | quote }}
             asString: true
@@ -717,6 +727,11 @@ spec:
             value: {{ $value | quote }}
             asString: true
           {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.eventsse.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
@@ -935,6 +950,11 @@ spec:
             value: LoadBalancer
           {{- end }}
           {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.terminal.service.annotations }}
           - name: service.annotations.{{ $key | replace "." "\\." }}
             value: {{ $value | quote }}
             asString: true
@@ -1163,6 +1183,11 @@ spec:
             value: {{ $value | quote }}
             asString: true
           {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.frontend.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
@@ -1253,6 +1278,21 @@ spec:
           {{- end }}
           {{- end }}
 
+    - id: extract-bff-internal-port
+      type: var
+      with:
+        name: BFF_INTERNAL_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.bff.fullnameOverride }}
+            {{- else }}
+            name: bff
+            {{- end }}
+          selector: .spec.ports[0].port
+
     - id: install-core-provider
       type: chart
       with:
@@ -1307,6 +1347,13 @@ spec:
           {{- if index .Values.krateoplatformops "core-provider" "image" "tag" }}
           - name: image.tag
             value: {{ index .Values.krateoplatformops "core-provider" "image" "tag" }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+          - name: env.URL_PLURALS
+            value: http://{{ .Values.krateoplatformops.bff.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$BFF_INTERNAL_PORT/api-info/names
+          {{- else }}
+          - name: env.URL_PLURALS
+            value: http://bff.{{ .Release.Namespace }}.svc.cluster.local:$BFF_INTERNAL_PORT/api-info/names
           {{- end }}
 
     - id: install-patch-provider
@@ -1384,6 +1431,21 @@ spec:
         {{- end }}
     {{- end }}
 
+    - id: extract-eventsse-internal-port
+      type: var
+      with:
+        name: EVENTSSE_INTERNAL_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.eventsse.fullnameOverride }}-internal
+            {{- else }}
+            name: eventsse-internal
+            {{- end }}
+          selector: .spec.ports[0].port
+
     - id: install-resource-tree-handler
       type: chart
       with:
@@ -1453,6 +1515,13 @@ spec:
             value: {{ $value | quote }}
             asString: true
           {{- end }}
+          {{- with .Values.krateoplatformops.resourcetreehandler.service.annotations }}
+          {{- range $key, $value := .Values.krateoplatformops.resourcetreehandler.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
           {{- if eq .Values.krateoplatformops.ingress.enabled true }}
           - name: ingress.enabled
             value: "true"
@@ -1476,86 +1545,19 @@ spec:
             value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.tls 0 "hosts" 0 }}
           {{- end }}
           {{- end }}
-
-    - id: extract-resource-tree-handler-internal-port
-      type: var
-      with:
-        name: RESOURCE_TREE_HANDLER_PORT
-        valueFrom:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-            {{- else }}
-            name: resource-tree-handler
-            {{- end }}
-          selector: .spec.ports[0].port
-
-    - id: install-composition-watcher
-      type: chart
-      with:
-        name: {{ .Values.krateoplatformops.compositionwatcher.chart.name }}
-        version: {{ .Values.krateoplatformops.compositionwatcher.chart.version }}
-        repository: {{ .Values.krateoplatformops.compositionwatcher.chart.repository }}
-        wait: {{ .Values.krateoplatformops.compositionwatcher.chart.wait }}
-        waitTimeout: {{ .Values.krateoplatformops.compositionwatcher.chart.waitTimeout }}
-        {{- if and .Values.krateoplatformops.compositionwatcher.chart.credentials (gt (len .Values.krateoplatformops.resourcetreehandler.chart.credentials) 0) }}
-        credentials:
-          username: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.username }}
-          passwordRef: # reference to a secret
-            key: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.passwordRef.key }}
-            name: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.passwordRef.name }}
-            namespace: {{ .Values.krateoplatformops.compositionwatcher.chart.credentials.passwordRef.namespace }}
-        {{- end }}
-        set:
-          {{- if .Values.krateoplatformops.compositionwatcher.fullnameOverride }}
-          - name: fullnameOverride
-            value: {{ .Values.krateoplatformops.compositionwatcher.fullnameOverride }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.compositionwatcher.resources.requests .Values.krateoplatformops.compositionwatcher.resources.requests.cpu }}
-          - name: resources.requests.cpu
-            value: {{ .Values.krateoplatformops.compositionwatcher.resources.requests.cpu | quote }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.compositionwatcher.resources.requests .Values.krateoplatformops.compositionwatcher.resources.requests.memory }}
-          - name: resources.requests.memory
-            value: {{ .Values.krateoplatformops.compositionwatcher.resources.requests.memory }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.compositionwatcher.resources.limits .Values.krateoplatformops.compositionwatcher.resources.limits.cpu }}
-          - name: resources.limits.cpu
-            value: {{ .Values.krateoplatformops.compositionwatcher.resources.limits.cpu | quote }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.compositionwatcher.resources.limits .Values.krateoplatformops.compositionwatcher.resources.limits.memory }}
-          - name: resources.limits.memory
-            value: {{ .Values.krateoplatformops.compositionwatcher.resources.limits.memory }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.compositionwatcher.image.repository }}
-          - name: image.repository
-            value: {{ .Values.krateoplatformops.compositionwatcher.image.repository }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.compositionwatcher.image.pullPolicy }}
-          - name: image.pullPolicy
-            value: {{ .Values.krateoplatformops.compositionwatcher.image.pullPolicy }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.compositionwatcher.image.tag }}
-          - name: image.tag
-            value: {{ .Values.krateoplatformops.compositionwatcher.image.tag }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.compositionwatcher.imagePullSecrets }}
-          {{- range $index, $secret := .Values.krateoplatformops.compositionwatcher.imagePullSecrets }}
-          - name: imagePullSecrets.{{ $index }}.name
-            value: {{ $secret.name }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.compositionwatcher.overrideconf }}
-          - name: env.RESOURCE_TREE_HANDLER_URL
-            value: {{ .Values.krateoplatformops.compositionwatcher.env.RESOURCE_TREE_HANDLER_URL }}
-          {{- else if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-          - name: env.RESOURCE_TREE_HANDLER_URL
-            value: http://{{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$RESOURCE_TREE_HANDLER_PORT
+          {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
+          - name: env.URL_SSE
+            value: http://{{ .Values.krateoplatformops.eventsse.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$EVENTSSE_INTERNAL_PORT/notifications
           {{- else }}
-          - name: env.RESOURCE_TREE_HANDLER_URL
-            value: http://resource-tree-handler.{{ .Release.Namespace }}.svc.cluster.local:$RESOURCE_TREE_HANDLER_PORT
+          - name: env.URL_SSE
+            value: http://eventsse-internal.{{ .Release.Namespace }}.svc.cluster.local:$EVENTSSE_INTERNAL_PORT/notifications
+          {{- end }}
+          {{- if .Values.krateoplatformops.bff.fullnameOverride }}
+          - name: env.URL_PLURALS
+            value: http://{{ .Values.krateoplatformops.bff.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$BFF_INTERNAL_PORT/api-info/names
+          {{- else }}
+          - name: env.URL_PLURALS
+            value: http://bff.{{ .Release.Namespace }}.svc.cluster.local:$BFF_INTERNAL_PORT/api-info/names
           {{- end }}
 
 {{- end }}
