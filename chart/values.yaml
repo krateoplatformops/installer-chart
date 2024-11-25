@@ -226,7 +226,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.1.25
+      version: 2.1.28
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -239,6 +239,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/krateo-frontend
       pullPolicy: IfNotPresent
@@ -258,7 +260,7 @@ krateoplatformops:
   bff:
     chart:
       name: bff
-      version: 0.8.4
+      version: 0.8.5
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -271,6 +273,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/bff
       pullPolicy: IfNotPresent
@@ -296,6 +300,44 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+      # capabilities:
+      #   add: ["NET_ADMIN", "SYS_TIME"]     # Add Linux capabilities
+      #   drop: ["ALL"]                       # Drop Linux capabilities
+      # privileged: false                     # Run container in privileged mode
+      # procMount: Default                    # Proc mount type
+      # readOnlyRootFilesystem: true         # Make root filesystem read-only
+      # allowPrivilegeEscalation: false      # Prevent privilege escalation
+      # runAsUser: 1000                      # User ID to run the container
+      # runAsGroup: 3000                     # Group ID to run the container
+      # runAsNonRoot: true                   # Require the container to run as non-root
+      # seccompProfile:                      # Container-specific seccomp profile
+      #   type: RuntimeDefault               # Use runtime default seccomp profile
+      # seLinuxOptions:                      # Container-specific SELinux options
+      #   level: "s0:c123,c456"
+      #   role: "system_r"
+      #   type: "container_t"
+      #   user: "system_u"
+      # windowsOptions:                      # Windows-specific options (for Windows nodes)
+      #   gmsaCredentialSpec: ""             # GMSA credential spec name
+      #   gmsaCredentialSpecName: ""         # GMSA credential spec
+      #   runAsUserName: "ContainerUser"     # Username to run the container
+    securityContext: {}
+      # fsGroup: 2000                          # File system group ID
+      # runAsUser: 1000                        # User ID to run the entrypoint of container
+      # runAsGroup: 3000                       # Group ID to run the entrypoint of container
+      # runAsNonRoot: true                     # Requires container to run as non-root user
+      # supplementalGroups: [1000, 2000]       # Additional groups to add to container
+      # sysctls:                               # Sysctls to set for the pod
+      # - name: net.core.somaxconn
+      #   value: "1024"
+      # seccompProfile:                        # Seccomp profile settings
+      #   type: RuntimeDefault                 # Use runtime default seccomp profile
+      # seLinuxOptions:                        # SELinux context settings
+      #   level: "s0:c123,c456"
+      #   role: "system_r"
+      #   type: "container_t"
+      #   user: "system_u"
     image:
       repository: ghcr.io/krateoplatformops/authn
       pullPolicy: IfNotPresent
@@ -309,7 +351,7 @@ krateoplatformops:
   backend:
     chart:
       name: backend
-      version: 0.14.2
+      version: 0.14.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -322,6 +364,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/backend
       pullPolicy: IfNotPresent
@@ -356,6 +400,8 @@ krateoplatformops:
             adaptSecurityContext: auto
       fullnameOverride: ""
       resources: {}
+      podSecurityContext: {}
+      securityContext: {}
       image:
         repository: krateoplatformops/etcd
         tag: 3.5.15-debian-12-r3
@@ -376,6 +422,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/core-provider
       pullPolicy: IfNotPresent
@@ -399,6 +447,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/patch-provider
       pullPolicy: IfNotPresent
@@ -422,6 +472,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/eventrouter
       pullPolicy: IfNotPresent
@@ -445,6 +497,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/eventsse
       pullPolicy: IfNotPresent
@@ -486,6 +540,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/terminal-server
       pullPolicy: IfNotPresent
@@ -498,7 +554,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.5
+      version: 0.2.6
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -511,6 +567,8 @@ krateoplatformops:
       #     namespace: krateo-system
     fullnameOverride: ""
     resources: {}
+    podSecurityContext: {}
+    securityContext: {}
     image:
       repository: ghcr.io/krateoplatformops/resource-tree-handler
       pullPolicy: IfNotPresent

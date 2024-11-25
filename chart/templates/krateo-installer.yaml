@@ -16,7 +16,7 @@ spec:
         repository: {{ .Values.krateoplatformops.authn.chart.repository }}
         wait: {{ .Values.krateoplatformops.authn.chart.wait }}
         waitTimeout: {{ .Values.krateoplatformops.authn.chart.waitTimeout }}
-        {{- if and .Values.krateoplatformops.authn.chart.credentials (gt (len .Values.krateoplatformops.authn.chart.credentials) 0) }}
+        {{- if and (hasKey .Values.krateoplatformops.authn.chart "credentials") (gt (len .Values.krateoplatformops.authn.chart.credentials) 0) }}
         credentials:
           username: {{ .Values.krateoplatformops.authn.chart.credentials.username }}
           passwordRef: # reference to a secret
