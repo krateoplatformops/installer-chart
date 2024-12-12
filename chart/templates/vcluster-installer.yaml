@@ -209,12 +209,12 @@ spec:
                 backend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "core-provider" }}
-                core-provider:
+                {{- with .Values.krateoplatformops.coreprovider }}
+                coreprovider:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "patch-provider" }}
-                patch-provider:
+                {{- with .Values.krateoplatformops.patchprovider }}
+                patchprovider:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.krateoplatformops.eventrouter }}
@@ -225,12 +225,16 @@ spec:
                 eventsse:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "composable-portal-basic" }}
-                composable-portal-basic:
+                {{- with .Values.krateoplatformops.composableportalbasic }}
+                composableportalbasic:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.krateoplatformops.terminal }}
                 terminal:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.resourcetreehandler }}
+                resourcetreehandler:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 
@@ -500,12 +504,12 @@ spec:
                 backend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "core-provider" }}
-                core-provider:
+                {{- with .Values.krateoplatformops.coreprovider }}
+                coreprovider:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "patch-provider" }}
-                patch-provider:
+                {{- with .Values.krateoplatformops.patchprovider }}
+                patchprovider:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.krateoplatformops.eventrouter }}
@@ -516,12 +520,16 @@ spec:
                 eventsse:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with index .Values.krateoplatformops "composable-portal-basic" }}
-                composable-portal-basic:
+                {{- with .Values.krateoplatformops.composableportalbasic }}
+                composableportalbasic:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.krateoplatformops.terminal }}
                 terminal:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.resourcetreehandler }}
+                resourcetreehandler:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 {{- end }}
