@@ -108,7 +108,7 @@ krateoplatformops:
       storageclasses:
         enabled: true
     openshift:
-      enable: auto
+      enable: false
     securityContext:
       allowPrivilegeEscalation: false
       # runAsUser: 0
@@ -120,6 +120,7 @@ krateoplatformops:
     # serviceAccount:
     #   imagePullSecrets:
     #     - name: image-registry-secret
+    env: []
   service:
     type: NodePort
     externalIpAvailable: false
@@ -134,6 +135,9 @@ krateoplatformops:
       ingressClassName: ""
       host: vcluster.local
       annotations: {}
+        # nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+        # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+        # nginx.ingress.kubernetes.io/ssl-redirect: "true"
       # Ingress TLS configuration
       tls: []
         # - secretName: tls-vcluster.local
@@ -226,7 +230,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.1.28
+      version: 2.1.29
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -249,18 +253,20 @@ krateoplatformops:
     # imagePullSecrets:
     #   - name: image-registry-secret
     overrideconf: false
-    env:
+    config:
       AUTHN_API_BASE_URL: ""
       BFF_API_BASE_URL: ""
       EVENTS_PUSH_API_BASE_URL: ""
       EVENTS_API_BASE_URL: ""
       TERMINAL_SOCKET_URL: ""
+    env: {}
+      # http_proxy: http://127.0.0.1:3128
     service: 
       annotations: {}
   bff:
     chart:
       name: bff
-      version: 0.8.5
+      version: 0.8.6
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -284,10 +290,15 @@ krateoplatformops:
     #   - name: image-registry-secret
     service: 
       annotations: {}
+    env: {}
+      # BFF_DEBUG: "true"
+      # BFF_CORS: "true"
+      # BFF_DUMP_ENV: "true"
+      # http_proxy: http://127.0.0.1:3128
   authn:
     chart:
       name: authn
-      version: 0.17.1
+      version: 0.18.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -301,43 +312,66 @@ krateoplatformops:
     fullnameOverride: ""
     resources: {}
     podSecurityContext: {}
-      # capabilities:
-      #   add: ["NET_ADMIN", "SYS_TIME"]     # Add Linux capabilities
-      #   drop: ["ALL"]                       # Drop Linux capabilities
-      # privileged: false                     # Run container in privileged mode
-      # procMount: Default                    # Proc mount type
-      # readOnlyRootFilesystem: true         # Make root filesystem read-only
-      # allowPrivilegeEscalation: false      # Prevent privilege escalation
-      # runAsUser: 1000                      # User ID to run the container
-      # runAsGroup: 3000                     # Group ID to run the container
-      # runAsNonRoot: true                   # Require the container to run as non-root
-      # seccompProfile:                      # Container-specific seccomp profile
-      #   type: RuntimeDefault               # Use runtime default seccomp profile
-      # seLinuxOptions:                      # Container-specific SELinux options
+      # appArmorProfile:
+      #   localhostProfile: "example-profile"
+      #   type: "RuntimeDefault" # Options: Localhost, RuntimeDefault, Unconfined
+      # fsGroup: 1000
+      # fsGroupChangePolicy: "OnRootMismatch" # Options: Always, OnRootMismatch
+      # runAsGroup: 3000
+      # runAsNonRoot: true
+      # runAsUser: 1000
+      # seLinuxOptions:
       #   level: "s0:c123,c456"
       #   role: "system_r"
-      #   type: "container_t"
+      #   type: "spc_t"
       #   user: "system_u"
-      # windowsOptions:                      # Windows-specific options (for Windows nodes)
-      #   gmsaCredentialSpec: ""             # GMSA credential spec name
-      #   gmsaCredentialSpecName: ""         # GMSA credential spec
-      #   runAsUserName: "ContainerUser"     # Username to run the container
+      # seccompProfile:
+      #   localhostProfile: "example-seccomp-profile"
+      #   type: "RuntimeDefault" # Options: Localhost, RuntimeDefault, Unconfined
+      # supplementalGroups:
+      #   - 2000
+      #   - 3000
+      # supplementalGroupsPolicy: Strict
+      # sysctls:
+      #   - name: "net.ipv4.tcp_syncookies"
+      #     value: "1"
+      #   - name: "fs.file-max"
+      #     value: "50000"
+      # windowsOptions:
+      #   gmsaCredentialSpec: '{"example-spec-json": "content"}'
+      #   gmsaCredentialSpecName: "example-gmsa-name"
+      #   hostProcess: false
+      #   runAsUserName: "Administrator"
     securityContext: {}
-      # fsGroup: 2000                          # File system group ID
-      # runAsUser: 1000                        # User ID to run the entrypoint of container
-      # runAsGroup: 3000                       # Group ID to run the entrypoint of container
-      # runAsNonRoot: true                     # Requires container to run as non-root user
-      # supplementalGroups: [1000, 2000]       # Additional groups to add to container
-      # sysctls:                               # Sysctls to set for the pod
-      # - name: net.core.somaxconn
-      #   value: "1024"
-      # seccompProfile:                        # Seccomp profile settings
-      #   type: RuntimeDefault                 # Use runtime default seccomp profile
-      # seLinuxOptions:                        # SELinux context settings
+      # allowPrivilegeEscalation: false
+      # appArmorProfile:
+      #   localhostProfile: "custom-apparmor-profile"
+      #   type: "RuntimeDefault" # Options: Localhost, RuntimeDefault, Unconfined
+      # capabilities:
+      #   add:
+      #     - "NET_ADMIN"
+      #     - "SYS_TIME"
+      #   drop:
+      #     - "ALL"
+      # privileged: false
+      # procMount: "Default" # Options: Default, Unmasked
+      # readOnlyRootFilesystem: true
+      # runAsGroup: 2000
+      # runAsNonRoot: true
+      # runAsUser: 1001
+      # seLinuxOptions:
       #   level: "s0:c123,c456"
       #   role: "system_r"
-      #   type: "container_t"
+      #   type: "spc_t"
       #   user: "system_u"
+      # seccompProfile:
+      #   localhostProfile: "custom-seccomp-profile"
+      #   type: "RuntimeDefault" # Options: Localhost, RuntimeDefault, Unconfined
+      # windowsOptions:
+      #   gmsaCredentialSpec: '{"example-spec-json": "content"}'
+      #   gmsaCredentialSpecName: "example-gmsa-name"
+      #   hostProcess: false
+      #   runAsUserName: "UserExample"
     image:
       repository: ghcr.io/krateoplatformops/authn
       pullPolicy: IfNotPresent
@@ -348,10 +382,17 @@ krateoplatformops:
     KUBECONFIG_SERVER_URL: https://krateo-v2-3-rc17-dns-pdnsmas7.hcp.northeurope.azmk8s.io:443
     service: 
       annotations: {}
+    env: {}
+      # AUTHN_DEBUG: "true"
+      # AUTHN_KUBECONFIG_CLUSTER_NAME: "krateo"
+      # AUTHN_KUBECONFIG_CRT_EXPIRES_IN: "24h"
+      # AUTHN_CORS: "true"
+      # AUTHN_DUMP_ENV: "true"
+      # http_proxy: http://127.0.0.1:3128
   backend:
     chart:
       name: backend
-      version: 0.14.4
+      version: 0.15.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -373,6 +414,8 @@ krateoplatformops:
       tag: ""
     # imagePullSecrets:
     #   - name: image-registry-secret
+    env: {}
+      # http_proxy: http://127.0.0.1:3128
     etcd:
       chart:
         name: etcd
@@ -401,15 +444,17 @@ krateoplatformops:
       fullnameOverride: ""
       resources: {}
       podSecurityContext: {}
-      securityContext: {}
+      containerSecurityContext: {}
       image:
         repository: krateoplatformops/etcd
         tag: 3.5.15-debian-12-r3
         pullPolicy: IfNotPresent
-  core-provider:
+      env: {}
+        # http_proxy: http://127.0.0.1:3128
+  coreprovider:
     chart:
       name: core-provider
-      version: 0.25.7
+      version: 0.27.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -431,10 +476,14 @@ krateoplatformops:
       tag: ""
     # imagePullSecrets:
     #   - name: image-registry-secret
-  patch-provider:
+    env: {}
+      # CORE_PROVIDER_DEBUG: "true"
+      # CDC_IMAGE_TAG: 0.14.9
+      # http_proxy: http://127.0.0.1:3128
+  patchprovider:
     chart:
       name: patch-provider
-      version: 1.0.0
+      version: 1.0.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -456,10 +505,14 @@ krateoplatformops:
       tag: ""
     # imagePullSecrets:
     #   - name: image-registry-secret
+    env: {}
+      # PATCH_PROVIDER_DEBUG: "true"
+      # PATCH_PROVIDER_POLL_INTERVAL: 3m
+      # http_proxy: http://127.0.0.1:3128
   eventrouter:
     chart:
       name: eventrouter
-      version: 0.5.7
+      version: 0.5.8
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -481,10 +534,18 @@ krateoplatformops:
       tag: ""
     # imagePullSecrets:
     #   - name: image-registry-secret
+    env: {}
+      # EVENT_ROUTER_DEBUG: "true"
+      # EVENT_ROUTER_INSECURE: "true"
+      # EVENT_ROUTER_RESYNC_INTERVAL: 3m
+      # EVENT_ROUTER_THROTTLE_PERIOD: 0
+      # EVENT_ROUTER_QUEUE_MAX_CAPACITY: 10
+      # EVENT_ROUTER_QUEUE_WORKER_THREADS: 50
+      # http_proxy: http://127.0.0.1:3128
   eventsse:
     chart:
       name: eventsse
-      version: 0.4.3
+      version: 0.4.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -508,7 +569,14 @@ krateoplatformops:
     #   - name: image-registry-secret
     service: 
       annotations: {}
-  composable-portal-basic:
+    env: {}
+      # EVENTSSE_DEBUG: "true"
+      # EVENTSSE_CORS: "true"
+      # EVENTSSE_DUMP_ENV: "true"
+      # EVENTSSE_TTL: 86400 #seconds
+      # EVENTSSE_GET_LIMIT: 500
+      # http_proxy: http://127.0.0.1:3128
+  composableportalbasic:
     enabled: true
     chart:
       name: composable-portal-basic
@@ -527,7 +595,7 @@ krateoplatformops:
     enabled: false
     chart:
       name: terminal-server
-      version: 0.1.5
+      version: 0.1.6
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -551,10 +619,12 @@ krateoplatformops:
     #   - name: image-registry-secret
     service: 
       annotations: {}
+    env: {}
+      # http_proxy: http://127.0.0.1:3128
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.6
+      version: 0.2.7
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -578,3 +648,6 @@ krateoplatformops:
     #   - name: image-registry-secret
     service: 
       annotations: {}
+    env: {} 
+      # DEBUG_LEVEL: info # one of debug, warning, info, or error
+      # http_proxy: http://127.0.0.1:3128
