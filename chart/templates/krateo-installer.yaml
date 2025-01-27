@@ -2646,6 +2646,11 @@ spec:
             asString: true
           {{- end }}
           {{- end }}
+          {{- if .Values.krateoplatformops.frontend.config.INIT }}
+          - name: config.INIT
+            value: {{ .Values.krateoplatformops.frontend.config.INIT }}
+          {{- end }}
+
 
     - id: extract-bff-internal-port
       type: var
