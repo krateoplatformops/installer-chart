@@ -73,3 +73,12 @@ jobs:
 
       - name: Helm lint
         run: helm lint ./chart
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1
+
+      - name: Install Krateo PlatformOps with standard configuration
+        run: helm install installer ./chart --create-namespace -n krateo-system --wait
+
+      - name: Wait for krateoplatformops krateo to become ready
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
