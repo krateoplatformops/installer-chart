@@ -5,5 +5,7 @@ metadata:
   labels:
     {{- include "installer.labels" . | nindent 4 }}
 data:
-  INSTALLER_NAMESPACE: {{ .Release.Namespace }}
-  INSTALLER_DEBUG: "{{ .Values.env.INSTALLER_DEBUG }}"
+  INSTALLER_PROVIDER_NAMESPACE: {{ .Release.Namespace }}
+  {{- range $key, $value := .Values.env }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}

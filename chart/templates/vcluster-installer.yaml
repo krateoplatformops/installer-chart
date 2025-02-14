@@ -197,8 +197,8 @@ spec:
                 frontend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.bff }}
-                bff:
+                {{- with .Values.krateoplatformops.snowplow }}
+                snowplow:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.krateoplatformops.authn }}
@@ -483,8 +483,8 @@ spec:
                 frontend:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
-                {{- with .Values.krateoplatformops.bff }}
-                bff:
+                {{- with .Values.krateoplatformops.snowplow }}
+                snowplow:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.krateoplatformops.authn }}
