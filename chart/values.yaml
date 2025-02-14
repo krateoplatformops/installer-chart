@@ -78,7 +78,7 @@ tolerations: []
 affinity: {}
 
 env:
-  INSTALLER_DEBUG: "true"
+  INSTALLER_PROVIDER_DEBUG: "true"
 
 krateoplatformops:
   vcluster:
@@ -157,20 +157,34 @@ krateoplatformops:
       # - secretName: frontend-krateo-certificate
       #   hosts:
       #     - app.krateoplatformops.io
-    bff:
+    snowplow:
       className: ""
       annotations: {}
         # cert-manager.io/cluster-issuer: letsencrypt-krateo
-        # external-dns.alpha.kubernetes.io/hostname: "bff.krateoplatformops.io"
+        # external-dns.alpha.kubernetes.io/hostname: "snowplow.krateoplatformops.io"
       hosts:
-        - host: bff.krateoplatformops.io
+        - host: snowplow.krateoplatformops.io
           paths:
             - path: /
               pathType: Prefix
       tls: []
-      # - secretName: bff-krateo-certificate
+      # - secretName: snowplow-krateo-certificate
       #   hosts:
-      #     - bff.krateoplatformops.io
+      #     - snowplow.krateoplatformops.io
+    snowplow:
+      className: ""
+      annotations: {}
+        # cert-manager.io/cluster-issuer: letsencrypt-krateo
+        # external-dns.alpha.kubernetes.io/hostname: "snowplow.krateoplatformops.io"
+      hosts:
+        - host: snowplow.krateoplatformops.io
+          paths:
+            - path: /
+              pathType: Prefix
+      tls: []
+      # - secretName: snowplow-krateo-certificate
+      #   hosts:
+      #     - snowplow.krateoplatformops.io
     authn:
       className: ""
       annotations: {}
@@ -230,7 +244,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.1.29
+      version: 2.3.9
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -255,18 +269,19 @@ krateoplatformops:
     overrideconf: false
     config:
       AUTHN_API_BASE_URL: ""
-      BFF_API_BASE_URL: ""
+      BACKEND_API_BASE_URL: ""
       EVENTS_PUSH_API_BASE_URL: ""
       EVENTS_API_BASE_URL: ""
       TERMINAL_SOCKET_URL: ""
+      INIT: ""
     env: {}
       # http_proxy: http://127.0.0.1:3128
     service: 
       annotations: {}
-  bff:
+  snowplow:
     chart:
-      name: bff
-      version: 0.8.6
+      name: snowplow
+      version: 0.3.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -282,7 +297,7 @@ krateoplatformops:
     podSecurityContext: {}
     securityContext: {}
     image:
-      repository: ghcr.io/krateoplatformops/bff
+      repository: ghcr.io/krateoplatformops/snowplow
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
@@ -291,14 +306,14 @@ krateoplatformops:
     service: 
       annotations: {}
     env: {}
-      # BFF_DEBUG: "true"
-      # BFF_CORS: "true"
-      # BFF_DUMP_ENV: "true"
+      # DEBUG: "true"
+      # BLIZZARD: "false"
+      # SKIP: "false"
       # http_proxy: http://127.0.0.1:3128
   authn:
     chart:
       name: authn
-      version: 0.18.0
+      version: 0.18.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -379,7 +394,7 @@ krateoplatformops:
       tag: ""
     # imagePullSecrets:
     #   - name: image-registry-secret
-    KUBECONFIG_SERVER_URL: https://krateo-v2-3-rc17-dns-pdnsmas7.hcp.northeurope.azmk8s.io:443
+    KUBECONFIG_SERVER_URL: ""
     service: 
       annotations: {}
     env: {}
@@ -392,7 +407,7 @@ krateoplatformops:
   backend:
     chart:
       name: backend
-      version: 0.15.2
+      version: 0.15.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -454,7 +469,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.27.0
+      version: 0.28.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -477,9 +492,21 @@ krateoplatformops:
     # imagePullSecrets:
     #   - name: image-registry-secret
     env: {}
-      # CORE_PROVIDER_DEBUG: "true"
-      # CDC_IMAGE_TAG: 0.14.9
       # http_proxy: http://127.0.0.1:3128
+    cdc:
+      fullnameOverride: ""
+      resources: {}
+      podSecurityContext: {}
+      securityContext: {}
+      image:
+        repository: ghcr.io/krateoplatformops/composition-dynamic-controller
+        pullPolicy: IfNotPresent
+        # Overrides the image tag whose default is the chart appVersion.
+        tag: ""
+      # imagePullSecrets:
+      #   - name: image-registry-secret
+      env: {}
+        # http_proxy: http://127.0.0.1:3128
   patchprovider:
     chart:
       name: patch-provider
@@ -577,10 +604,10 @@ krateoplatformops:
       # EVENTSSE_GET_LIMIT: 500
       # http_proxy: http://127.0.0.1:3128
   composableportalbasic:
-    enabled: true
+    enabled: false
     chart:
       name: composable-portal-basic
-      version: 0.3.1
+      version: 0.5.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -624,7 +651,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.7
+      version: 0.2.8
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
