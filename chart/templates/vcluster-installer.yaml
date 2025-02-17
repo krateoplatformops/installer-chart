@@ -136,12 +136,12 @@ spec:
             value: {{ .Release.Namespace }}
           - name: init.helm[0].values
             value: |-
-              {{- if eq .Values.env.INSTALLER_DEBUG "true" }}
+              {{- if eq .Values.env.INSTALLER_PROVIDER_DEBUG "true" }}
               env:
-                INSTALLER_DEBUG: "true"
+                INSTALLER_PROVIDER_DEBUG: "true"
               {{- else }}
               env:
-                INSTALLER_DEBUG: "false"
+                INSTALLER_PROVIDER_DEBUG: "false"
               {{- end }}
               krateoplatformops:
                 vcluster:
@@ -235,6 +235,34 @@ spec:
                 {{- end }}
                 {{- with .Values.krateoplatformops.resourcetreehandler }}
                 resourcetreehandler:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorcratedb }}
+                finopsoperatorcratedb:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopscratedbcustomresource }}
+                finopscratedbcustomresource:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorexporter }}
+                finopsoperatorexporter:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorfocus }}
+                finopsoperatorfocus:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsdatabasehandler }}
+                finopsdatabasehandler:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopscompositiondefinitionparser }}
+                finopscompositiondefinitionparser:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorscraper }}
+                finopsoperatorscraper:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 
@@ -422,12 +450,12 @@ spec:
             value: {{ .Release.Namespace }}
           - name: init.helm[0].values
             value: |-
-              {{- if eq .Values.env.INSTALLER_DEBUG "true" }}
+              {{- if eq .Values.env.INSTALLER_PROVIDER_DEBUG "true" }}
               env:
-                INSTALLER_DEBUG: "true"
+                INSTALLER_PROVIDER_DEBUG: "true"
               {{- else }}
               env:
-                INSTALLER_DEBUG: "false"
+                INSTALLER_PROVIDER_DEBUG: "false"
               {{- end }}
               krateoplatformops:
                 vcluster:
@@ -530,6 +558,34 @@ spec:
                 {{- end }}
                 {{- with .Values.krateoplatformops.resourcetreehandler }}
                 resourcetreehandler:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorcratedb }}
+                finopsoperatorcratedb:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopscratedbcustomresource }}
+                finopscratedbcustomresource:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorexporter }}
+                finopsoperatorexporter:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorfocus }}
+                finopsoperatorfocus:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsdatabasehandler }}
+                finopsdatabasehandler:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopscompositiondefinitionparser }}
+                finopscompositiondefinitionparser:
+                  {{- toYaml . | nindent 18 }}
+                {{- end }}
+                {{- with .Values.krateoplatformops.finopsoperatorscraper }}
+                finopsoperatorscraper:
                   {{- toYaml . | nindent 18 }}
                 {{- end }}
 {{- end }}

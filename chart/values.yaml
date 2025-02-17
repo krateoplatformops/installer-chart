@@ -244,7 +244,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.3.9
+      version: 2.3.10
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -607,7 +607,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: composable-portal-basic
-      version: 0.5.0
+      version: 0.5.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -678,3 +678,192 @@ krateoplatformops:
     env: {} 
       # DEBUG_LEVEL: info # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
+  composablefinops:
+    enabled: true
+  finopsoperatorcratedb:
+    chart:
+      name: crate-operator
+      version: 2.43.1
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/crate-operator
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+    service: 
+      annotations: {}
+    env: {}
+  finopscratedbcustomresource:
+    chart:
+      name: finops-cratedb-custom-resource
+      version: 0.1.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: finops
+    resources:
+      disk:
+        size: 8000MiB
+        storageClass: standard
+    image:
+      repository: ghcr.io/krateoplatformops/crate
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+  finopsoperatorexporter:
+    chart:
+      name: finops-operator-exporter
+      version: 0.4.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/finops-operator-exporter
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    service: 
+      annotations: {}
+    env: {}
+  finopsoperatorfocus:
+    chart:
+      name: finops-operator-focus
+      version: 0.4.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/finops-operator-focus
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+    service: 
+      annotations: {}
+    env: {}
+  finopsdatabasehandler:
+    chart:
+      name: finops-database-handler
+      version: 0.4.2
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/finops-database-handler
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+    service:
+      annotations: {}
+    env: {} 
+  finopscompositiondefinitionparser:
+    chart:
+      name: finops-composition-definition-parser
+      version: 0.1.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/finops-composition-definition-parser
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+    service: 
+      annotations: {}
+    env: {}
+  finopsoperatorscraper:
+    chart:
+      name: finops-operator-scraper
+      version: 0.4.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/finops-operator-scraper
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    service: 
+      annotations: {}
+    env: {}
