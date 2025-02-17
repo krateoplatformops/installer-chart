@@ -3665,4 +3665,1529 @@ spec:
           {{- end }}
           {{- end }}
 
+    {{- if .Values.krateoplatformops.composablefinops.enabled }}
+
+    - id: install-finops-operator-cratedb
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.name }}
+        version: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.version }}
+        repository: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.repository }}
+        wait: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.finopsoperatorcratedb.chart.credentials (gt (len .Values.krateoplatformops.finopsoperatorcratedb.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.finopsoperatorcratedb.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.finopsoperatorcratedb.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorcratedb.resources.requests .Values.krateoplatformops.finopsoperatorcratedb.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorcratedb.resources.requests .Values.krateoplatformops.finopsoperatorcratedb.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorcratedb.resources.limits .Values.krateoplatformops.finopsoperatorcratedb.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorcratedb.resources.limits .Values.krateoplatformops.finopsoperatorcratedb.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.appArmorProfile "type") }}
+          - name: podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.fsGroup }}
+          - name: podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.fsGroupChangePolicy }}
+          - name: podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.runAsGroup }}
+          - name: podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.runAsNonRoot }}
+          - name: podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.runAsUser }}
+          - name: podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions "level") }}
+          - name: podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions "role") }}
+          - name: podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions "type") }}
+          - name: podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions "user") }}
+          - name: podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seccompProfile "type") }}
+          - name: podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.supplementalGroups }}
+          - name: podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.supplementalGroupsPolicy }}
+          - name: podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.sysctls }}
+          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.securityContext.allowPrivilegeEscalation }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.appArmorProfile "localhostProfile") }}
+          - name: securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.appArmorProfile "type") }}
+          - name: securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorcratedb.securityContext.capabilities.add }}
+          - name: securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorcratedb.securityContext.capabilities.drop }}
+          - name: securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.securityContext.privileged }}
+          - name: securityContext.privileged
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.securityContext.procMount }}
+          - name: securityContext.procMount
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.securityContext.readOnlyRootFilesystem }}
+          - name: securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions "level") }}
+          - name: securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions "role") }}
+          - name: securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions "type") }}
+          - name: securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions "user") }}
+          - name: securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seccompProfile "localhostProfile") }}
+          - name: securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seccompProfile "type") }}
+          - name: securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.windowsOptions "hostProcess") }}
+          - name: securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorcratedb.securityContext.windowsOptions "runAsUserName") }}
+          - name: securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.finopsoperatorcratedb.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorcratedb.env }}
+          {{- range $key, $value := .Values.krateoplatformops.finopsoperatorcratedb.env }}
+          - name: env.{{ $key }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
+
+    - id: install-finops-cratedb-custom-resource
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.name }}
+        version: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.version }}
+        repository: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.repository }}
+        wait: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.waitTimeout }}
+        {{- if and (hasKey .Values.krateoplatformops.finopscratedbcustomresource.chart "credentials") (gt (len .Values.krateoplatformops.finopscratedbcustomresource.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.finopscratedbcustomresource.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.finopscratedbcustomresource.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscratedbcustomresource.resources.requests .Values.krateoplatformops.finopscratedbcustomresource.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscratedbcustomresource.resources.requests .Values.krateoplatformops.finopscratedbcustomresource.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscratedbcustomresource.resources.limits .Values.krateoplatformops.finopscratedbcustomresource.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscratedbcustomresource.resources.limits .Values.krateoplatformops.finopscratedbcustomresource.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.resources.limits.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscratedbcustomresource.resources.disk .Values.krateoplatformops.finopscratedbcustomresource.resources.disk.count }}
+          - name: resources.disk.count
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.resources.disk.count }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscratedbcustomresource.resources.disk .Values.krateoplatformops.finopscratedbcustomresource.resources.disk.size }}
+          - name: resources.disk.size
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.resources.disk.size }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscratedbcustomresource.resources.disk .Values.krateoplatformops.finopscratedbcustomresource.resources.disk.storageClass }}
+          - name: resources.disk.storageClass
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.resources.disk.storageClass }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscratedbcustomresource.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscratedbcustomresource.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscratedbcustomresource.nodeName }}
+          - name: nodeName
+            value: {{ .Values.krateoplatformops.finopscratedbcustomresource.nodeName }}
+          {{- end }}
+
+    - id: install-finops-operator-exporter
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.name }}
+        version: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.version }}
+        repository: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.repository }}
+        wait: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.finopsoperatorexporter.chart.credentials (gt (len .Values.krateoplatformops.finopsoperatorexporter.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.finopsoperatorexporter.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.finopsoperatorexporter.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorexporter.resources.requests .Values.krateoplatformops.finopsoperatorexporter.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorexporter.resources.requests .Values.krateoplatformops.finopsoperatorexporter.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorexporter.resources.limits .Values.krateoplatformops.finopsoperatorexporter.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorexporter.resources.limits .Values.krateoplatformops.finopsoperatorexporter.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.appArmorProfile "type") }}
+          - name: podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.fsGroup }}
+          - name: podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.fsGroupChangePolicy }}
+          - name: podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.runAsGroup }}
+          - name: podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.runAsNonRoot }}
+          - name: podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.runAsUser }}
+          - name: podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions "level") }}
+          - name: podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions "role") }}
+          - name: podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions "type") }}
+          - name: podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions "user") }}
+          - name: podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seccompProfile "type") }}
+          - name: podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.supplementalGroups }}
+          - name: podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.supplementalGroupsPolicy }}
+          - name: podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.sysctls }}
+          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.securityContext.allowPrivilegeEscalation }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.appArmorProfile "localhostProfile") }}
+          - name: securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.appArmorProfile "type") }}
+          - name: securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorexporter.securityContext.capabilities.add }}
+          - name: securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorexporter.securityContext.capabilities.drop }}
+          - name: securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.securityContext.privileged }}
+          - name: securityContext.privileged
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.securityContext.procMount }}
+          - name: securityContext.procMount
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.securityContext.readOnlyRootFilesystem }}
+          - name: securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions "level") }}
+          - name: securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions "role") }}
+          - name: securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions "type") }}
+          - name: securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions "user") }}
+          - name: securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.seccompProfile "localhostProfile") }}
+          - name: securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.seccompProfile "type") }}
+          - name: securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.windowsOptions "hostProcess") }}
+          - name: securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorexporter.securityContext.windowsOptions "runAsUserName") }}
+          - name: securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.finopsoperatorexporter.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorexporter.env }}
+          {{- range $key, $value := .Values.krateoplatformops.finopsoperatorexporter.env }}
+          - name: env.{{ $key }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
+
+    - id: install-finops-operator-focus
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.name }}
+        version: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.version }}
+        repository: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.repository }}
+        wait: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.finopsoperatorfocus.chart.credentials (gt (len .Values.krateoplatformops.finopsoperatorfocus.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.finopsoperatorfocus.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.finopsoperatorfocus.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorfocus.resources.requests .Values.krateoplatformops.finopsoperatorfocus.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorfocus.resources.requests .Values.krateoplatformops.finopsoperatorfocus.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorfocus.resources.limits .Values.krateoplatformops.finopsoperatorfocus.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorfocus.resources.limits .Values.krateoplatformops.finopsoperatorfocus.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.appArmorProfile "type") }}
+          - name: podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.fsGroup }}
+          - name: podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.fsGroupChangePolicy }}
+          - name: podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.runAsGroup }}
+          - name: podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.runAsNonRoot }}
+          - name: podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.runAsUser }}
+          - name: podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions "level") }}
+          - name: podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions "role") }}
+          - name: podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions "type") }}
+          - name: podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions "user") }}
+          - name: podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seccompProfile "type") }}
+          - name: podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.supplementalGroups }}
+          - name: podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.supplementalGroupsPolicy }}
+          - name: podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.sysctls }}
+          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.securityContext.allowPrivilegeEscalation }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.appArmorProfile "localhostProfile") }}
+          - name: securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.appArmorProfile "type") }}
+          - name: securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorfocus.securityContext.capabilities.add }}
+          - name: securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorfocus.securityContext.capabilities.drop }}
+          - name: securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.securityContext.privileged }}
+          - name: securityContext.privileged
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.securityContext.procMount }}
+          - name: securityContext.procMount
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.securityContext.readOnlyRootFilesystem }}
+          - name: securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions "level") }}
+          - name: securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions "role") }}
+          - name: securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions "type") }}
+          - name: securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions "user") }}
+          - name: securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.seccompProfile "localhostProfile") }}
+          - name: securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.seccompProfile "type") }}
+          - name: securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.windowsOptions "hostProcess") }}
+          - name: securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorfocus.securityContext.windowsOptions "runAsUserName") }}
+          - name: securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.finopsoperatorfocus.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorfocus.env }}
+          {{- range $key, $value := .Values.krateoplatformops.finopsoperatorfocus.env }}
+          - name: env.{{ $key }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
+
+    - id: install-finops-database-handler
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.name }}
+        version: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.version }}
+        repository: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.repository }}
+        wait: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.finopsdatabasehandler.chart.credentials (gt (len .Values.krateoplatformops.finopsdatabasehandler.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.finopsdatabasehandler.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsdatabasehandler.resources.requests .Values.krateoplatformops.finopsdatabasehandler.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsdatabasehandler.resources.requests .Values.krateoplatformops.finopsdatabasehandler.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsdatabasehandler.resources.limits .Values.krateoplatformops.finopsdatabasehandler.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsdatabasehandler.resources.limits .Values.krateoplatformops.finopsdatabasehandler.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.appArmorProfile "type") }}
+          - name: podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.fsGroup }}
+          - name: podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.fsGroupChangePolicy }}
+          - name: podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.runAsGroup }}
+          - name: podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.runAsNonRoot }}
+          - name: podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.runAsUser }}
+          - name: podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions "level") }}
+          - name: podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions "role") }}
+          - name: podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions "type") }}
+          - name: podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions "user") }}
+          - name: podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seccompProfile "type") }}
+          - name: podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.supplementalGroups }}
+          - name: podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.supplementalGroupsPolicy }}
+          - name: podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.sysctls }}
+          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.securityContext.allowPrivilegeEscalation }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.appArmorProfile "localhostProfile") }}
+          - name: securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.appArmorProfile "type") }}
+          - name: securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsdatabasehandler.securityContext.capabilities.add }}
+          - name: securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsdatabasehandler.securityContext.capabilities.drop }}
+          - name: securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.securityContext.privileged }}
+          - name: securityContext.privileged
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.securityContext.procMount }}
+          - name: securityContext.procMount
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.securityContext.readOnlyRootFilesystem }}
+          - name: securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions "level") }}
+          - name: securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions "role") }}
+          - name: securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions "type") }}
+          - name: securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions "user") }}
+          - name: securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.seccompProfile "localhostProfile") }}
+          - name: securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.seccompProfile "type") }}
+          - name: securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.windowsOptions "hostProcess") }}
+          - name: securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsdatabasehandler.securityContext.windowsOptions "runAsUserName") }}
+          - name: securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.finopsdatabasehandler.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
+          - name: service.type
+            value: NodePort
+          - name: service.nodePort
+            value: "30086"
+          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
+          - name: service.type
+            value: LoadBalancer
+          {{- end }}
+          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- with .Values.krateoplatformops.finopsdatabasehandler.service.annotations }}
+          {{- range $key, $value := .Values.krateoplatformops.finopsdatabasehandler.service.annotations }}
+          - name: service.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
+          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
+          - name: ingress.enabled
+            value: "true"
+          - name: ingress.className
+            value: {{ .Values.krateoplatformops.ingress.finopsdatabasehandler.className }}
+          {{- range $key, $value := .Values.krateoplatformops.ingress.finopsdatabasehandler.annotations }}
+          - name: ingress.annotations.{{ $key | replace "." "\\." }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          - name: ingress.hosts[0].host
+            value: {{ index .Values.krateoplatformops.ingress.finopsdatabasehandler.hosts 0 "host" }}
+          - name: ingress.hosts[0].paths[0].path
+            value: {{ index .Values.krateoplatformops.ingress.finopsdatabasehandler.hosts 0 "paths" 0 "path" }}
+          - name: ingress.hosts[0].paths[0].pathType
+            value: {{ index .Values.krateoplatformops.ingress.finopsdatabasehandler.hosts 0 "paths" 0 "pathType" }}
+          {{- if and .Values.krateoplatformops.ingress.finopsdatabasehandler.tls (gt (len .Values.krateoplatformops.ingress.finopsdatabasehandler.tls) 0) }}
+          - name: ingress.tls[0].secretName
+            value: {{ index .Values.krateoplatformops.ingress.finopsdatabasehandler.tls 0 "secretName" }}
+          - name: ingress.tls[0].hosts[0]
+            value: {{ index .Values.krateoplatformops.ingress.finopsdatabasehandler.tls 0 "hosts" 0 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscratedbcustomresource.fullnameOverride }}
+          - name: env.CRATE_HOST
+            value: crate-{{ .Values.krateoplatformops.finopscratedbcustomresource.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local
+          - name: cratedbUserSystemName
+            value: user-system-{{ .Values.krateoplatformops.finopscratedbcustomresource.fullnameOverride }}
+          {{- else }}
+          - name: env.CRATE_HOST
+            value: crate-finops-cratedb-custom-resource.{{ .Release.Namespace }}.svc.cluster.local
+          - name: cratedbUserSystemName
+            value: user-system-finops-cratedb-custom-resource
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.env }}
+          {{- range $key, $value := .Values.krateoplatformops.finopsdatabasehandler.env }}
+          - name: env.{{ $key }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
+
+    - id: extract-finops-database-handler-internal-port
+      type: var
+      with:
+        name: FINOPS_DATABASE_HANDLER_INTERNAL_PORT
+        valueFrom:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            {{- if .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
+            name: {{ .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
+            {{- else }}
+            name: finops-database-handler
+            {{- end }}
+          selector: .spec.ports[0].port
+
+    - id: install-finops-composition-definition-parser
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.name }}
+        version: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.version }}
+        repository: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.repository }}
+        wait: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.finopscompositiondefinitionparser.chart.credentials (gt (len .Values.krateoplatformops.finopscompositiondefinitionparser.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscompositiondefinitionparser.resources.requests .Values.krateoplatformops.finopscompositiondefinitionparser.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscompositiondefinitionparser.resources.requests .Values.krateoplatformops.finopscompositiondefinitionparser.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscompositiondefinitionparser.resources.limits .Values.krateoplatformops.finopscompositiondefinitionparser.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopscompositiondefinitionparser.resources.limits .Values.krateoplatformops.finopscompositiondefinitionparser.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.appArmorProfile "type") }}
+          - name: podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.fsGroup }}
+          - name: podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.fsGroupChangePolicy }}
+          - name: podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.runAsGroup }}
+          - name: podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.runAsNonRoot }}
+          - name: podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.runAsUser }}
+          - name: podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions "level") }}
+          - name: podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions "role") }}
+          - name: podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions "type") }}
+          - name: podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions "user") }}
+          - name: podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seccompProfile "type") }}
+          - name: podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.supplementalGroups }}
+          - name: podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.supplementalGroupsPolicy }}
+          - name: podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.sysctls }}
+          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.allowPrivilegeEscalation }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.appArmorProfile "localhostProfile") }}
+          - name: securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.appArmorProfile "type") }}
+          - name: securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.capabilities.add }}
+          - name: securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.capabilities.drop }}
+          - name: securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.privileged }}
+          - name: securityContext.privileged
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.procMount }}
+          - name: securityContext.procMount
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.readOnlyRootFilesystem }}
+          - name: securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions "level") }}
+          - name: securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions "role") }}
+          - name: securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions "type") }}
+          - name: securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions "user") }}
+          - name: securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seccompProfile "localhostProfile") }}
+          - name: securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seccompProfile "type") }}
+          - name: securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "hostProcess") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.windowsOptions "hostProcess") }}
+          - name: securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.windowsOptions "runAsUserName") }}
+          - name: securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.finopscompositiondefinitionparser.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.snowplow.fullnameOverride }}
+          - name: env.URL_PLURALS
+            value: http://{{ .Values.krateoplatformops.snowplow.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$SNOWPLOW_INTERNAL_PORT/api-info/names
+          {{- else }}
+          - name: env.URL_PLURALS
+            value: http://snowplow.{{ .Release.Namespace }}.svc.cluster.local:$SNOWPLOW_INTERNAL_PORT/api-info/names
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
+          - name: env.URL_DATABASE_HANDLER_PRICING_NOTEBOOK
+            value: http://{{ .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$FINOPS_DATABASE_HANDLER_INTERNAL_PORT/compute/pricing_parser
+          - name: env.DATABASE_CONFIG_NAME
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
+          {{- else }}
+          - name: env.URL_DATABASE_HANDLER_PRICING_NOTEBOOK
+            value: http://finops-database-handler.{{ .Release.Namespace }}.svc.cluster.local:$FINOPS_DATABASE_HANDLER_INTERNAL_PORT/compute/pricing_parser
+          - name: env.DATABASE_CONFIG_NAME
+            value: finops-database-handler
+          {{- end }}
+          - name: env.DATABASE_CONFIG_NAME
+            value: {{ .Release.namespace }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.env }}
+          {{- range $key, $value := .Values.krateoplatformops.finopscompositiondefinitionparser.env }}
+          - name: env.{{ $key }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
+
+    - id: install-finops-operator-scraper
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.name }}
+        version: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.version }}
+        repository: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.repository }}
+        wait: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.waitTimeout }}
+        {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.chart "credentials") (gt (len .Values.krateoplatformops.finopsoperatorscraper.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.finopsoperatorscraper.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.finopsoperatorscraper.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorscraper.resources.requests .Values.krateoplatformops.finopsoperatorscraper.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorscraper.resources.requests .Values.krateoplatformops.finopsoperatorscraper.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorscraper.resources.limits .Values.krateoplatformops.finopsoperatorscraper.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.finopsoperatorscraper.resources.limits .Values.krateoplatformops.finopsoperatorscraper.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.appArmorProfile "type") }}
+          - name: podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.fsGroup }}
+          - name: podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.fsGroupChangePolicy }}
+          - name: podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.runAsGroup }}
+          - name: podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.runAsNonRoot }}
+          - name: podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.runAsUser }}
+          - name: podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions "level") }}
+          - name: podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions "role") }}
+          - name: podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions "type") }}
+          - name: podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions "user") }}
+          - name: podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seccompProfile "type") }}
+          - name: podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.supplementalGroups }}
+          - name: podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.supplementalGroupsPolicy }}
+          - name: podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.sysctls }}
+          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.securityContext.allowPrivilegeEscalation }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.appArmorProfile "localhostProfile") }}
+          - name: securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.appArmorProfile "type") }}
+          - name: securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorscraper.securityContext.capabilities.add }}
+          - name: securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "capabilities") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.finopsoperatorscraper.securityContext.capabilities.drop }}
+          - name: securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.securityContext.privileged }}
+          - name: securityContext.privileged
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.securityContext.procMount }}
+          - name: securityContext.procMount
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.securityContext.readOnlyRootFilesystem }}
+          - name: securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions "level") }}
+          - name: securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions "role") }}
+          - name: securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions "type") }}
+          - name: securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions "user") }}
+          - name: securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.seccompProfile "localhostProfile") }}
+          - name: securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.seccompProfile "type") }}
+          - name: securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "hostProcess") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.windowsOptions "hostProcess") }}
+          - name: securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.finopsoperatorscraper.securityContext.windowsOptions "runAsUserName") }}
+          - name: securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.finopsoperatorscraper.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
+          - name: env.URL_DB_WEBSERVICE
+            value: http://{{ .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$FINOPS_DATABASE_HANDLER_INTERNAL_PORT
+          {{- else }}
+          - name: env.URL_DB_WEBSERVICE
+            value: http://finops-database-handler.{{ .Release.Namespace }}.svc.cluster.local:$FINOPS_DATABASE_HANDLER_INTERNAL_PORT
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopsoperatorscraper.env }}
+          {{- range $key, $value := .Values.krateoplatformops.finopsoperatorscraper.env }}
+          - name: env.{{ $key }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}
+
+    {{- end }}
+
 {{- end }}
