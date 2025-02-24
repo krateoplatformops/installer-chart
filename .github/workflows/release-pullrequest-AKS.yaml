@@ -115,6 +115,11 @@ jobs:
             location: northeurope
           EOF
 
+      - name: Wait for ResourceGroup Provisioning
+        run: |
+          echo "Waiting for ResourceGroup resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s resourcegroup/aso-installer-test-$K8S_VERSION_NODOT
+
       - name: Deploy ManagedCluster CR via ASO
         run: |
           echo "Deploying ManagedCluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
@@ -137,15 +142,8 @@ jobs:
 
       - name: Wait for ManagedCluster Provisioning
         run: |
-          sleep 120s
-
-      - name: Get ManagedCluster status
-        run: |
-          kubectl get events -A --sort-by='.lastTimestamp'
-
-      - name: Get events
-        run: |
-          kubectl get managedcluster/managedcluster-$K8S_VERSION_NODOT -o yaml
+          echo "Waiting for ManagedCluster resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-$K8S_VERSION_NODOT
 
       - name: Retrieve ManagedCluster Kubeconfig
         run: |
