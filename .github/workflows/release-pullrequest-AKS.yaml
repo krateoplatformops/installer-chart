@@ -146,9 +146,10 @@ jobs:
             dnsPrefix: "aks-$K8S_VERSION_NODOT"
             kubernetesVersion: "${{ matrix.k8s_version }}"
             agentPoolProfiles:
-              - name: agentpool
+              - name: systempool
                 count: 1
                 vmSize: Standard_DS2_v2
+                mode: System
             identity:
               type: SystemAssigned
           EOF
