@@ -89,7 +89,7 @@ jobs:
         run: |
           helm repo add jetstack https://charts.jetstack.io
           helm repo update
-          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true --wait --create-namespace --version=
+          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set crds.enabled=true --wait --create-namespace --version=
 
       - name: Install Azure Service Operator on Kind using Helm
         run: |
@@ -134,6 +134,10 @@ jobs:
                 count: 1
                 vmSize: Standard_DS2_v2
           EOF
+
+      - name: Get all ManagedCluster CR
+        run: |
+          kubectl get managedclusters -A
 
       - name: Wait for ManagedCluster Provisioning
         run: |
