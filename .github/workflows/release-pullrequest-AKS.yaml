@@ -135,19 +135,15 @@ jobs:
                 vmSize: Standard_DS2_v2
           EOF
 
-      - name: Get ManagedCluster CR status
-        run: |
-          kubectl get managedclusters managedcluster-1-30-9 -o yaml
-
       - name: Wait for ManagedCluster Provisioning
         run: |
           echo "Waiting for ManagedCluster resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-${{ matrix.k8s_version }}
+          kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-$K8S_VERSION_NODOT
 
       - name: Retrieve ManagedCluster Kubeconfig
         run: |
           echo "Extracting kubeconfig from secret..."
-          kubectl get secret managedcluster-${{ matrix.k8s_version }}-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > aks-kubeconfig.yaml
+          kubectl get secret managedcluster-$K8S_VERSION_NODOT-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > aks-kubeconfig.yaml
           echo "KUBECONFIG=$(pwd)/aks-kubeconfig.yaml" >> $GITHUB_ENV
 
 
