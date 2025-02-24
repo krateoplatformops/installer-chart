@@ -1,4 +1,4 @@
-name: release-pullrequest
+name: release-pullrequest-kind
 
 on:
   pull_request:

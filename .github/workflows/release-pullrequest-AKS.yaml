@@ -84,14 +84,18 @@ jobs:
         run: |
           echo '${{ secrets.INSTALLER_AZURE_CREDENTIALS }}' > azurecreds.json
           kubectl create secret generic azure-credentials --from-file=azurecreds.json
-          
-      - name: Install Azure Service Operator on Kind
+
+      - name: Install cert-manager using Helm
         run: |
-          echo "Installing Azure Service Operator..."
-          # Apply the ASO CRDs (adjust the URL if necessary)
-          kubectl apply -f https://raw.githubusercontent.com/Azure/azure-service-operator/main/config/crd/bases/azure.microsoft.com_aksclusters.yaml
-          # Deploy the operator (adjust the manifest URL as required)
-          kubectl apply -f https://raw.githubusercontent.com/Azure/azure-service-operator/main/deploy/azure-service-operator.yaml
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true --wait --create-namespace
+
+      - name: Install Azure Service Operator on Kind using Helm
+        run: |
+          helm repo add azure-service-operator https://azure.github.io/azure-service-operator
+          helm repo update
+          helm install azure-service-operator azure-service-operator/azure-service-operator --namespace azure-service-operator --create-namespace --wait
 
       - name: Deploy AKS Cluster CR via ASO
         run: |
