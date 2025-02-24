@@ -104,7 +104,7 @@ jobs:
           apiVersion: containerservice.azure.com/v1api20240901
           kind: ManagedCluster
           metadata:
-            name: managedcluster-${{ matrix.k8s_version }}
+            name: managedcluster-${{ replace(matrix.k8s_version, '.', '-') }}
           spec:
             location: "eastus"
             dnsPrefix: "aks-${{ matrix.k8s_version }}"
