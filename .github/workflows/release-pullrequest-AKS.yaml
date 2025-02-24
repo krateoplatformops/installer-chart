@@ -1,0 +1,132 @@
+name: release-pullrequest-AKS
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+      matrix:
+        k8s_version: [ "1.31.5", "1.30.9" ]
+
+    steps:
+      - name: Extract and Store Trimmed Repository Name
+        run: |
+          REPO_CHART_NAME="${{ github.repository }}"
+          REPO_APP_NAME=$(echo "$REPO_CHART_NAME" | sed 's/-chart$//')  # Remove "-chart" suffix if present
+          
+          # Check if the trimmed repo exists
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$REPO_APP_NAME")
+
+          if [[ "$HTTP_STATUS" -eq 200 ]]; then
+            echo "Using trimmed repository name: $REPO_APP_NAME"
+            echo "REPO_APP_NAME=$REPO_APP_NAME" >> $GITHUB_ENV
+          else
+            echo "Trimmed repository not found. Falling back to original repository name."
+            echo "REPO_APP_NAME=$REPO_CHART_NAME" >> $GITHUB_ENV
+          fi
+
+      - name: Use the Stored Variable
+        run: |
+          echo "Trimmed Repository Name: ${{ env.REPO_APP_NAME }}"
+
+      - name: Authenticate with GitHub App
+        id: authenticate
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Extract latest App Version
+        uses: tdemin/find-latest-tag@v1
+        id: app_version
+        with:
+          repo: https://${{ steps.authenticate.outputs.token }}@github.com/${{ env.REPO_APP_NAME }}.git
+
+      - name: Extract latest Chart Version
+        uses: tdemin/find-latest-tag@v1
+        id: chart_version
+        with:
+          repo: https://${{ steps.authenticate.outputs.token }}@github.com/${{ github.repository }}.git
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Print Version
+        run: |
+          echo APP_VERSION:${{steps.app_version.outputs.tag}}
+          echo CHART_VERSION:${{steps.chart_version.outputs.tag}}
+
+      - name: Replace Version in Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./chart/Chart.yaml
+
+      - name: Print latest App Version
+        run: echo ${{ steps.app_version.outputs.tag }}
+
+      - name: Replace App Version in Chart.yaml
+        run: sed -i 's/APP_VERSION/${{ steps.app_version.outputs.tag }}/g' ./chart/Chart.yaml
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.1.0
+
+      - name: Helm lint
+        run: helm lint ./chart
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1
+
+      - name: Create Azure Credentials Secret in Kind
+        run: |
+          echo '${{ secrets.INSTALLER_AZURE_CREDENTIALS }}' > azurecreds.json
+          kubectl create secret generic azure-credentials --from-file=azurecreds.json
+          
+      - name: Install Azure Service Operator on Kind
+        run: |
+          echo "Installing Azure Service Operator..."
+          # Apply the ASO CRDs (adjust the URL if necessary)
+          kubectl apply -f https://raw.githubusercontent.com/Azure/azure-service-operator/main/config/crd/bases/azure.microsoft.com_aksclusters.yaml
+          # Deploy the operator (adjust the manifest URL as required)
+          kubectl apply -f https://raw.githubusercontent.com/Azure/azure-service-operator/main/deploy/azure-service-operator.yaml
+
+      - name: Deploy AKS Cluster CR via ASO
+        run: |
+          echo "Deploying AKS cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: azure.microsoft.com/v1alpha1
+          kind: AKSCluster
+          metadata:
+            name: aks-cluster-${{ matrix.k8s_version }}
+          spec:
+            location: "eastus"
+            resourceGroup: "myResourceGroup"
+            dnsPrefix: "aks-${{ matrix.k8s_version }}"
+            kubernetesVersion: "${{ matrix.k8s_version }}"
+            nodeCount: 1
+            nodeVMSize: "Standard_DS2_v2"
+            # Reference the Azure credentials secret created earlier (adjust if your operator requires a specific field)
+            credentialsSecretRef:
+              name: azure-credentials
+          EOF
+
+      - name: Wait for AKS Cluster Provisioning
+        run: |
+          echo "Waiting for AKS cluster resource to become Ready..."
+          # Wait up to 10 minutes for the resource status to indicate readiness.
+          kubectl wait --for=condition=Ready --timeout=600s akscluster/aks-cluster-${{ matrix.k8s_version }}
+
+      - name: Retrieve AKS Cluster Kubeconfig
+        run: |
+          echo "Extracting kubeconfig from secret..."
+          # Assuming the operator stores the kubeconfig in a secret named "aks-cluster-<version>-kubeconfig"
+          kubectl get secret aks-cluster-${{ matrix.k8s_version }}-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > aks-kubeconfig.yaml
+          echo "KUBECONFIG=$(pwd)/aks-kubeconfig.yaml" >> $GITHUB_ENV
+
+      - name: Install Krateo PlatformOps with standard configuration
+        run: helm install installer ./chart --create-namespace -n krateo-system --wait
+
+      - name: Wait for krateoplatformops krateo to become ready
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
