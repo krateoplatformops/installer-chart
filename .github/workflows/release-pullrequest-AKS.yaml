@@ -107,7 +107,6 @@ jobs:
             name: managedcluster-${{ matrix.k8s_version }}
           spec:
             location: "eastus"
-            resourceGroup: "myResourceGroup"
             dnsPrefix: "aks-${{ matrix.k8s_version }}"
             kubernetesVersion: "${{ matrix.k8s_version }}"
             agentPoolProfiles:
