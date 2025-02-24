@@ -149,6 +149,8 @@ jobs:
               - name: agentpool
                 count: 1
                 vmSize: Standard_DS2_v2
+            identity:
+              type: SystemAssigned
           EOF
 
       - name: Wait for ManagedCluster Provisioning
