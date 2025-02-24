@@ -97,38 +97,36 @@ jobs:
           helm repo update
           helm install aso2 aso2/azure-service-operator --create-namespace --namespace=azureserviceoperator-system --set crdPattern='resources.azure.com/*;containerservice.azure.com/*;keyvault.azure.com/*;managedidentity.azure.com/*;eventhub.azure.com/*'
 
-      - name: Deploy AKS Cluster CR via ASO
+      - name: Deploy ManagedCluster CR via ASO
         run: |
-          echo "Deploying AKS cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          echo "Deploying ManagedCluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
-          apiVersion: azure.microsoft.com/v1alpha1
-          kind: AKSCluster
+          apiVersion: containerservice.azure.com/v1api20240901
+          kind: ManagedCluster
           metadata:
-            name: aks-cluster-${{ matrix.k8s_version }}
+            name: managedcluster-${{ matrix.k8s_version }}
           spec:
             location: "eastus"
             resourceGroup: "myResourceGroup"
             dnsPrefix: "aks-${{ matrix.k8s_version }}"
             kubernetesVersion: "${{ matrix.k8s_version }}"
-            nodeCount: 1
-            nodeVMSize: "Standard_DS2_v2"
-            # Reference the Azure credentials secret created earlier (adjust if your operator requires a specific field)
-            credentialsSecretRef:
-              name: azure-credentials
+            agentPoolProfiles:
+              - name: agentpool
+                count: 1
+                vmSize: Standard_DS2_v2
           EOF
 
-      - name: Wait for AKS Cluster Provisioning
+      - name: Wait for ManagedCluster Provisioning
         run: |
-          echo "Waiting for AKS cluster resource to become Ready..."
-          # Wait up to 10 minutes for the resource status to indicate readiness.
-          kubectl wait --for=condition=Ready --timeout=600s akscluster/aks-cluster-${{ matrix.k8s_version }}
+          echo "Waiting for ManagedCluster resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-${{ matrix.k8s_version }}
 
-      - name: Retrieve AKS Cluster Kubeconfig
+      - name: Retrieve ManagedCluster Kubeconfig
         run: |
           echo "Extracting kubeconfig from secret..."
-          # Assuming the operator stores the kubeconfig in a secret named "aks-cluster-<version>-kubeconfig"
-          kubectl get secret aks-cluster-${{ matrix.k8s_version }}-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > aks-kubeconfig.yaml
+          kubectl get secret managedcluster-${{ matrix.k8s_version }}-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > aks-kubeconfig.yaml
           echo "KUBECONFIG=$(pwd)/aks-kubeconfig.yaml" >> $GITHUB_ENV
+
 
       - name: Install Krateo PlatformOps with standard configuration
         run: helm install installer ./chart --create-namespace -n krateo-system --wait
