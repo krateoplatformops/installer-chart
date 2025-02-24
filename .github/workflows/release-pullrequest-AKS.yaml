@@ -140,6 +140,10 @@ jobs:
           echo "Waiting for ManagedCluster resource to become Ready..."
           kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-$K8S_VERSION_NODOT
 
+      - name: Get events
+        run: |
+          kubectl get events -A --sort-by='.lastTimestamp'
+
       - name: Retrieve ManagedCluster Kubeconfig
         run: |
           echo "Extracting kubeconfig from secret..."
