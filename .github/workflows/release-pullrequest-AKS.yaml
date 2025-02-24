@@ -110,7 +110,8 @@ jobs:
           metadata:
             name: managedcluster-$K8S_VERSION_NODOT
           spec:
-            location: "eastus"
+            owner: "/subscriptions/31a6f7f0-996a-490e-b431-25c3f54b08b5/resourceGroups/installer-test"
+            location: "northeurope"
             dnsPrefix: "aks-${{ matrix.k8s_version }}"
             kubernetesVersion: "${{ matrix.k8s_version }}"
             agentPoolProfiles:
