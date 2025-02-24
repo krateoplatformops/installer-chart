@@ -143,7 +143,7 @@ jobs:
             owner:
               name: managedcluster-$K8S_VERSION_NODOT
             location: "northeurope"
-            dnsPrefix: "aks-${{ matrix.k8s_version }}"
+            dnsPrefix: "aks-$K8S_VERSION_NODOT"
             kubernetesVersion: "${{ matrix.k8s_version }}"
             agentPoolProfiles:
               - name: agentpool
