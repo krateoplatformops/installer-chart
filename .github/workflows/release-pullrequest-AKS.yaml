@@ -6,8 +6,9 @@ on:
       - main
 
 jobs:
-  package:
+  install-AKS:
     runs-on: ubuntu-latest
+    strategy:
       matrix:
         k8s_version: [ "1.31.5", "1.30.9" ]
 
