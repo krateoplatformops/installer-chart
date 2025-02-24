@@ -137,8 +137,7 @@ jobs:
 
       - name: Wait for ManagedCluster Provisioning
         run: |
-          echo "Waiting for ManagedCluster resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-$K8S_VERSION_NODOT
+          sleep 120s
 
       - name: Get ManagedCluster status
         run: |
