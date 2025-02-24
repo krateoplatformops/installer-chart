@@ -109,10 +109,13 @@ jobs:
           apiVersion: resources.azure.com/v1api20200601
           kind: ResourceGroup
           metadata:
-            name: aso-installer-test-$K8S_VERSION_NODOT
+            name: managedcluster-$K8S_VERSION_NODOT
             namespace: default
           spec:
             location: northeurope
+            credentials:
+              secretRef:
+                name: azure-credentials
           EOF
 
       - name: Wait for ResourceGroup Provisioning
@@ -121,7 +124,7 @@ jobs:
 
       - name: Wait for ResourceGroup Provisioning
         run: |
-          kubectl get resourcegroup/aso-installer-test-$K8S_VERSION_NODOT -o yaml
+          kubectl get resourcegroup/managedcluster-$K8S_VERSION_NODOT -o yaml
 
       - name: Deploy ManagedCluster CR via ASO
         run: |
@@ -133,7 +136,7 @@ jobs:
             name: managedcluster-$K8S_VERSION_NODOT
           spec:
             owner:
-              name: aso-installer-test-$K8S_VERSION_NODOT
+              name: managedcluster-$K8S_VERSION_NODOT
             location: "northeurope"
             dnsPrefix: "aks-${{ matrix.k8s_version }}"
             kubernetesVersion: "${{ matrix.k8s_version }}"
