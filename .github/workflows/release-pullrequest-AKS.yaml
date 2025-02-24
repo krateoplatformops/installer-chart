@@ -167,11 +167,15 @@ jobs:
           echo "Waiting for ManagedCluster resource to become Ready..."
           kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-$K8S_VERSION_NODOT
 
+      - name: Find all secrets
+        run: |
+          kubectl get secrets -A
+
       - name: Retrieve ManagedCluster Kubeconfig
         run: |
           echo "Extracting kubeconfig from secret..."
-          kubectl get secret managedcluster-$K8S_VERSION_NODOT-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > aks-kubeconfig.yaml
-          echo "KUBECONFIG=$(pwd)/aks-kubeconfig.yaml" >> $GITHUB_ENV
+          kubectl get secret managedcluster-$K8S_VERSION_NODOT-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
+          echo "KUBECONFIG=$(pwd)/managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml" >> $GITHUB_ENV
 
 
       - name: Install Krateo PlatformOps with standard configuration
@@ -181,7 +185,9 @@ jobs:
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
 
       - name: Clean Up ManagedCluster Resource
+        if: always()
         run: kubectl delete managedcluster managedcluster-$K8S_VERSION_NODOT
 
       - name: Clean Up ResourceGroup CR
+        if: always()
         run: kubectl delete resourcegroup aso-installer-test-$K8S_VERSION_NODOT
