@@ -113,9 +113,6 @@ jobs:
             namespace: default
           spec:
             location: northeurope
-            credentials:
-              secretRef:
-                name: azure-credentials
           EOF
 
       - name: Wait for ResourceGroup Provisioning
