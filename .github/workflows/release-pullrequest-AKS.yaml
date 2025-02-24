@@ -135,9 +135,9 @@ jobs:
                 vmSize: Standard_DS2_v2
           EOF
 
-      - name: Get all ManagedCluster CR
+      - name: Get ManagedCluster CR status
         run: |
-          kubectl get managedclusters -A
+          kubectl get managedclusters managedcluster-1-30-9 -o yaml
 
       - name: Wait for ManagedCluster Provisioning
         run: |
