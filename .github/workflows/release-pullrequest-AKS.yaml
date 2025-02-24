@@ -101,6 +101,20 @@ jobs:
       - name: Prepare version variable
         run: echo "K8S_VERSION_NODOT=$(echo '${{ matrix.k8s_version }}' | tr '.' '-')" >> $GITHUB_ENV
 
+      # Create a ResourceGroup CR that will serve as the owner for the ManagedCluster.
+      - name: Deploy ResourceGroup CR via ASO
+        run: |
+          echo "Deploying ResourceGroup for Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: resources.azure.com/v1api20200601
+          kind: ResourceGroup
+          metadata:
+            name: aso-installer-test-$K8S_VERSION_NODOT
+            namespace: default
+          spec:
+            location: northeurope
+          EOF
+
       - name: Deploy ManagedCluster CR via ASO
         run: |
           echo "Deploying ManagedCluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
@@ -110,7 +124,8 @@ jobs:
           metadata:
             name: managedcluster-$K8S_VERSION_NODOT
           spec:
-            owner: "/subscriptions/31a6f7f0-996a-490e-b431-25c3f54b08b5/resourceGroups/installer-test"
+            owner:
+              name: aso-installer-test-$K8S_VERSION_NODOT
             location: "northeurope"
             dnsPrefix: "aks-${{ matrix.k8s_version }}"
             kubernetesVersion: "${{ matrix.k8s_version }}"
@@ -137,3 +152,9 @@ jobs:
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
+
+      - name: Clean Up ManagedCluster Resource
+        run: kubectl delete managedcluster managedcluster-$K8S_VERSION_NODOT
+
+      - name: Clean Up ResourceGroup CR
+        run: kubectl delete resourcegroup aso-installer-test-$K8S_VERSION_NODOT
