@@ -182,34 +182,38 @@ jobs:
           kubectl get secret managedcluster-$K8S_VERSION_NODOT-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
           echo "KUBECONFIG=$(pwd)/managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml" >> $GITHUB_ENV
 
+      - name: Find all charts
+        run: |
+          helm list -A
+
       - name: Install Krateo PlatformOps with standard configuration
-        run: helm install installer-$K8S_VERSION_NODOT ./chart --create-namespace -n krateo-system --wait
+        run: helm install installer-$K8S_VERSION_NODOT ./chart --create-namespace -n krateo-system-$K8S_VERSION_NODOT --wait
 
       - name: Wait for krateoplatformops krateo to become ready
         run: sleep 300
 
       - name: Wait for krateoplatformops krateo to become ready
-        run: kubectl get krateoplatformops krateo --namespace krateo-system -o yaml
+        run: kubectl get krateoplatformops krateo --namespace krateo-system-$K8S_VERSION_NODOT -o yaml
 
       - name: Wait for krateoplatformops krateo to become ready
-        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system-$K8S_VERSION_NODOT
 
       - name: Clean Up Krateo PlatformOps CR
         if: always()
-        run: kubectl delete krateoplatformops krateo --namespace krateo-system
+        run: kubectl delete krateoplatformops krateo --namespace krateo-system-$K8S_VERSION_NODOT
 
       - name: Clean Up Installer Helm Chart
         if: always()
-        run: helm uninstall installer-$K8S_VERSION_NODOT --namespace krateo-system
+        run: helm uninstall installer-$K8S_VERSION_NODOT --namespace krateo-system-$K8S_VERSION_NODOT
 
       - name: Clean Up krateo-system namespace
         if: always()
-        run: kubectl delete namespace krateo-system
+        run: kubectl delete namespace krateo-system-$K8S_VERSION_NODOT
 
       - name: Clean Up ManagedCluster Resource
         if: always()
-        run: kubectl delete managedcluster managedcluster-$K8S_VERSION_NODOT
+        run: kubectl delete managedcluster/managedcluster-$K8S_VERSION_NODOT
 
       - name: Clean Up ResourceGroup CR
         if: always()
-        run: kubectl delete resourcegroup aso-installer-test-$K8S_VERSION_NODOT
+        run: kubectl delete resourcegroups/aso-installer-test-$K8S_VERSION_NODOT
