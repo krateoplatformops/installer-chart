@@ -174,7 +174,7 @@ jobs:
           kubectl get secret managedcluster-$K8S_VERSION_NODOT-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
 
       - name: Install Krateo PlatformOps with standard configuration
-        run: helm install installer-$K8S_VERSION_NODOT ./chart --create-namespace -n krateo-system-$K8S_VERSION_NODOT --wait --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml --set krateoplatformops.finopscratedbcustomresource.resources.disk.storageClass=default
+        run: helm install installer-$K8S_VERSION_NODOT ./chart --create-namespace -n krateo-system-$K8S_VERSION_NODOT --wait --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml --set krateoplatformops.finopsoperatorcratedb.env.disk.CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS=default --set krateoplatformops.finopscratedbcustomresource.resources.disk.storageClass=default
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
