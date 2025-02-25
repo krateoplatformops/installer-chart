@@ -168,51 +168,28 @@ jobs:
           echo "Waiting for ManagedCluster resource to become Ready..."
           kubectl wait --for=condition=Ready --timeout=600s managedcluster/managedcluster-$K8S_VERSION_NODOT
 
-      - name: Find all secrets
-        run: |
-          kubectl get secrets -A
-
-      - name: Show actual Kubeconfig
-        run: |
-          cat $HOME/.kube/config
-          echo "KUBECONFIG=$KUBECONFIG"
-
       - name: Retrieve ManagedCluster Kubeconfig
         run: |
           echo "Extracting kubeconfig from secret..."
           kubectl get secret managedcluster-$K8S_VERSION_NODOT-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
-          echo "KUBECONFIG=$(pwd)/managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml" >> $GITHUB_ENV
-
-      - name: Find all charts
-        run: |
-          helm list -A
 
       - name: Install Krateo PlatformOps with standard configuration
-        run: helm install installer-$K8S_VERSION_NODOT ./chart --create-namespace -n krateo-system-$K8S_VERSION_NODOT --wait
+        run: helm install installer-$K8S_VERSION_NODOT ./chart --create-namespace -n krateo-system-$K8S_VERSION_NODOT --wait --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
 
       - name: Wait for krateoplatformops krateo to become ready
-        run: sleep 300
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
 
-      - name: Wait for krateoplatformops krateo to become ready
-        run: kubectl get krateoplatformops krateo --namespace krateo-system-$K8S_VERSION_NODOT -o yaml
-
-      - name: Wait for krateoplatformops krateo to become ready
-        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system-$K8S_VERSION_NODOT
-
-      - name: Get events
-        run: kubectl get events -A --sort-by='.lastTimestamp'
-
-      - name: Clean Up Krateo PlatformOps CR
+      - name: Clean Up Krateo PlatformOps CR on ManagedCluster
         if: always()
-        run: kubectl delete krateoplatformops krateo --namespace krateo-system-$K8S_VERSION_NODOT
+        run: kubectl delete krateoplatformops krateo --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
 
-      - name: Clean Up Installer Helm Chart
+      - name: Clean Up Installer Helm Chart on ManagedCluster
         if: always()
-        run: helm uninstall installer-$K8S_VERSION_NODOT --namespace krateo-system-$K8S_VERSION_NODOT
+        run: helm uninstall installer-$K8S_VERSION_NODOT --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
 
-      - name: Clean Up krateo-system namespace
+      - name: Clean Up krateo-system namespace on ManagedCluster
         if: always()
-        run: kubectl delete namespace krateo-system-$K8S_VERSION_NODOT
+        run: kubectl delete namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
 
       - name: Clean Up ManagedCluster Resource
         if: always()
