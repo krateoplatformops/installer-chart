@@ -187,6 +187,12 @@ jobs:
         run: helm install installer ./chart --create-namespace -n krateo-system --wait
 
       - name: Wait for krateoplatformops krateo to become ready
+        run: sleep 300
+
+      - name: Wait for krateoplatformops krateo to become ready
+        run: kubectl get krateoplatformops krateo --namespace krateo-system -o yaml
+
+      - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
 
       - name: Clean Up ManagedCluster Resource
