@@ -182,6 +182,8 @@ jobs:
           kubectl get secret managedcluster-$K8S_VERSION_NODOT-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d > managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
           echo "KUBECONFIG=$(pwd)/managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml" >> $GITHUB_ENV
 
+      - name: Install Krateo PlatformOps with standard configuration
+        run: helm list -A
 
       - name: Install Krateo PlatformOps with standard configuration
         run: helm install installer ./chart --create-namespace -n krateo-system --wait
