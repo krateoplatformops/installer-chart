@@ -183,10 +183,7 @@ jobs:
           echo "KUBECONFIG=$(pwd)/managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml" >> $GITHUB_ENV
 
       - name: Install Krateo PlatformOps with standard configuration
-        run: helm list -A
-
-      - name: Install Krateo PlatformOps with standard configuration
-        run: helm install installer ./chart --create-namespace -n krateo-system --wait
+        run: helm install installer-$K8S_VERSION_NODOT ./chart --create-namespace -n krateo-system --wait
 
       - name: Wait for krateoplatformops krateo to become ready
         run: sleep 300
@@ -203,7 +200,7 @@ jobs:
 
       - name: Clean Up Installer Helm Chart
         if: always()
-        run: helm uninstall installer --namespace krateo-system
+        run: helm uninstall installer-$K8S_VERSION_NODOT --namespace krateo-system
 
       - name: Clean Up krateo-system namespace
         if: always()
