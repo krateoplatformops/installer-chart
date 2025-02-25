@@ -195,6 +195,18 @@ jobs:
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
 
+      - name: Clean Up Krateo PlatformOps CR
+        if: always()
+        run: kubectl delete krateoplatformops krateo --namespace krateo-system
+
+      - name: Clean Up Installer Helm Chart
+        if: always()
+        run: helm uninstall installer --namespace krateo-system
+
+      - name: Clean Up krateo-system namespace
+        if: always()
+        run: kubectl delete namespace krateo-system
+
       - name: Clean Up ManagedCluster Resource
         if: always()
         run: kubectl delete managedcluster managedcluster-$K8S_VERSION_NODOT
