@@ -179,6 +179,14 @@ jobs:
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
 
+      - name: Get Krateo PlatformOps CR status on ManagedCluster
+        if: always()
+        run: kubectl get krateoplatformops krateo --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml -o yaml
+
+      - name: Get events on ManagedCluster
+        if: always()
+        run: kubectl get events -A --sort-by='.lastTimestamp' --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
+
       - name: Clean Up Krateo PlatformOps CR on ManagedCluster
         if: always()
         run: kubectl delete krateoplatformops krateo --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=managedcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
