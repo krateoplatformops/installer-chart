@@ -197,4 +197,4 @@ jobs:
 
       - name: Clean Up ResourceGroup CR
         if: always()
-        run: kubectl delete resourcegroups/aso-installer-test-$K8S_VERSION_NODOT
+        run: kubectl delete resourcegroups/managedcluster-$K8S_VERSION_NODOT
