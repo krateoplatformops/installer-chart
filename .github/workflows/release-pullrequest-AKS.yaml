@@ -150,6 +150,11 @@ jobs:
                 count: 1
                 vmSize: Standard_DS2_v2
                 mode: System
+            operatorSpec:
+              secrets:
+                adminCredentials:
+                  name: "managedcluster-$K8S_VERSION_NODOT-kubeconfig"
+                  key: "kubeconfig"
             identity:
               type: SystemAssigned
           EOF
