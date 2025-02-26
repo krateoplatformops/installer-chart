@@ -1,4 +1,4 @@
-name: release-pullrequest-AKS
+name: release-pullrequest-OpenShift
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  install-AKS:
+  install-OpenShift:
     runs-on: ubuntu-latest
     strategy:
       matrix:
