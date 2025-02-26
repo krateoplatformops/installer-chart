@@ -143,8 +143,8 @@ jobs:
             owner:
               name: openshiftcluster-$K8S_VERSION_NODOT
             location: "northeurope"
-            version: "${{ matrix.k8s_version }}"
             clusterProfile:
+              version: "${{ matrix.k8s_version }}"
               domain: openshiftcluster-$K8S_VERSION_NODOT
             masterProfile:
               vmSize: Standard_D8s_v3
@@ -153,13 +153,6 @@ jobs:
                 diskSizeGB: 128
                 name: worker
                 vmSize: Standard_D4s_v3
-            operatorSpec:
-              secrets:
-                adminCredentials:
-                  name: "openshiftcluster-$K8S_VERSION_NODOT-kubeconfig"
-                  key: "kubeconfig"
-            identity:
-              type: SystemAssigned
           EOF
 
       - name: Wait for OpenShiftCluster Provisioning
