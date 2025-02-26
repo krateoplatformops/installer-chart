@@ -135,7 +135,7 @@ jobs:
         run: |
           echo "Deploying OpenShiftCluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
-          apiVersion: containerservice.azure.com/v1api20240901
+          apiVersion: redhatopenshift.azure.com/v1api20231122
           kind: OpenShiftCluster
           metadata:
             name: openshiftcluster-$K8S_VERSION_NODOT
