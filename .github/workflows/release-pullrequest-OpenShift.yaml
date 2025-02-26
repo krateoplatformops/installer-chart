@@ -100,13 +100,13 @@ jobs:
         run: |
           helm repo add jetstack https://charts.jetstack.io
           helm repo update
-          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set crds.enabled=true --wait --create-namespace --version=
+          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set crds.enabled=true --wait --create-namespace --version=v1.17.1
 
       - name: Install Azure Service Operator on Kind using Helm
         run: |
           helm repo add aso2 https://raw.githubusercontent.com/Azure/azure-service-operator/main/v2/charts
           helm repo update
-          helm install aso2 aso2/azure-service-operator --create-namespace --wait --version=2.12.0 --namespace=azureserviceoperator-system --set crdPattern='resources.azure.com/*;containerservice.azure.com/*;keyvault.azure.com/*;managedidentity.azure.com/*;eventhub.azure.com/*'
+          helm install aso2 aso2/azure-service-operator --create-namespace --wait --version=2.12.0 --namespace=azureserviceoperator-system --set crdPattern='resources.azure.com/*;containerservice.azure.com/*;keyvault.azure.com/*;managedidentity.azure.com/*;eventhub.azure.com/*;redhatopenshift.azure.com/*'
 
       # Prepare a sanitized version string (replace '.' with '-') and store it in K8S_VERSION_NODOT
       - name: Prepare version variable

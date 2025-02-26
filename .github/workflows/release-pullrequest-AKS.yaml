@@ -100,7 +100,7 @@ jobs:
         run: |
           helm repo add jetstack https://charts.jetstack.io
           helm repo update
-          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set crds.enabled=true --wait --create-namespace --version=
+          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set crds.enabled=true --wait --create-namespace --version=v1.17.1
 
       - name: Install Azure Service Operator on Kind using Helm
         run: |
