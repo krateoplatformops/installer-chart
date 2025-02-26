@@ -1,4 +1,4 @@
-name: release-pullrequest
+name: release-pullrequest-kind
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  package:
+  install-kind:
     runs-on: ubuntu-latest
 
     steps:
