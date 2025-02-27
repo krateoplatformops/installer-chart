@@ -162,7 +162,11 @@ jobs:
       - name: Wait for OpenShiftCluster Provisioning
         run: |
           echo "Waiting for OpenShiftCluster resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s openshiftcluster/openshiftcluster-$K8S_VERSION_NODOT
+          sleep 120
+
+      - name: Wait for OpenShiftCluster Provisioning
+        run: |
+          kubectl get events -A --sort-by='.lastTimestamp'
 
       - name: Retrieve OpenShiftCluster Kubeconfig
         run: |
