@@ -285,6 +285,11 @@ jobs:
           echo "Waiting for OpenShiftCluster openshiftcluster-$K8S_VERSION_NODOT to become Ready..."
           kubectl wait --for=condition=Ready --timeout=2700s openshiftcluster/openshiftcluster-$K8S_VERSION_NODOT
 
+      # TO DELETE 
+      - name: Wait for OpenShiftCluster Provisioning
+        run: |
+          kubectl get openshiftcluster/openshiftcluster-$K8S_VERSION_NODOT -o yaml
+
       - name: Retrieve OpenShiftCluster Kubeconfig
         run: |
           echo "Extracting kubeconfig from secret..."
@@ -295,11 +300,6 @@ jobs:
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=openshiftcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
-
-      - name: Wait for OpenShiftCluster Provisioning
-        if: always()
-        run: |
-          kubectl get events -A --sort-by='.lastTimestamp'
 
       - name: Get Krateo PlatformOps CR status on OpenShiftCluster
         if: always()
@@ -344,3 +344,8 @@ jobs:
       - name: Clean Up ResourceGroup CR
         if: always()
         run: kubectl delete resourcegroups/openshiftcluster-$K8S_VERSION_NODOT
+
+      - name: Get events
+        if: always()
+        run: |
+          kubectl get events -A --sort-by='.lastTimestamp'
