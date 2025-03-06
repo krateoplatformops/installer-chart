@@ -106,16 +106,21 @@ jobs:
         run: |
           helm repo add aso2 https://raw.githubusercontent.com/Azure/azure-service-operator/main/v2/charts
           helm repo update
-          helm install aso2 aso2/azure-service-operator --create-namespace --wait --version=2.12.0 --namespace=azureserviceoperator-system --set crdPattern='resources.azure.com/*;containerservice.azure.com/*;keyvault.azure.com/*;managedidentity.azure.com/*;eventhub.azure.com/*;redhatopenshift.azure.com/*'
+          helm install aso2 aso2/azure-service-operator --create-namespace --wait --version=2.12.0 --namespace=azureserviceoperator-system --set crdPattern='resources.azure.com/*;network.azure.com/*;redhatopenshift.azure.com/*;authorization.azure.com/*' --set replicaCount=1
 
       # Prepare a sanitized version string (replace '.' with '-') and store it in K8S_VERSION_NODOT
       - name: Prepare version variable
         run: echo "K8S_VERSION_NODOT=$(echo '${{ matrix.k8s_version }}' | tr '.' '-')" >> $GITHUB_ENV
 
+      # Prepare a sanitized version string (remove '.' entirely) and store it in K8S_VERSION_NODOT2
+      - name: Prepare version variable
+        run: echo "K8S_VERSION_NODOT2=$(echo '${{ matrix.k8s_version }}' | tr -d '.')" >> $GITHUB_ENV
+
+
       # Create a ResourceGroup CR that will serve as the owner for the OpenShiftCluster.
       - name: Deploy ResourceGroup CR via ASO
         run: |
-          echo "Deploying ResourceGroup for Kubernetes version ${{ matrix.k8s_version }}..."
+          echo "Deploying ResourceGroup openshiftcluster-$K8S_VERSION_NODOT for Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
           apiVersion: resources.azure.com/v1api20200601
           kind: ResourceGroup
@@ -128,12 +133,103 @@ jobs:
 
       - name: Wait for ResourceGroup Provisioning
         run: |
-          echo "Waiting for ResourceGroup resource to become Ready..."
+          echo "Waiting for ResourceGroup openshiftcluster-$K8S_VERSION_NODOT to become Ready..."
           kubectl wait --for=condition=Ready --timeout=600s resourcegroup/openshiftcluster-$K8S_VERSION_NODOT
+
+      - name: Deploy VirtualNetwork CR via ASO
+        run: |
+          echo "Deploying VirtualNetwork openshiftcluster-$K8S_VERSION_NODOT for Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: network.azure.com/v1api20240301
+          kind: VirtualNetwork
+          metadata:
+            name: openshiftcluster-$K8S_VERSION_NODOT
+            namespace: default
+          spec:
+            location: northeurope
+            owner:
+              name: openshiftcluster-$K8S_VERSION_NODOT
+            addressSpace:
+              addressPrefixes:
+                - 10.0.0.0/22
+          EOF
+
+      - name: Wait for VirtualNetwork Provisioning
+        run: |
+          echo "Waiting for VirtualNetwork openshiftcluster-$K8S_VERSION_NODOT to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s virtualnetwork/openshiftcluster-$K8S_VERSION_NODOT
+
+      - name: Deploy VirtualNetworksSubnet CR via ASO
+        run: |
+          echo "Deploying VirtualNetworksSubnet openshiftcluster-$K8S_VERSION_NODOT-master for Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: network.azure.com/v1api20240301
+          kind: VirtualNetworksSubnet
+          metadata:
+            name: openshiftcluster-$K8S_VERSION_NODOT-master
+            namespace: default
+          spec:
+            owner:
+              name: openshiftcluster-$K8S_VERSION_NODOT
+            addressPrefix: 10.0.0.0/23
+          EOF
+
+      - name: Wait for VirtualNetworksSubnet Provisioning
+        run: |
+          echo "Waiting for VirtualNetworksSubnet openshiftcluster-$K8S_VERSION_NODOT-master to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s virtualnetworkssubnet/openshiftcluster-$K8S_VERSION_NODOT-master
+
+      - name: Deploy VirtualNetworksSubnet CR via ASO
+        run: |
+          echo "Deploying VirtualNetworksSubnet openshiftcluster-$K8S_VERSION_NODOT-worker for Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: network.azure.com/v1api20240301
+          kind: VirtualNetworksSubnet
+          metadata:
+            name: openshiftcluster-$K8S_VERSION_NODOT-worker
+            namespace: default
+          spec:
+            owner:
+              name: openshiftcluster-$K8S_VERSION_NODOT
+            addressPrefix: 10.0.2.0/23
+          EOF
+
+      - name: Wait for VirtualNetworksSubnet Provisioning
+        run: |
+          echo "Waiting for VirtualNetworksSubnet openshiftcluster-$K8S_VERSION_NODOT-worker to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s virtualnetworkssubnet/openshiftcluster-$K8S_VERSION_NODOT-worker
+
+      - name: Deploy RoleAssignment CR via ASO
+        run: |
+          echo "Deploying RoleAssignment openshiftcluster-$K8S_VERSION_NODOT for Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: authorization.azure.com/v1api20220401
+          kind: RoleAssignment
+          metadata:
+            name: openshiftcluster-$K8S_VERSION_NODOT
+            namespace: default
+          spec:
+            # This resource can be owner by any resource. In this example we've chosen a resource group for simplicity
+            owner:
+              name: openshiftcluster-$K8S_VERSION_NODOT
+              group: network.azure.com
+              kind: VirtualNetwork
+            # This is the Principal ID of the AAD identity to which the role will be assigned
+            principalId: ${{ secrets.AZURE_PRINCIPAL_ID }}
+            principalType: ServicePrincipal
+            roleDefinitionReference:
+              # This ARM ID represents "Contributor" - you can read about other built in roles here: https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
+              armId: /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7
+          EOF
+
+      - name: Wait for RoleAssignment Provisioning
+        run: |
+          echo "Waiting for RoleAssignment openshiftcluster-$K8S_VERSION_NODOT to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s roleassignment/openshiftcluster-$K8S_VERSION_NODOT
 
       - name: Deploy OpenShiftCluster CR via ASO
         run: |
-          echo "Deploying OpenShiftCluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          echo "Deploying OpenShiftCluster openshiftcluster-$K8S_VERSION_NODOT with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
           apiVersion: redhatopenshift.azure.com/v1api20231122
           kind: OpenShiftCluster
@@ -144,15 +240,40 @@ jobs:
               name: openshiftcluster-$K8S_VERSION_NODOT
             location: "northeurope"
             clusterProfile:
+              domain: openshiftcluster$K8S_VERSION_NODOT2
               version: "${{ matrix.k8s_version }}"
-              domain: openshiftcluster-$K8S_VERSION_NODOT
+              resourceGroupId: /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/openshiftcluster-$K8S_VERSION_NODOT-cluster
+              fipsValidatedModules: Disabled
+            ingressProfiles:
+              - name: default
+                visibility: Public
             masterProfile:
               vmSize: Standard_D8s_v3
+              encryptionAtHost: Disabled
+              subnetReference:
+                group: network.azure.com
+                kind: VirtualNetworksSubnet
+                name: openshiftcluster-$K8S_VERSION_NODOT-master
             workerProfiles:
-              - count: 3
-                diskSizeGB: 128
-                name: worker
-                vmSize: Standard_D4s_v3
+            - count: 3
+              diskSizeGB: 128
+              name: worker
+              vmSize: Standard_D4s_v3
+              encryptionAtHost: Disabled
+              subnetReference:
+                group: network.azure.com
+                kind: VirtualNetworksSubnet
+                name: openshiftcluster-$K8S_VERSION_NODOT-worker
+            servicePrincipalProfile:
+              clientId: ${{ secrets.AZURE_CLIENT_ID }}
+              clientSecret:
+                key: AZURE_CLIENT_SECRET
+                name: aso-credential
+            networkProfile:
+              podCidr: 10.128.0.0/14
+              serviceCidr: 172.30.0.0/16
+            apiserverProfile:
+              visibility: Public
           EOF
 
       - name: Wait for OpenShiftCluster Provisioning
@@ -161,12 +282,8 @@ jobs:
 
       - name: Wait for OpenShiftCluster Provisioning
         run: |
-          echo "Waiting for OpenShiftCluster resource to become Ready..."
-          sleep 120
-
-      - name: Wait for OpenShiftCluster Provisioning
-        run: |
-          kubectl get events -A --sort-by='.lastTimestamp'
+          echo "Waiting for OpenShiftCluster openshiftcluster-$K8S_VERSION_NODOT to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=2700 openshiftcluster/openshiftcluster-$K8S_VERSION_NODOT
 
       - name: Retrieve OpenShiftCluster Kubeconfig
         run: |
@@ -178,6 +295,11 @@ jobs:
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system-$K8S_VERSION_NODOT --kubeconfig=openshiftcluster-$K8S_VERSION_NODOT-kubeconfig.yaml
+
+      - name: Wait for OpenShiftCluster Provisioning
+        if: always()
+        run: |
+          kubectl get events -A --sort-by='.lastTimestamp'
 
       - name: Get Krateo PlatformOps CR status on OpenShiftCluster
         if: always()
@@ -202,6 +324,22 @@ jobs:
       - name: Clean Up OpenShiftCluster Resource
         if: always()
         run: kubectl delete openshiftcluster/openshiftcluster-$K8S_VERSION_NODOT
+
+      - name: Clean Up RoleAssignment Resource
+        if: always()
+        run: kubectl delete roleassignment/openshiftcluster-$K8S_VERSION_NODOT
+
+      - name: Clean Up VirtualNetworksSubnet Resource
+        if: always()
+        run: kubectl delete virtualnetworkssubnet/openshiftcluster-$K8S_VERSION_NODOT-worker
+
+      - name: Clean Up VirtualNetworksSubnet Resource
+        if: always()
+        run: kubectl delete virtualnetworkssubnet/openshiftcluster-$K8S_VERSION_NODOT-master
+
+      - name: Clean Up VirtualNetwork Resource
+        if: always()
+        run: kubectl delete virtualnetwork/openshiftcluster-$K8S_VERSION_NODOT
 
       - name: Clean Up ResourceGroup CR
         if: always()
