@@ -455,7 +455,7 @@ krateoplatformops:
         defaultStorageClass: ""
         compatibility:
           openshift:
-            adaptSecurityContext: force
+            adaptSecurityContext: auto
       fullnameOverride: ""
       resources: {}
       podSecurityContext: {}
@@ -675,7 +675,7 @@ krateoplatformops:
         defaultStorageClass: ""
         compatibility:
           openshift:
-            adaptSecurityContext: force
+            adaptSecurityContext: auto
       fullnameOverride: ""
       resources: {}
       podSecurityContext: {}
