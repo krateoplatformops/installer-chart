@@ -244,7 +244,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.3.10
+      version: 2.3.18
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -281,7 +281,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.3.4
+      version: 0.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -313,7 +313,7 @@ krateoplatformops:
   authn:
     chart:
       name: authn
-      version: 0.18.1
+      version: 0.19.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -434,7 +434,7 @@ krateoplatformops:
     etcd:
       chart:
         name: etcd
-        version: 10.2.9
+        version: 11.1.3
         repository: https://charts.krateo.io
         wait: true
         waitTimeout: 5m
@@ -462,14 +462,18 @@ krateoplatformops:
       containerSecurityContext: {}
       image:
         repository: krateoplatformops/etcd
-        tag: 3.5.15-debian-12-r3
+        tag: ""
         pullPolicy: IfNotPresent
       env: {}
         # http_proxy: http://127.0.0.1:3128
+      preUpgradeJob:
+        resources: {}
+        podSecurityContext: {}
+        containerSecurityContext: {}
   coreprovider:
     chart:
       name: core-provider
-      version: 0.28.0
+      version: 0.29.5
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -500,6 +504,49 @@ krateoplatformops:
       securityContext: {}
       image:
         repository: ghcr.io/krateoplatformops/composition-dynamic-controller
+        pullPolicy: IfNotPresent
+        # Overrides the image tag whose default is the chart appVersion.
+        tag: ""
+      # imagePullSecrets:
+      #   - name: image-registry-secret
+      env: {}
+        # http_proxy: http://127.0.0.1:3128
+  oasgenprovider:
+    chart:
+      name: oasgen-provider
+      version: 0.4.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/oasgen-provider
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+    env: {}
+      # PATCH_PROVIDER_DEBUG: "true"
+      # PATCH_PROVIDER_POLL_INTERVAL: 3m
+      # http_proxy: http://127.0.0.1:3128
+    rdc:
+      fullnameOverride: ""
+      resources: {}
+      podSecurityContext: {}
+      securityContext: {}
+      image:
+        repository: ghcr.io/krateoplatformops/rest-dynamic-controller
         pullPolicy: IfNotPresent
         # Overrides the image tag whose default is the chart appVersion.
         tag: ""
@@ -572,7 +619,7 @@ krateoplatformops:
   eventsse:
     chart:
       name: eventsse
-      version: 0.4.4
+      version: 0.5.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -603,11 +650,51 @@ krateoplatformops:
       # EVENTSSE_TTL: 86400 #seconds
       # EVENTSSE_GET_LIMIT: 500
       # http_proxy: http://127.0.0.1:3128
+    etcd:
+      chart:
+        name: etcd
+        releaseName: eventsse-etcd
+        version: 11.1.3
+        repository: https://charts.krateo.io
+        wait: true
+        waitTimeout: 5m
+        # # Use with private helm registry
+        # credentials:
+        #   username: username
+        #   passwordRef: # reference to a secret
+        #     key: token
+        #     name: helm-registry-token
+        #     namespace: krateo-system
+      auth:
+        rbac:
+          create: false
+      global:
+        imageRegistry: ghcr.io
+        # imagePullSecrets:
+        #   - name: image-registry-secret
+        defaultStorageClass: ""
+        compatibility:
+          openshift:
+            adaptSecurityContext: auto
+      fullnameOverride: ""
+      resources: {}
+      podSecurityContext: {}
+      containerSecurityContext: {}
+      image:
+        repository: krateoplatformops/etcd
+        tag: ""
+        pullPolicy: IfNotPresent
+      env: {}
+        # http_proxy: http://127.0.0.1:3128
+      preUpgradeJob:
+        resources: {}
+        podSecurityContext: {}
+        containerSecurityContext: {}
   composableportalbasic:
     enabled: true
     chart:
       name: composable-portal-basic
-      version: 0.5.1
+      version: 0.5.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -651,7 +738,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.8
+      version: 0.2.9
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -679,7 +766,7 @@ krateoplatformops:
       # DEBUG_LEVEL: info # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
   composablefinops:
-    enabled: true
+    enabled: false
   finopsoperatorcratedb:
     chart:
       name: crate-operator
@@ -707,7 +794,8 @@ krateoplatformops:
     #   - name: image-registry-secret
     service: 
       annotations: {}
-    env: {}
+    env:
+      CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS: standard
   finopscratedbcustomresource:
     chart:
       name: finops-cratedb-custom-resource
