@@ -122,8 +122,8 @@ krateoplatformops:
     #     - name: image-registry-secret
     env: []
   service:
-    type: LoadBalancer
-    externalIpAvailable: true
+    type: NodePort
+    externalIpAvailable: false
     # annotations:
     #   service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Use "nlb" for Network Load Balancer or "clb" for Classic Load Balancer
     #   service.beta.kubernetes.io/aws-load-balancer-internal: "false" # Set to "true" if you want an internal load balancer
@@ -455,7 +455,7 @@ krateoplatformops:
         defaultStorageClass: ""
         compatibility:
           openshift:
-            adaptSecurityContext: auto
+            adaptSecurityContext: force
       fullnameOverride: ""
       resources: {}
       podSecurityContext: {}
@@ -540,6 +540,20 @@ krateoplatformops:
       # PATCH_PROVIDER_DEBUG: "true"
       # PATCH_PROVIDER_POLL_INTERVAL: 3m
       # http_proxy: http://127.0.0.1:3128
+    rdc:
+      fullnameOverride: ""
+      resources: {}
+      podSecurityContext: {}
+      securityContext: {}
+      image:
+        repository: ghcr.io/krateoplatformops/rest-dynamic-controller
+        pullPolicy: IfNotPresent
+        # Overrides the image tag whose default is the chart appVersion.
+        tag: ""
+      # imagePullSecrets:
+      #   - name: image-registry-secret
+      env: {}
+        # http_proxy: http://127.0.0.1:3128
   patchprovider:
     chart:
       name: patch-provider
@@ -661,7 +675,7 @@ krateoplatformops:
         defaultStorageClass: ""
         compatibility:
           openshift:
-            adaptSecurityContext: auto
+            adaptSecurityContext: force
       fullnameOverride: ""
       resources: {}
       podSecurityContext: {}
@@ -724,7 +738,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.8
+      version: 0.2.9
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -752,7 +766,7 @@ krateoplatformops:
       # DEBUG_LEVEL: info # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
   composablefinops:
-    enabled: true
+    enabled: false
   finopsoperatorcratedb:
     chart:
       name: crate-operator
@@ -781,7 +795,7 @@ krateoplatformops:
     service: 
       annotations: {}
     env:
-      CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS: default
+      CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS: standard
   finopscratedbcustomresource:
     chart:
       name: finops-cratedb-custom-resource
@@ -800,7 +814,7 @@ krateoplatformops:
     resources:
       disk:
         size: 8000MiB
-        storageClass: default
+        storageClass: standard
     image:
       repository: ghcr.io/krateoplatformops/crate
       # Overrides the image tag whose default is the chart appVersion.
