@@ -81,7 +81,7 @@ jobs:
         run: helm install installer ./chart --create-namespace -n krateo-system --wait
 
       - name: Wait for krateoplatformops krateo to become ready
-        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=300s --namespace krateo-system
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
 
       - name: Get events
         if: always()
