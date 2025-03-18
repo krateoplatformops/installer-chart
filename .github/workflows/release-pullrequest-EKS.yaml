@@ -148,7 +148,7 @@ jobs:
 
       - name: Wait for ACK Controller Deployment to be Ready
         run: |
-          kubectl wait --for=condition=ready --timeout=300s deployment/ack-eks-controller-eks-chart -n ack-system
+          kubectl wait --for=condition=Ready --timeout=300s deployment/ack-eks-controller-eks-chart -n ack-system
 
       - name: Get events
         if: always()
