@@ -109,13 +109,11 @@ jobs:
           EXPIRATION=$(echo $CREDS | jq -r '.Expiration')
 
           cat > ./credentials <<EOF
-          [profile dev]
+          [dev]
           aws_access_key_id = $ACCESS_KEY
           aws_secret_access_key = $SECRET_KEY
           aws_session_token = $SESSION_TOKEN
           EOF
-
-          cat ./credentials
 
           echo "AWS credentials retrieved. Session expires at: $EXPIRATION"
 
