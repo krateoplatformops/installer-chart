@@ -1,4 +1,4 @@
-name: release-pullrequest-AKS
+name: release-pullrequest-EKS
 
 on:
   pull_request:
@@ -86,9 +86,14 @@ jobs:
       - name: Prepare version variable
         run: echo "K8S_VERSION_NODOT=$(echo '${{ matrix.k8s_version }}' | tr '.' '-')" >> $GITHUB_ENV
 
-      - name: Get serviceaccounts
-        if: always()
-        run: kubectl get sa -A -o wide
+      - name: Annotate ACK Controller serviceaccount
+        run: kubectl annotate serviceaccount -n ack-system ack-eks-controller eks.amazonaws.com/role-arn=arn:aws:iam::539247454863:role/github-action
+
+      - name: Check ACK Controller serviceaccount
+        run: kubectl describe serviceaccount -n ack-system ack-eks-controller
+
+      - name: Restart ACK Controller 
+        run: kubectl rollout restart deployment -n ack-system ack-eks-controller      
 
       - name: Get events
         if: always()
