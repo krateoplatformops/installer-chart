@@ -145,6 +145,10 @@ jobs:
 
       - name: Restart ACK Controller 
         run: kubectl rollout restart deployment -n ack-system ack-eks-controller-eks-chart  
+        
+      - name: Wait for ACK Controller Deployment to be Ready
+        run: |
+          kubectl wait --for=condition=available --timeout=300s deployment/ack-eks-controller-eks-chart -n ack-system
 
       - name: Get events
         if: always()
