@@ -77,10 +77,58 @@ jobs:
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1
 
+      - name: Install AWS Signing Helper
+        run: |
+          curl -Lo aws_signing_helper https://rolesanywhere.amazonaws.com/releases/1.4.0/X86_64/Linux/aws_signing_helper
+          chmod +x aws_signing_helper
+          sudo mv aws_signing_helper /usr/local/bin/
+
+      - name: Write Certificate and Private Key from Secrets
+        run: |
+          echo "${{ secrets.CERTIFICATO }}" | base64 --decode > certificato.txt
+          echo "${{ secrets.CHIAVE_PRIVATA_DECIFRATA }}" | base64 --decode > chiave_privata_decifrata.key
+          chmod 600 certificato.txt chiave_privata_decifrata.key
+
+      - name: Get AWS Credentials via IAM Roles Anywhere
+        run: |
+          echo "Retrieving AWS credentials..."
+          CREDS=$(./aws_signing_helper credential-process \
+                --certificate ./certificato.txt \
+                --private-key ./chiave_privata_decifrata.key \
+                --trust-anchor-arn arn:aws:rolesanywhere:eu-central-1:539247454863:trust-anchor/9cb6726b-665b-4fe7-92fd-c7b46e266808 \
+                --profile-arn arn:aws:rolesanywhere:eu-central-1:539247454863:profile/d74cc60b-e748-4868-843f-15c30c7ed6d3 \
+                --role-arn arn:aws:iam::539247454863:role/github-action \
+                --session-duration 14400)
+
+          ACCESS_KEY=$(echo $CREDS | jq -r '.AccessKeyId')
+          SECRET_KEY=$(echo $CREDS | jq -r '.SecretAccessKey')
+          SESSION_TOKEN=$(echo $CREDS | jq -r '.SessionToken')
+          EXPIRATION=$(echo $CREDS | jq -r '.Expiration')
+
+          cat > ./credentials <<EOF
+          [profile dev]
+          aws_access_key_id = $ACCESS_KEY
+          aws_secret_access_key = $SECRET_KEY
+          aws_session_token = $SESSION_TOKEN
+          EOF
+
+          echo "AWS credentials retrieved. Session expires at: $EXPIRATION"
+
+      - name: Create AWS Credentials Secret in Kubernetes
+        run: |
+          kubectl create ns ack-system
+          kubectl create secret generic aws-creds \
+            --from-file=credentials-file=./credentials \
+            --namespace=ack-system \
+            --type=Opaque
+
+      - name: Clean Up Sensitive Files
+        run: rm -f certificato.txt chiave_privata_decifrata.key ./credentials
+
       - name: Install ACK Controller on Kind using Helm
         run: |
           helm install --create-namespace -n ack-system ack-eks-controller \
-          oci://public.ecr.aws/aws-controllers-k8s/eks-chart --version=1.6.3 --set=aws.region=eu-central-1 --wait
+          oci://public.ecr.aws/aws-controllers-k8s/eks-chart --version=1.6.3 --set=aws.region=eu-central-1 --wait --set=aws.credentials.secretName=aws-creds --set=aws.credentials.secretKey=credentials-file --set=aws.credentials.profile=dev
 
       # Prepare a sanitized version string (replace '.' with '-') and store it in K8S_VERSION_NODOT
       - name: Prepare version variable
