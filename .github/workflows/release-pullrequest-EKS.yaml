@@ -82,11 +82,15 @@ jobs:
           curl -Lo aws_signing_helper https://rolesanywhere.amazonaws.com/releases/1.4.0/X86_64/Linux/aws_signing_helper
           chmod +x aws_signing_helper
 
-      - name: Write Certificate and Private Key from Secrets
+      - name: Write Certificate from Secrets
         run: |
           echo "${{ secrets.AWS_CERTIFICATE }}" | base64 --decode > certificato.txt
+          chmod 600 certificato.txt
+
+      - name: Write Private Key from Secrets
+        run: |
           echo "${{ secrets.AWS_PRIVATE_KEY }}" | base64 --decode > chiave_privata_decifrata.key
-          chmod 600 certificato.txt chiave_privata_decifrata.key
+          chmod 600 chiave_privata_decifrata.key
 
       - name: Get AWS Credentials via IAM Roles Anywhere
         run: |
