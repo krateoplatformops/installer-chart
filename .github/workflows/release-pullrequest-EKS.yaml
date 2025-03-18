@@ -92,6 +92,9 @@ jobs:
       - name: Check ACK Controller serviceaccount
         run: kubectl describe serviceaccount -n ack-system ack-eks-controller
 
+      - name: Get deployment
+        run: kubectl get deployment -n ack-system
+
       - name: Restart ACK Controller 
         run: kubectl rollout restart deployment -n ack-system ack-eks-controller      
 
