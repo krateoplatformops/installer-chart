@@ -115,6 +115,8 @@ jobs:
           aws_session_token = $SESSION_TOKEN
           EOF
 
+          cat ./credentials
+
           echo "AWS credentials retrieved. Session expires at: $EXPIRATION"
 
       - name: Create AWS Credentials Secret in Kubernetes
