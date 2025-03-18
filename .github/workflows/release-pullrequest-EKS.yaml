@@ -154,9 +154,13 @@ jobs:
         if: always()
         run: kubectl get events -A --sort-by='.lastTimestamp'
 
+      - name: Get deployments
+        if: always()
+        run: kubectl get deployments -n ack-system
+
       - name: Get pods
         if: always()
-        run: kubectl describe pods -n ack-system
+        run: kubectl get pods -n ack-system
 
       - name: Get logs of ACK Controller pod
         if: always()
