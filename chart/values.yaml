@@ -122,8 +122,8 @@ krateoplatformops:
     #     - name: image-registry-secret
     env: []
   service:
-    type: NodePort
-    externalIpAvailable: false
+    type: LoadBalancer
+    externalIpAvailable: true
     # annotations:
     #   service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Use "nlb" for Network Load Balancer or "clb" for Classic Load Balancer
     #   service.beta.kubernetes.io/aws-load-balancer-internal: "false" # Set to "true" if you want an internal load balancer
@@ -244,7 +244,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.3.18
+      version: 2.4.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -473,7 +473,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.29.5
+      version: 0.29.6
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -514,7 +514,7 @@ krateoplatformops:
   oasgenprovider:
     chart:
       name: oasgen-provider
-      version: 0.4.0
+      version: 0.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -766,7 +766,7 @@ krateoplatformops:
       # DEBUG_LEVEL: info # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
   composablefinops:
-    enabled: false
+    enabled: true
   finopsoperatorcratedb:
     chart:
       name: crate-operator
@@ -795,7 +795,7 @@ krateoplatformops:
     service: 
       annotations: {}
     env:
-      CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS: standard
+      CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS: default
   finopscratedbcustomresource:
     chart:
       name: finops-cratedb-custom-resource
@@ -814,7 +814,7 @@ krateoplatformops:
     resources:
       disk:
         size: 8000MiB
-        storageClass: standard
+        storageClass: default
     image:
       repository: ghcr.io/krateoplatformops/crate
       # Overrides the image tag whose default is the chart appVersion.
