@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  install-AKS:
+  install-EKS:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -98,3 +98,7 @@ jobs:
       - name: Get events
         if: always()
         run: kubectl get events -A --sort-by='.lastTimestamp'
+
+      - name: Get pods
+        if: always()
+        run: kubectl describe pods -n ack-system
