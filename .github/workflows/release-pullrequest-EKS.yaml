@@ -84,8 +84,8 @@ jobs:
 
       - name: Write Certificate and Private Key from Secrets
         run: |
-          echo "${{ secrets.CERTIFICATO }}" | base64 --decode > certificato.txt
-          echo "${{ secrets.CHIAVE_PRIVATA_DECIFRATA }}" | base64 --decode > chiave_privata_decifrata.key
+          echo "${{ secrets.AWS_CERTIFICATE }}" | base64 --decode > certificato.txt
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" | base64 --decode > chiave_privata_decifrata.key
           chmod 600 certificato.txt chiave_privata_decifrata.key
 
       - name: Get AWS Credentials via IAM Roles Anywhere
