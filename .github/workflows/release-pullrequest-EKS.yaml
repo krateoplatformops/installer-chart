@@ -80,7 +80,7 @@ jobs:
       - name: Install ACK Controller on Kind using Helm
         run: |
           helm install --create-namespace -n ack-system ack-eks-controller \
-          oci://public.ecr.aws/aws-controllers-k8s/eks-chart --version=1.6.3 --set=aws.region=eu-central-1
+          oci://public.ecr.aws/aws-controllers-k8s/eks-chart --version=1.6.3 --set=aws.region=eu-central-1 --wait
 
       # Prepare a sanitized version string (replace '.' with '-') and store it in K8S_VERSION_NODOT
       - name: Prepare version variable
@@ -92,11 +92,8 @@ jobs:
       - name: Check ACK Controller serviceaccount
         run: kubectl describe serviceaccount -n ack-system ack-eks-controller
 
-      - name: Get deployment
-        run: kubectl get deployment -n ack-system
-
       - name: Restart ACK Controller 
-        run: kubectl rollout restart deployment -n ack-system ack-eks-controller      
+        run: kubectl rollout restart deployment -n ack-system ack-eks-controller-eks-chart  
 
       - name: Get events
         if: always()
