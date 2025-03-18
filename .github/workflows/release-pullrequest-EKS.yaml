@@ -81,7 +81,6 @@ jobs:
         run: |
           curl -Lo aws_signing_helper https://rolesanywhere.amazonaws.com/releases/1.4.0/X86_64/Linux/aws_signing_helper
           chmod +x aws_signing_helper
-          sudo mv aws_signing_helper /usr/local/bin/
 
       - name: Write Certificate and Private Key from Secrets
         run: |
