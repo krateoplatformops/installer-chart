@@ -68,6 +68,10 @@ jobs:
       - name: Replace App Version in Chart.yaml
         run: sed -i 's/APP_VERSION/${{ steps.app_version.outputs.tag }}/g' ./chart/Chart.yaml
 
+      # Prepare a sanitized version string (replace '.' with '-') and store it in K8S_VERSION_NODOT
+      - name: Prepare version variable
+        run: echo "K8S_VERSION_NODOT=$(echo '${{ matrix.k8s_version }}' | tr '.' '-')" >> $GITHUB_ENV
+
       - name: Set up Helm
         uses: azure/setup-helm@v4.1.0
 
@@ -128,26 +132,202 @@ jobs:
       - name: Clean Up Sensitive Files
         run: rm -f certificato.txt chiave_privata_decifrata.key ./credentials
 
-      - name: Install ACK Controller on Kind using Helm
+      - name: Install ACK EC2 Controller on Kind using Helm
+        run: |
+          helm install --create-namespace -n ack-system ack-ec2-controller \
+          oci://public.ecr.aws/aws-controllers-k8s/ec2-chart --version=1.3.7 --set=aws.region=eu-central-1 --wait --set=aws.credentials.secretName=aws-creds --set=aws.credentials.secretKey=credentials-file --set=aws.credentials.profile=dev
+
+      - name: Annotate ACK EC2 Controller serviceaccount
+        run: kubectl annotate serviceaccount -n ack-system ack-ec2-controller eks.amazonaws.com/role-arn=arn:aws:iam::539247454863:role/github-action
+
+      - name: Check ACK EC2 Controller serviceaccount
+        run: kubectl describe serviceaccount -n ack-system ack-ec2-controller
+
+      - name: Restart ACK EC2 Controller 
+        run: kubectl rollout restart deployment -n ack-system ack-ec2-controller-ec2-chart  
+
+      - name: Wait for ACK EC2 Controller Deployment to be Ready
+        run:  kubectl rollout status deployment -n ack-system ack-ec2-controller-ec2-chart --timeout=300s
+
+      - name: Install ACK EKS Controller on Kind using Helm
         run: |
           helm install --create-namespace -n ack-system ack-eks-controller \
           oci://public.ecr.aws/aws-controllers-k8s/eks-chart --version=1.6.3 --set=aws.region=eu-central-1 --wait --set=aws.credentials.secretName=aws-creds --set=aws.credentials.secretKey=credentials-file --set=aws.credentials.profile=dev
 
-      # Prepare a sanitized version string (replace '.' with '-') and store it in K8S_VERSION_NODOT
-      - name: Prepare version variable
-        run: echo "K8S_VERSION_NODOT=$(echo '${{ matrix.k8s_version }}' | tr '.' '-')" >> $GITHUB_ENV
-
-      - name: Annotate ACK Controller serviceaccount
+      - name: Annotate ACK EKS Controller serviceaccount
         run: kubectl annotate serviceaccount -n ack-system ack-eks-controller eks.amazonaws.com/role-arn=arn:aws:iam::539247454863:role/github-action
 
-      - name: Check ACK Controller serviceaccount
+      - name: Check ACK EKS Controller serviceaccount
         run: kubectl describe serviceaccount -n ack-system ack-eks-controller
 
-      - name: Restart ACK Controller 
+      - name: Restart ACK EKS Controller 
         run: kubectl rollout restart deployment -n ack-system ack-eks-controller-eks-chart  
 
-      - name: Wait for ACK Controller Deployment to be Ready
+      - name: Wait for ACK EKS Controller Deployment to be Ready
         run:  kubectl rollout status deployment -n ack-system ack-eks-controller-eks-chart --timeout=300s
+
+      - name: Deploy VPC CR via EC2 Controller
+        run: |
+          echo "Deploying VPC resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPC
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT
+          spec:
+            cidrBlock: 10.0.0.0/16
+            enableDnsSupport: true
+            enableDnsHostnames: true
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT
+              - key: kubernetes.io/cluster/cluster-$K8S_VERSION_NODOT
+                value: shared
+          EOF
+
+      - name: Wait for VPC Provisioning
+        run: |
+          echo "Waiting for VPC resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s vpc/cluster-$K8S_VERSION_NODOT
+
+      - name: Check VPC status
+        run: |
+          kubectl get vpc/cluster-$K8S_VERSION_NODOT -o yaml
+
+      - name: Deploy Subnet-1 CR via EC2 Controller
+        run: |
+          echo "Deploying Subnet-1 resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: Subnet
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-1
+          spec:
+            cidrBlock: 10.0.1.0/24
+            vpcRef: 
+              from: 
+                name: cluster-$K8S_VERSION_NODOT
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-1
+              - key: kubernetes.io/cluster/cluster-$K8S_VERSION_NODOT
+                value: shared
+          EOF
+
+      - name: Wait for Subnet-1 Provisioning
+        run: |
+          echo "Waiting for Subnet-1 resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-1
+
+      - name: Check Subnet-2 status
+        run: |
+          kubectl get subnet/cluster-$K8S_VERSION_NODOT-1 -o yaml
+
+      - name: Deploy Subnet-1 CR via EC2 Controller
+        run: |
+          echo "Deploying Subnet-2 resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: Subnet
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-2
+          spec:
+            cidrBlock: 10.0.1.0/24
+            vpcRef: 
+              from: 
+                name: cluster-$K8S_VERSION_NODOT
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-2
+              - key: kubernetes.io/cluster/cluster-$K8S_VERSION_NODOT
+                value: shared
+          EOF
+
+      - name: Wait for Subnet-2 Provisioning
+        run: |
+          echo "Waiting for Subnet-1 resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-2
+
+      - name: Check Subnet-2 status
+        run: |
+          kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
+
+      - name: Deploy Cluster CR via EKS Controller
+        run: |
+          echo "Deploying Cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: eks.services.k8s.aws/v1alpha1
+          kind: Cluster
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT
+          spec:
+            name: cluster-$K8S_VERSION_NODOT
+            roleARN: arn:aws:iam::539247454863:role/EKSClusterRole
+            version: "${{ matrix.k8s_version }}"
+            resourcesVPCConfig:
+              endpointPrivateAccess: true
+              endpointPublicAccess: true
+              subnetRefs:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-1
+                  kind: Subnet
+                  apiVersion: ec2.services.k8s.aws/v1alpha1
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-2
+                  kind: Subnet
+                  apiVersion: ec2.services.k8s.aws/v1alpha1
+          EOF
+
+      - name: Wait for Cluster Provisioning
+        run: |
+          echo "Waiting for Cluster resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s cluster/cluster-$K8S_VERSION_NODOT
+
+      - name: Check Cluster status
+        run: |
+          kubectl get cluster/cluster-$K8S_VERSION_NODOT -o yaml
+
+      - name: Deploy Nodegroup CR via EKS Controller
+        run: |
+          echo "Deploying Nodegroup resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: eks.services.k8s.aws/v1alpha1
+          kind: NodeGroup
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT
+          spec:
+            clusterRef:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT
+                  kind: Cluster
+                  apiVersion: eks.services.k8s.aws/v1alpha1          
+            nodeRole: arn:aws:iam::123456789012:role/eks-node-group-role
+            subnetRefs:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-1
+                  kind: Subnet
+                  apiVersion: ec2.services.k8s.aws/v1alpha1
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-2
+                  kind: Subnet
+                  apiVersion: ec2.services.k8s.aws/v1alpha1
+            instanceTypes:
+              - t3.medium
+            diskSize: 50
+            scalingConfig:
+              minSize: 2
+              maxSize: 5
+              desiredSize: 3
+          EOF
+
+      - name: Wait for Nodegroup Provisioning
+        run: |
+          echo "Waiting for Cluster resource to become Ready..."
+          kubectl wait --for=condition=Ready --timeout=600s nodegroup/cluster-$K8S_VERSION_NODOT
+
+      - name: Check Cluster status
+        run: |
+          kubectl get cluster/cluster-$K8S_VERSION_NODOT -o yaml
 
       - name: Get events
         if: always()
