@@ -188,8 +188,8 @@ jobs:
 
       - name: Wait for VPC Provisioning
         run: |
-          echo "Waiting for VPC resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s vpc/cluster-$K8S_VERSION_NODOT
+          echo "Waiting for VPC resource to become ACK.ResourceSynced..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s vpc/cluster-$K8S_VERSION_NODOT
 
       - name: Check VPC status
         if: always()
@@ -344,7 +344,17 @@ jobs:
         if: always()
         run: kubectl get pods -n ack-system
 
-      - name: Get logs of ACK Controller pod
+      - name: Get logs of ACK EC2 Controller pod
+        if: always()
+        run: |
+          POD_NAME=$(kubectl get pods -n ack-system -l app.kubernetes.io/instance=ack-ec2-controller -o jsonpath="{.items[0].metadata.name}")
+          if [[ -n "$POD_NAME" ]]; then
+            kubectl logs -n ack-system "$POD_NAME"
+          else
+            echo "No pod found with label app.kubernetes.io/instance=ack-ec2-controller"
+          fi
+
+      - name: Get logs of ACK ECK Controller pod
         if: always()
         run: |
           POD_NAME=$(kubectl get pods -n ack-system -l app.kubernetes.io/instance=ack-eks-controller -o jsonpath="{.items[0].metadata.name}")
