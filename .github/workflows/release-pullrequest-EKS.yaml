@@ -363,3 +363,8 @@ jobs:
           else
             echo "No pod found with label app.kubernetes.io/instance=ack-eks-controller"
           fi
+
+      - name: Delete VPC
+        if: always()
+        run: |
+          kubectl delete vpc/cluster-$K8S_VERSION_NODOT
