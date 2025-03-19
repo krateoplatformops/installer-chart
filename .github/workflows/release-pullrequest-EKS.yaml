@@ -179,6 +179,7 @@ jobs:
               - 10.0.0.0/16
             enableDNSSupport: true
             enableDNSHostnames: true
+            region=eu-central-1
             tags:
               - key: Name
                 value: cluster-$K8S_VERSION_NODOT
