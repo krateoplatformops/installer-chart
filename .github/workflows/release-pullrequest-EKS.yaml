@@ -192,6 +192,7 @@ jobs:
           kubectl wait --for=condition=Ready --timeout=600s vpc/cluster-$K8S_VERSION_NODOT
 
       - name: Check VPC status
+        if: always()
         run: |
           kubectl get vpc/cluster-$K8S_VERSION_NODOT -o yaml
 
@@ -221,6 +222,7 @@ jobs:
           kubectl wait --for=condition=Ready --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-1
 
       - name: Check Subnet-2 status
+        if: always()
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-1 -o yaml
 
