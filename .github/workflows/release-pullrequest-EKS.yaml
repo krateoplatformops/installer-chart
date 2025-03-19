@@ -102,9 +102,9 @@ jobs:
           CREDS=$(./aws_signing_helper credential-process \
                 --certificate ./certificato.txt \
                 --private-key ./chiave_privata_decifrata.key \
-                --trust-anchor-arn arn:aws:rolesanywhere:eu-central-1:539247454863:trust-anchor/9cb6726b-665b-4fe7-92fd-c7b46e266808 \
-                --profile-arn arn:aws:rolesanywhere:eu-central-1:539247454863:profile/d74cc60b-e748-4868-843f-15c30c7ed6d3 \
-                --role-arn arn:aws:iam::539247454863:role/github-action \
+                --trust-anchor-arn arn:aws:rolesanywhere:eu-central-1:654654440307:trust-anchor/5f810e29-6061-46d6-a1ff-d36a5ac5c8cc \
+                --profile-arn arn:aws:rolesanywhere:eu-central-1:654654440307:profile/32097de8-0ad3-41f6-8da9-c99fa1c82bf5 \
+                --role-arn arn:aws:iam::654654440307:role/github-action-admin \
                 --session-duration 14400)
 
           ACCESS_KEY=$(echo $CREDS | jq -r '.AccessKeyId')
