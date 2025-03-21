@@ -219,14 +219,14 @@ jobs:
       - name: Wait for Subnet-1 Provisioning
         run: |
           echo "Waiting for Subnet-1 resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-1
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-1
 
-      - name: Check Subnet-2 status
+      - name: Check Subnet-1 status
         if: always()
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-1 -o yaml
 
-      - name: Deploy Subnet-1 CR via EC2 Controller
+      - name: Deploy Subnet-2 CR via EC2 Controller
         run: |
           echo "Deploying Subnet-2 resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
@@ -249,9 +249,10 @@ jobs:
       - name: Wait for Subnet-2 Provisioning
         run: |
           echo "Waiting for Subnet-1 resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-2
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-2
 
       - name: Check Subnet-2 status
+        if: always()
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
 
@@ -284,9 +285,10 @@ jobs:
       - name: Wait for Cluster Provisioning
         run: |
           echo "Waiting for Cluster resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s cluster/cluster-$K8S_VERSION_NODOT
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s cluster/cluster-$K8S_VERSION_NODOT
 
       - name: Check Cluster status
+        if: always()
         run: |
           kubectl get cluster/cluster-$K8S_VERSION_NODOT -o yaml
 
@@ -326,11 +328,12 @@ jobs:
       - name: Wait for Nodegroup Provisioning
         run: |
           echo "Waiting for Cluster resource to become Ready..."
-          kubectl wait --for=condition=Ready --timeout=600s nodegroup/cluster-$K8S_VERSION_NODOT
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s nodegroup/cluster-$K8S_VERSION_NODOT
 
-      - name: Check Cluster status
+      - name: Check Nodegroup status
+        if: always()
         run: |
-          kubectl get cluster/cluster-$K8S_VERSION_NODOT -o yaml
+          kubectl get nodegroup/cluster-$K8S_VERSION_NODOT -o yaml
 
       - name: Get events
         if: always()
@@ -363,6 +366,16 @@ jobs:
           else
             echo "No pod found with label app.kubernetes.io/instance=ack-eks-controller"
           fi
+
+      - name: Delete Subnet-1
+        if: always()
+        run: |
+          kubectl delete subnet/cluster-$K8S_VERSION_NODOT-1
+
+      - name: Delete Subnet-2
+        if: always()
+        run: |
+          kubectl delete subnet/cluster-$K8S_VERSION_NODOT-2
 
       - name: Delete VPC
         if: always()
