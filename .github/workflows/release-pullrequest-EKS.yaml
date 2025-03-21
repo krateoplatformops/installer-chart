@@ -282,6 +282,7 @@ jobs:
           metadata:
             name: cluster-$K8S_VERSION_NODOT
           spec:
+            name: cluster-$K8S_VERSION_NODOT
             assumeRolePolicyDocument: |
               {
                 "Version": "2012-10-17",
