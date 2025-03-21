@@ -206,6 +206,7 @@ jobs:
             name: cluster-$K8S_VERSION_NODOT-1
           spec:
             cidrBlock: 10.0.1.0/24
+            availabilityZone: eu-central-1a
             vpcRef: 
               from: 
                 name: cluster-$K8S_VERSION_NODOT
@@ -236,6 +237,7 @@ jobs:
             name: cluster-$K8S_VERSION_NODOT-2
           spec:
             cidrBlock: 10.0.2.0/24
+            availabilityZone: eu-central-1b
             vpcRef: 
               from: 
                 name: cluster-$K8S_VERSION_NODOT
