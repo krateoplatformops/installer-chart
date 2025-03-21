@@ -235,7 +235,7 @@ jobs:
           metadata:
             name: cluster-$K8S_VERSION_NODOT-2
           spec:
-            cidrBlock: 10.0.1.0/24
+            cidrBlock: 10.0.2.0/24
             vpcRef: 
               from: 
                 name: cluster-$K8S_VERSION_NODOT
@@ -248,7 +248,7 @@ jobs:
 
       - name: Wait for Subnet-2 Provisioning
         run: |
-          echo "Waiting for Subnet-1 resource to become Ready..."
+          echo "Waiting for Subnet-2 resource to become Ready..."
           kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-2
 
       - name: Check Subnet-2 status
