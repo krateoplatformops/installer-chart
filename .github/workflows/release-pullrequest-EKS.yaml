@@ -274,12 +274,8 @@ jobs:
               subnetRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-1
-                  kind: Subnet
-                  apiVersion: ec2.services.k8s.aws/v1alpha1
               - from:
                   name: cluster-$K8S_VERSION_NODOT-2
-                  kind: Subnet
-                  apiVersion: ec2.services.k8s.aws/v1alpha1
           EOF
 
       - name: Wait for Cluster Provisioning
