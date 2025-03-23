@@ -290,6 +290,11 @@ jobs:
         run: |
           kubectl get cluster/cluster-$K8S_VERSION_NODOT -o yaml
 
+      - name: Get secrets
+        if: always()
+        run: |
+          kubectl get secrets -A
+
       - name: Deploy Nodegroup CR via EKS Controller
         run: |
           echo "Deploying Nodegroup resource with Kubernetes version ${{ matrix.k8s_version }}..."
