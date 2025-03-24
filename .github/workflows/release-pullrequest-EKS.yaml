@@ -295,12 +295,17 @@ jobs:
         run: |
           kubectl get secrets -A
 
+      - name: Get crds
+        if: always()
+        run: |
+          kubectl get crd
+
       - name: Deploy Nodegroup CR via EKS Controller
         run: |
           echo "Deploying Nodegroup resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
           apiVersion: eks.services.k8s.aws/v1alpha1
-          kind: NodeGroup
+          kind: Nodegroup
           metadata:
             name: cluster-$K8S_VERSION_NODOT
           spec:
