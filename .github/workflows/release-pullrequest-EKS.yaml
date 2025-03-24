@@ -313,7 +313,7 @@ jobs:
             clusterRef:
               from:
                 name: cluster-$K8S_VERSION_NODOT       
-            nodeRole: arn:aws:iam::123456789012:role/eks-node-group-role
+            nodeRole: arn:aws:iam::654654440307:role/eks-node-role
             subnetRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-1
