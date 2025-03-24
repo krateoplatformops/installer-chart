@@ -311,19 +311,13 @@ jobs:
           spec:
             clusterRef:
               - from:
-                  name: cluster-$K8S_VERSION_NODOT
-                  kind: Cluster
-                  apiVersion: eks.services.k8s.aws/v1alpha1          
+                  name: cluster-$K8S_VERSION_NODOT       
             nodeRole: arn:aws:iam::123456789012:role/eks-node-group-role
             subnetRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-1
-                  kind: Subnet
-                  apiVersion: ec2.services.k8s.aws/v1alpha1
               - from:
                   name: cluster-$K8S_VERSION_NODOT-2
-                  kind: Subnet
-                  apiVersion: ec2.services.k8s.aws/v1alpha1
             instanceTypes:
               - t3.medium
             diskSize: 50
