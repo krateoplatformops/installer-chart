@@ -309,6 +309,7 @@ jobs:
           metadata:
             name: cluster-$K8S_VERSION_NODOT
           spec:
+            name: cluster-$K8S_VERSION_NODOT
             clusterRef:
               from:
                 name: cluster-$K8S_VERSION_NODOT       
