@@ -331,7 +331,7 @@ jobs:
       - name: Wait for Nodegroup Provisioning
         run: |
           echo "Waiting for Cluster resource to become Ready..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s nodegroup/cluster-$K8S_VERSION_NODOT
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=1200s nodegroup/cluster-$K8S_VERSION_NODOT
 
       - name: Check Nodegroup status
         if: always()
