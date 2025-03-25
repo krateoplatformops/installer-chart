@@ -196,6 +196,44 @@ jobs:
         run: |
           kubectl get vpc/cluster-$K8S_VERSION_NODOT -o yaml
 
+      - name: Deploy SecurityGroup CR via EC2 Controller
+        run: |
+          echo "Deploying VPC resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: SecurityGroup
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT
+          spec:
+            name: cluster-$K8S_VERSION_NODOT
+            description: Security group for EKS nodes
+            ingressRules:
+              - fromPort: 443
+                toPort: 443
+                ipProtocol: tcp
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+            egressRules:
+              - fromPort: -1
+                toPort: -1
+                ipProtocol: -1
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+            vpcRef: 
+              from: 
+                name: cluster-$K8S_VERSION_NODOT
+          EOF
+
+      - name: Wait for SecurityGroup Provisioning
+        run: |
+          echo "Waiting for VPC resource to become ACK.ResourceSynced..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s securitygroup/cluster-$K8S_VERSION_NODOT
+
+      - name: Check SecurityGroup status
+        if: always()
+        run: |
+          kubectl get securitygroup/cluster-$K8S_VERSION_NODOT -o yaml
+
       - name: Deploy Subnet-1 CR via EC2 Controller
         run: |
           echo "Deploying Subnet-1 resource with Kubernetes version ${{ matrix.k8s_version }}..."
@@ -271,8 +309,8 @@ jobs:
             roleARN: arn:aws:iam::654654440307:role/EKSClusterRole
             version: "${{ matrix.k8s_version }}"
             resourcesVPCConfig:
-              endpointPrivateAccess: false
-              endpointPublicAccess: true
+              endpointPrivateAccess: true
+              endpointPublicAccess: false
               subnetRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-1
