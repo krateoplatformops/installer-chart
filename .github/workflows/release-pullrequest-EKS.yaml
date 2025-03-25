@@ -216,7 +216,7 @@ jobs:
             egressRules:
               - fromPort: -1
                 toPort: -1
-                ipProtocol: -1
+                ipProtocol: "-1"
                 ipRanges:
                   - cidrIP: 0.0.0.0/0
             vpcRef: 
