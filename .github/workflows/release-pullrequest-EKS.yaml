@@ -196,44 +196,6 @@ jobs:
         run: |
           kubectl get vpc/cluster-$K8S_VERSION_NODOT -o yaml
 
-      - name: Deploy SecurityGroup CR via EC2 Controller
-        run: |
-          echo "Deploying VPC resource with Kubernetes version ${{ matrix.k8s_version }}..."
-          cat <<EOF | kubectl apply -f -
-          apiVersion: ec2.services.k8s.aws/v1alpha1
-          kind: SecurityGroup
-          metadata:
-            name: cluster-$K8S_VERSION_NODOT
-          spec:
-            name: cluster-$K8S_VERSION_NODOT
-            description: Security group for EKS nodes
-            ingressRules:
-              - fromPort: 443
-                toPort: 443
-                ipProtocol: tcp
-                ipRanges:
-                  - cidrIP: 0.0.0.0/0
-            egressRules:
-              - fromPort: -1
-                toPort: -1
-                ipProtocol: "-1"
-                ipRanges:
-                  - cidrIP: 0.0.0.0/0
-            vpcRef: 
-              from: 
-                name: cluster-$K8S_VERSION_NODOT
-          EOF
-
-      - name: Wait for SecurityGroup Provisioning
-        run: |
-          echo "Waiting for VPC resource to become ACK.ResourceSynced..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s securitygroup/cluster-$K8S_VERSION_NODOT
-
-      - name: Check SecurityGroup status
-        if: always()
-        run: |
-          kubectl get securitygroup/cluster-$K8S_VERSION_NODOT -o yaml
-
       - name: Deploy Subnet-1 CR via EC2 Controller
         run: |
           echo "Deploying Subnet-1 resource with Kubernetes version ${{ matrix.k8s_version }}..."
@@ -296,6 +258,35 @@ jobs:
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
 
+      - name: Deploy InternetGateway CR via EC2 Controller
+        run: |
+          echo "Deploying InternetGateway resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: InternetGateway
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-2
+          spec:
+            vpcRef: 
+              from: 
+                name: cluster-$K8S_VERSION_NODOT
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-2
+              - key: kubernetes.io/cluster/cluster-$K8S_VERSION_NODOT
+                value: shared
+          EOF
+
+      - name: Wait for InternetGateway Provisioning
+        run: |
+          echo "Waiting for InternetGateway resource to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s internetgateway/cluster-$K8S_VERSION_NODOT-2
+
+      - name: Check InternetGateway status
+        if: always()
+        run: |
+          kubectl get internetgateway/cluster-$K8S_VERSION_NODOT-2 -o yaml
+
       - name: Deploy Cluster CR via EKS Controller
         run: |
           echo "Deploying Cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
@@ -310,7 +301,7 @@ jobs:
             version: "${{ matrix.k8s_version }}"
             resourcesVPCConfig:
               endpointPrivateAccess: true
-              endpointPublicAccess: false
+              endpointPublicAccess: true
               subnetRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-1
@@ -407,28 +398,3 @@ jobs:
           else
             echo "No pod found with label app.kubernetes.io/instance=ack-eks-controller"
           fi
-
-      - name: Delete Nodegroup
-        if: always()
-        run: |
-          kubectl delete nodegroup/cluster-$K8S_VERSION_NODOT
-
-      - name: Delete Cluster
-        if: always()
-        run: |
-          kubectl delete cluster/cluster-$K8S_VERSION_NODOT
-
-      - name: Delete Subnet-1
-        if: always()
-        run: |
-          kubectl delete subnet/cluster-$K8S_VERSION_NODOT-1
-
-      - name: Delete Subnet-2
-        if: always()
-        run: |
-          kubectl delete subnet/cluster-$K8S_VERSION_NODOT-2
-
-      - name: Delete VPC
-        if: always()
-        run: |
-          kubectl delete vpc/cluster-$K8S_VERSION_NODOT

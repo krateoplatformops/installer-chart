@@ -766,7 +766,7 @@ krateoplatformops:
       # DEBUG_LEVEL: info # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
   composablefinops:
-    enabled: true
+    enabled: false
   finopsoperatorcratedb:
     chart:
       name: crate-operator
