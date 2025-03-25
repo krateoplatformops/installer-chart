@@ -370,15 +370,10 @@ jobs:
             echo "No pod found with label app.kubernetes.io/instance=ack-eks-controller"
           fi
 
-      - name: Delete Role
+      - name: Delete Nodegroup
         if: always()
         run: |
-          kubectl delete role/cluster-$K8S_VERSION_NODOT
-
-      - name: Delete RoleBinding
-        if: always()
-        run: |
-          kubectl delete rolebinding/cluster-$K8S_VERSION_NODOT
+          kubectl delete nodegroup/cluster-$K8S_VERSION_NODOT
 
       - name: Delete Cluster
         if: always()
