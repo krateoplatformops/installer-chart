@@ -271,7 +271,7 @@ jobs:
             roleARN: arn:aws:iam::654654440307:role/EKSClusterRole
             version: "${{ matrix.k8s_version }}"
             resourcesVPCConfig:
-              endpointPrivateAccess: true
+              endpointPrivateAccess: false
               endpointPublicAccess: true
               subnetRefs:
               - from:
