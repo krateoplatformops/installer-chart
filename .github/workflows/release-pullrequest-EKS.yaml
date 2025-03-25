@@ -331,7 +331,7 @@ jobs:
       - name: Wait for Nodegroup Provisioning
         run: |
           echo "Waiting for Cluster resource to become Ready..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=1200s nodegroup/cluster-$K8S_VERSION_NODOT
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=1800s nodegroup/cluster-$K8S_VERSION_NODOT
 
       - name: Check Nodegroup status
         if: always()
@@ -369,3 +369,28 @@ jobs:
           else
             echo "No pod found with label app.kubernetes.io/instance=ack-eks-controller"
           fi
+
+      - name: Delete Nodegroup
+        if: always()
+        run: |
+          kubectl delete nodegroup/cluster-$K8S_VERSION_NODOT
+
+      - name: Delete Cluster
+        if: always()
+        run: |
+          kubectl delete cluster/cluster-$K8S_VERSION_NODOT
+
+      - name: Delete Subnet-1
+        if: always()
+        run: |
+          kubectl delete subnet/cluster-$K8S_VERSION_NODOT-1
+
+      - name: Delete Subnet-2
+        if: always()
+        run: |
+          kubectl delete subnet/cluster-$K8S_VERSION_NODOT-2
+
+      - name: Delete VPC
+        if: always()
+        run: |
+          kubectl delete vpc/cluster-$K8S_VERSION_NODOT
