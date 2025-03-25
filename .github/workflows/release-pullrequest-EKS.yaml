@@ -301,7 +301,7 @@ jobs:
             version: "${{ matrix.k8s_version }}"
             resourcesVPCConfig:
               endpointPrivateAccess: true
-              endpointPublicAccess: true
+              endpointPublicAccess: false
               subnetRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-1
