@@ -327,33 +327,24 @@ jobs:
           metadata:
             name: cluster-$K8S_VERSION_NODOT-eks-vpc-endpoints
           spec:
+            name: cluster-$K8S_VERSION_NODOT-eks-vpc-endpoints
+            description: Security group to allow worker nodes to reach VPC endpoints
             vpcRef: 
               from: 
                 name: cluster-$K8S_VERSION_NODOT
-            serviceName: com.amazonaws.eu-central-1.ec2
-            vpcEndpointType: Interface
-            groupName: cluster-$K8S_VERSION_NODOT-eks-vpc-endpoints
-            description: Security group to allow worker nodes to reach VPC endpoints
-            # Inbound Rules
             ingressRules:
-              - description: Allow HTTPS from worker node CIDR
-                fromPort: 443
+              - fromPort: 443
                 toPort: 443
-                protocol: tcp
-                cidrBlocks:
-                  - 10.0.0.0/16  # Replace with your VPC or worker node CIDR
-              - description: Allow all traffic from worker nodes
-                fromPort: -1
-                toPort: -1
-                protocol: "-1"
-            # Outbound Rules
+                ipRanges:
+                  - cidrIP: 10.0.0.0/16
+                    description: Allow HTTPS from VPC CIDR
+
             egressRules:
-              - description: Allow all outbound traffic
-                fromPort: -1
+              - fromPort: -1
                 toPort: -1
-                protocol: "-1"
-                cidrBlocks:
-                  - 0.0.0.0/0
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+                    description: Allow all outbound traffic
           EOF
 
       - name: Wait for SecurityGroup ec2 Provisioning
