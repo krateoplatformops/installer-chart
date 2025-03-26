@@ -258,58 +258,106 @@ jobs:
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
 
-      - name: Deploy VPC Endpoints via EC2 Controller
+     - name: Deploy Internet Gateway
         run: |
-          echo "Deploying VPC Endpoints for EC2 services..."
-          
-          # Define the services we need endpoints for
-          VPC_ENDPOINT_SERVICES=(
-            "com.amazonaws.eu-central-1.ec2"
-            "com.amazonaws.eu-central-1.ecr.api"
-            "com.amazonaws.eu-central-1.ecr.dkr"
-            "com.amazonaws.eu-central-1.s3"
-            "com.amazonaws.eu-central-1.sts"
-          )
-
-          for service in "${VPC_ENDPOINT_SERVICES[@]}"; do
-            cat <<EOF | kubectl apply -f -
+          echo "Deploying Internet Gateway for VPC..."
+          cat <<EOF | kubectl apply -f -
           apiVersion: ec2.services.k8s.aws/v1alpha1
-          kind: VPCEndpoint
+          kind: InternetGateway
           metadata:
-            name: cluster-$K8S_VERSION_NODOT-$(echo "$service" | tr '.' '-')
+            name: cluster-$K8S_VERSION_NODOT-igw
           spec:
-            serviceName: $service
             vpcRef:
               from:
                 name: cluster-$K8S_VERSION_NODOT
-            vpcEndpointType: Interface
-            subnetRefs:
-              - from:
-                  name: cluster-$K8S_VERSION_NODOT-1
-              - from:
-                  name: cluster-$K8S_VERSION_NODOT-2
-            privateDNSEnabled: true
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-igw
           EOF
-          done
 
-      - name: Wait for VPC Endpoints Provisioning
+      - name: Wait for Internet Gateway Provisioning
         run: |
-          VPC_ENDPOINT_SERVICES=(
-            "com.amazonaws.eu-central-1.ec2"
-            "com.amazonaws.eu-central-1.ecr.api"
-            "com.amazonaws.eu-central-1.ecr.dkr"
-            "com.amazonaws.eu-central-1.sts"
-          )
+          echo "Waiting for Internet Gateway to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s internetgateway/cluster-$K8S_VERSION_NODOT-igw
 
-          for service in "${VPC_ENDPOINT_SERVICES[@]}"; do
-            echo "Waiting for VPC Endpoint $service to become Ready..."
-            kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s vpcendpoint/$(echo "cluster-$K8S_VERSION_NODOT-$service" | tr '.' '-')
-          done
-
-      - name: Check VPC Endpoints status
-        if: always()
+      - name: Deploy Elastic IP for NAT Gateway
         run: |
-          kubectl get vpcendpoint
+          echo "Deploying Elastic IP for NAT Gateway..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: EIP
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-eip
+          spec:
+            domain: vpc
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-nat-eip
+          EOF
+
+      - name: Wait for Elastic IP Provisioning
+        run: |
+          echo "Waiting for Elastic IP to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s eip/cluster-$K8S_VERSION_NODOT-eip
+
+      - name: Deploy NAT Gateway
+        run: |
+          echo "Deploying NAT Gateway in public subnet..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: NATGateway
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-natgw
+          spec:
+            subnetRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT-1
+            allocationRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT-eip
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-natgw
+          EOF
+
+      - name: Wait for NAT Gateway Provisioning
+        run: |
+          echo "Waiting for NAT Gateway to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=1200s natgateway/cluster-$K8S_VERSION_NODOT-natgw
+
+      - name: Create Route Table for Private Subnets
+        run: |
+          echo "Creating Route Table for Private Subnets..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: RouteTable
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-private-rt
+          spec:
+            vpcRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT
+            routes:
+              - destinationCIDRBlock: 0.0.0.0/0
+                natGatewayRef:
+                  from:
+                    name: cluster-$K8S_VERSION_NODOT-natgw
+            associations:
+              - subnetRef:
+                  from:
+                    name: cluster-$K8S_VERSION_NODOT-1
+              - subnetRef:
+                  from:
+                    name: cluster-$K8S_VERSION_NODOT-2
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-private-rt
+          EOF
+
+      - name: Wait for Route Table Provisioning
+        run: |
+          echo "Waiting for Route Table to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s routetable/cluster-$K8S_VERSION_NODOT-private-rt
 
       - name: Deploy Cluster CR via EKS Controller
         run: |
