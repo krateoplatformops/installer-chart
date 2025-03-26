@@ -298,7 +298,6 @@ jobs:
             "com.amazonaws.eu-central-1.ec2"
             "com.amazonaws.eu-central-1.ecr.api"
             "com.amazonaws.eu-central-1.ecr.dkr"
-            "com.amazonaws.eu-central-1.s3"
             "com.amazonaws.eu-central-1.sts"
           )
 
