@@ -333,18 +333,25 @@ jobs:
               from: 
                 name: cluster-$K8S_VERSION_NODOT
             ingressRules:
-              - fromPort: 443
-                toPort: 443
-                ipRanges:
-                  - cidrIP: 10.0.0.0/16
-                    description: Allow HTTPS from VPC CIDR
-
+            - fromPort: 443
+              toPort: 443
+              ipProtocol: tcp
+              ipRanges:
+                - cidrIP: 10.0.0.0/16
+                  description: Allow HTTPS from VPC CIDR
             egressRules:
-              - fromPort: -1
-                toPort: -1
-                ipRanges:
-                  - cidrIP: 0.0.0.0/0
-                    description: Allow all outbound traffic
+            - fromPort: 0
+              toPort: 65535
+              ipProtocol: tcp
+              ipRanges:
+                - cidrIP: 0.0.0.0/0
+                  description: Allow all outbound TCP traffic
+            - fromPort: 0
+              toPort: 65535
+              ipProtocol: udp
+              ipRanges:
+                - cidrIP: 0.0.0.0/0
+                  description: Allow all outbound UDP traffic
           EOF
 
       - name: Wait for SecurityGroup ec2 Provisioning
