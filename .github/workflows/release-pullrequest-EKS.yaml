@@ -300,8 +300,8 @@ jobs:
             roleARN: arn:aws:iam::654654440307:role/EKSClusterRole
             version: "${{ matrix.k8s_version }}"
             resourcesVPCConfig:
-              endpointPrivateAccess: true
-              endpointPublicAccess: false
+              endpointPrivateAccess: false
+              endpointPublicAccess: true
               subnetRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-1
@@ -318,16 +318,6 @@ jobs:
         if: always()
         run: |
           kubectl get cluster/cluster-$K8S_VERSION_NODOT -o yaml
-
-      - name: Get secrets
-        if: always()
-        run: |
-          kubectl get secrets -A
-
-      - name: Get crds
-        if: always()
-        run: |
-          kubectl get crd
 
       - name: Deploy Nodegroup CR via EKS Controller
         run: |
