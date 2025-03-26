@@ -285,11 +285,11 @@ jobs:
           echo "Deploying Elastic IP for NAT Gateway..."
           cat <<EOF | kubectl apply -f -
           apiVersion: ec2.services.k8s.aws/v1alpha1
-          kind: EIP
+          kind: ElasticIPAddress
           metadata:
             name: cluster-$K8S_VERSION_NODOT-eip
           spec:
-            domain: vpc
+            networkBorderGroup: eu-central-1
             tags:
               - key: Name
                 value: cluster-$K8S_VERSION_NODOT-nat-eip
