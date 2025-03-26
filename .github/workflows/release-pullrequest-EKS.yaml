@@ -258,7 +258,7 @@ jobs:
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
 
-     - name: Deploy Internet Gateway
+      - name: Deploy Internet Gateway
         run: |
           echo "Deploying Internet Gateway for VPC..."
           cat <<EOF | kubectl apply -f -
