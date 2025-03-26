@@ -342,13 +342,6 @@ jobs:
                 natGatewayRef:
                   from:
                     name: cluster-$K8S_VERSION_NODOT-natgw
-            associations:
-              - subnetRef:
-                  from:
-                    name: cluster-$K8S_VERSION_NODOT-1
-              - subnetRef:
-                  from:
-                    name: cluster-$K8S_VERSION_NODOT-2
             tags:
               - key: Name
                 value: cluster-$K8S_VERSION_NODOT-private-rt
