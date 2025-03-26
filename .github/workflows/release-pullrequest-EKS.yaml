@@ -287,6 +287,37 @@ jobs:
         run: |
           kubectl get internetgateway/cluster-$K8S_VERSION_NODOT-2 -o yaml
 
+      - name: Deploy VPCEndpoint ec2 CR via EC2 Controller
+        run: |
+          echo "Deploying VPCEndpoint ec2 resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPCEndpoint
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-ec2
+          spec:
+            vpcRef: 
+              from: 
+                name: cluster-$K8S_VERSION_NODOT
+            serviceName: com.amazonaws.eu-central-1.ec2
+            vpcEndpointType: Interface
+            subnetRefs:
+            - from:
+                name: cluster-$K8S_VERSION_NODOT-1
+            - from:
+                name: cluster-$K8S_VERSION_NODOT-2
+          EOF
+
+      - name: Wait for VPCEndpoint ec2 Provisioning
+        run: |
+          echo "Waiting for VPCEndpoint ec2 resource to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s vpcendpoint/cluster-$K8S_VERSION_NODOT-ec2
+
+      - name: Check VPCEndpoint status
+        if: always()
+        run: |
+          kubectl get vpcendpoint/cluster-$K8S_VERSION_NODOT-ec2 -o yaml
+
       - name: Deploy Cluster CR via EKS Controller
         run: |
           echo "Deploying Cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
