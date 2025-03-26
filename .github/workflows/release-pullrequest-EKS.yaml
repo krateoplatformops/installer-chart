@@ -258,6 +258,60 @@ jobs:
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
 
+      - name: Deploy VPC Endpoints via EC2 Controller
+        run: |
+          echo "Deploying VPC Endpoints for EC2 services..."
+          
+          # Define the services we need endpoints for
+          VPC_ENDPOINT_SERVICES=(
+            "com.amazonaws.eu-central-1.ec2"
+            "com.amazonaws.eu-central-1.ecr.api"
+            "com.amazonaws.eu-central-1.ecr.dkr"
+            "com.amazonaws.eu-central-1.s3"
+            "com.amazonaws.eu-central-1.sts"
+          )
+
+          for service in "${VPC_ENDPOINT_SERVICES[@]}"; do
+            cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: VPCEndpoint
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-$(echo "$service" | tr '.' '-')
+          spec:
+            serviceName: $service
+            vpcRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT
+            vpcEndpointType: Interface
+            subnetRefs:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-1
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-2
+            privateDNSEnabled: true
+          EOF
+          done
+
+      - name: Wait for VPC Endpoints Provisioning
+        run: |
+          VPC_ENDPOINT_SERVICES=(
+            "com.amazonaws.eu-central-1.ec2"
+            "com.amazonaws.eu-central-1.ecr.api"
+            "com.amazonaws.eu-central-1.ecr.dkr"
+            "com.amazonaws.eu-central-1.s3"
+            "com.amazonaws.eu-central-1.sts"
+          )
+
+          for service in "${VPC_ENDPOINT_SERVICES[@]}"; do
+            echo "Waiting for VPC Endpoint $service to become Ready..."
+            kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s vpcendpoint/$(echo "cluster-$K8S_VERSION_NODOT-$service" | tr '.' '-')
+          done
+
+      - name: Check VPC Endpoints status
+        if: always()
+        run: |
+          kubectl get vpcendpoint
+
       - name: Deploy Cluster CR via EKS Controller
         run: |
           echo "Deploying Cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."

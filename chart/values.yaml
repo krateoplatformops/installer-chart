@@ -244,7 +244,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.4.0
+      version: 2.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -268,11 +268,11 @@ krateoplatformops:
     #   - name: image-registry-secret
     overrideconf: false
     config:
-      AUTHN_API_BASE_URL: ""
-      BACKEND_API_BASE_URL: ""
-      EVENTS_PUSH_API_BASE_URL: ""
-      EVENTS_API_BASE_URL: ""
-      TERMINAL_SOCKET_URL: ""
+      AUTHN_API_BASE_URL: "" # should be mapped to authn service
+      BACKEND_API_BASE_URL: "" # should be mapped to snowplow service
+      EVENTS_PUSH_API_BASE_URL: "" # should be mapped to eventsse service
+      EVENTS_API_BASE_URL: "" # should be mapped to eventsse service
+      TERMINAL_SOCKET_URL: "" # should be mapped to terminal service
       INIT: ""
     env: {}
       # http_proxy: http://127.0.0.1:3128
