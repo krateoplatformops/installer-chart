@@ -258,6 +258,49 @@ jobs:
         run: |
           kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
 
+      - name: Create Security Group for VPC Endpoints
+        run: |
+          echo "Creating Security Group for VPC Endpoints..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: SecurityGroup
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-vpce-sg
+          spec:
+            description: Security group for VPC Endpoints
+            groupName: cluster-$K8S_VERSION_NODOT-vpce-sg
+            vpcRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT
+            ingressRules:
+              - fromPort: 443
+                toPort: 443
+                ipProtocol: tcp
+                ipRanges:
+                  - cidrIP: 10.0.0.0/16
+                    description: Allow HTTPS from VPC CIDR
+            egressRules:
+              - fromPort: -1
+                toPort: -1
+                ipProtocol: "-1"
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+                    description: Allow all outbound traffic
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-vpce-sg
+          EOF
+
+      - name: Wait for Security Group Provisioning
+        run: |
+          echo "Waiting forSecurity Group resource to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s securitygroup/cluster-$K8S_VERSION_NODOT-vpce-sg
+
+      - name: Check Security Group status
+        if: always()
+        run: |
+          kubectl get securitygroup/cluster-$K8S_VERSION_NODOT-vpce-sg -o yaml
+
       - name: Deploy VPC Endpoint for EC2
         run: |
           echo "Deploying VPC Endpoint for EC2..."
@@ -276,6 +319,9 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-1
               - from:
                   name: cluster-$K8S_VERSION_NODOT-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
             tags:
@@ -301,6 +347,9 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-1
               - from:
                   name: cluster-$K8S_VERSION_NODOT-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
             tags:
@@ -326,6 +375,9 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-1
               - from:
                   name: cluster-$K8S_VERSION_NODOT-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
             tags:
@@ -351,6 +403,9 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-1
               - from:
                   name: cluster-$K8S_VERSION_NODOT-2
+            securityGroupRefs:
+              - from:
+                  name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
             tags:
