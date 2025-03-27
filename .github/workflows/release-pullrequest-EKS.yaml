@@ -267,22 +267,21 @@ jobs:
           metadata:
             name: cluster-$K8S_VERSION_NODOT-vpce-sg
           spec:
-            description: Security group for VPC Endpoints
-            groupName: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcRef:
               from:
                 name: cluster-$K8S_VERSION_NODOT
+            description: Security group for VPC Endpoints
             ingressRules:
-              - fromPort: 443
+              - ipProtocol: tcp
+                fromPort: 443
                 toPort: 443
-                ipProtocol: tcp
                 ipRanges:
                   - cidrIP: 10.0.0.0/16
                     description: Allow HTTPS from VPC CIDR
             egressRules:
-              - fromPort: -1
+              - ipProtocol: "-1"
+                fromPort: -1
                 toPort: -1
-                ipProtocol: "-1"
                 ipRanges:
                   - cidrIP: 0.0.0.0/0
                     description: Allow all outbound traffic
