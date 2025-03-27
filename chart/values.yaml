@@ -157,34 +157,20 @@ krateoplatformops:
       # - secretName: frontend-krateo-certificate
       #   hosts:
       #     - app.krateoplatformops.io
-    snowplow:
+    backend:
       className: ""
       annotations: {}
         # cert-manager.io/cluster-issuer: letsencrypt-krateo
-        # external-dns.alpha.kubernetes.io/hostname: "snowplow.krateoplatformops.io"
+        # external-dns.alpha.kubernetes.io/hostname: "backend.krateoplatformops.io"
       hosts:
-        - host: snowplow.krateoplatformops.io
+        - host: backend.krateoplatformops.io
           paths:
             - path: /
               pathType: Prefix
       tls: []
-      # - secretName: snowplow-krateo-certificate
+      # - secretName: backend-krateo-certificate
       #   hosts:
-      #     - snowplow.krateoplatformops.io
-    snowplow:
-      className: ""
-      annotations: {}
-        # cert-manager.io/cluster-issuer: letsencrypt-krateo
-        # external-dns.alpha.kubernetes.io/hostname: "snowplow.krateoplatformops.io"
-      hosts:
-        - host: snowplow.krateoplatformops.io
-          paths:
-            - path: /
-              pathType: Prefix
-      tls: []
-      # - secretName: snowplow-krateo-certificate
-      #   hosts:
-      #     - snowplow.krateoplatformops.io
+      #     - backend.krateoplatformops.io
     authn:
       className: ""
       annotations: {}
@@ -281,7 +267,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.4.1
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
