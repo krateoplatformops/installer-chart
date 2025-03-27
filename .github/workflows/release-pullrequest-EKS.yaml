@@ -324,6 +324,18 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
+            policyDocument: |
+              {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "*",
+                    "Resource": "*"
+                  }
+                ]
+              }
             tags:
               - key: Name
                 value: cluster-$K8S_VERSION_NODOT-ec2-endpoint
@@ -352,6 +364,18 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
+            policyDocument: |
+              {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "*",
+                    "Resource": "*"
+                  }
+                ]
+              }
             tags:
               - key: Name
                 value: cluster-$K8S_VERSION_NODOT-ecr-api-endpoint
@@ -380,6 +404,18 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
+            policyDocument: |
+              {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "*",
+                    "Resource": "*"
+                  }
+                ]
+              }
             tags:
               - key: Name
                 value: cluster-$K8S_VERSION_NODOT-ecr-dkr-endpoint
@@ -408,6 +444,18 @@ jobs:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
             vpcEndpointType: Interface
             privateDNSEnabled: true
+            policyDocument: |
+              {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "*",
+                    "Resource": "*"
+                  }
+                ]
+              }
             tags:
               - key: Name
                 value: cluster-$K8S_VERSION_NODOT-sts-endpoint
