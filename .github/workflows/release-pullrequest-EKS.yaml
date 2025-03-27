@@ -271,6 +271,7 @@ jobs:
               from:
                 name: cluster-$K8S_VERSION_NODOT
             description: Security group for VPC Endpoints
+            name: cluster-$K8S_VERSION_NODOT-vpce-sg
             ingressRules:
               - ipProtocol: tcp
                 fromPort: 443
