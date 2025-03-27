@@ -511,6 +511,7 @@ jobs:
           metadata:
             name: cluster-$K8S_VERSION_NODOT
           spec:
+            version: "${{ matrix.k8s_version }}"
             name: cluster-$K8S_VERSION_NODOT
             clusterRef:
               from:
