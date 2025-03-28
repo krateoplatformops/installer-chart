@@ -3726,7 +3726,216 @@ spec:
             asString: true
           {{- end }}
           {{- end }}
-          
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.coreprovider.chartInspector.imagePullSecrets }}
+          - name: chartInspector.imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.fullnameOverride }}
+          - name: chartInspector.fullnameOverride
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.coreprovider.chartInspector.resources.requests .Values.krateoplatformops.coreprovider.chartInspector.resources.requests.cpu }}
+          - name: chartInspector.resources.requests.cpu
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.coreprovider.chartInspector.resources.requests .Values.krateoplatformops.coreprovider.chartInspector.resources.requests.memory }}
+          - name: chartInspector.resources.requests.memory
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.coreprovider.chartInspector.resources.limits .Values.krateoplatformops.coreprovider.chartInspector.resources.limits.cpu }}
+          - name: chartInspector.resources.limits.cpu
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.coreprovider.chartInspector.resources.limits .Values.krateoplatformops.coreprovider.chartInspector.resources.limits.memory }}
+          - name: chartInspector.resources.limits.memory
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: chartInspector.podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.appArmorProfile "type") }}
+          - name: chartInspector.podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.fsGroup }}
+          - name: chartInspector.podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.fsGroupChangePolicy }}
+          - name: chartInspector.podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.runAsGroup }}
+          - name: chartInspector.podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.runAsNonRoot }}
+          - name: chartInspector.podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.runAsUser }}
+          - name: chartInspector.podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions "level") }}
+          - name: chartInspector.podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions "role") }}
+          - name: chartInspector.podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions "type") }}
+          - name: chartInspector.podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions "user") }}
+          - name: chartInspector.podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: chartInspector.podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seccompProfile "type") }}
+          - name: chartInspector.podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.supplementalGroups }}
+          - name: chartInspector.podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.supplementalGroupsPolicy }}
+          - name: chartInspector.podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.sysctls }}
+          - name: chartInspector.podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: chartInspector.podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: chartInspector.podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: chartInspector.podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.securityContext.allowPrivilegeEscalation }}
+          - name: chartInspector.securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.appArmorProfile "localhostProfile") }}
+          - name: chartInspector.securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.appArmorProfile "type") }}
+          - name: chartInspector.securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "capabilities") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.coreprovider.chartInspector.securityContext.capabilities.add }}
+          - name: chartInspector.securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "capabilities") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.coreprovider.chartInspector.securityContext.capabilities.drop }}
+          - name: chartInspector.securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.securityContext.privileged }}
+          - name: chartInspector.securityContext.privileged
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.securityContext.procMount }}
+          - name: chartInspector.securityContext.procMount
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.securityContext.readOnlyRootFilesystem }}
+          - name: chartInspector.securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.securityContext.runAsGroup }}
+          - name: chartInspector.securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.securityContext.runAsNonRoot }}
+          - name: chartInspector.securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.securityContext.runAsUser }}
+          - name: chartInspector.securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions "level") }}
+          - name: chartInspector.securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions "role") }}
+          - name: chartInspector.securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions "type") }}
+          - name: chartInspector.securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions "user") }}
+          - name: chartInspector.securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seccompProfile "localhostProfile") }}
+          - name: chartInspector.securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seccompProfile "type") }}
+          - name: chartInspector.securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: chartInspector.securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "hostProcess") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.windowsOptions "hostProcess") }}
+          - name: chartInspector.securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.coreprovider.chartInspector.securityContext.windowsOptions "runAsUserName") }}
+          - name: chartInspector.securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.image.repository }}
+          - name: chartInspector.image.repository
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.image.pullPolicy }}
+          - name: chartInspector.image.pullPolicy
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.image.tag }}
+          - name: chartInspector.image.tag
+            value: {{ .Values.krateoplatformops.coreprovider.chartInspector.image.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.coreprovider.chartInspector.env }}
+          {{- range $key, $value := .Values.krateoplatformops.coreprovider.chartInspector.env }}
+          - name: chartInspector.env.{{ $key }}
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
+          {{- end }}          
+
     - id: install-oasgen-provider
       type: chart
       with:

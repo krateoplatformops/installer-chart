@@ -497,6 +497,20 @@ krateoplatformops:
       #   - name: image-registry-secret
       env: {}
         # http_proxy: http://127.0.0.1:3128
+    chartInspector:
+      fullnameOverride: ""
+      resources: {}
+      podSecurityContext: {}
+      securityContext: {}
+      image:
+        repository: ghcr.io/krateoplatformops/chart-inspector
+        pullPolicy: IfNotPresent
+        # Overrides the image tag whose default is the chart appVersion.
+        tag: ""
+      # imagePullSecrets:
+      #   - name: image-registry-secret
+      env: {}
+        # http_proxy: http://127.0.0.1:3128
   oasgenprovider:
     chart:
       name: oasgen-provider

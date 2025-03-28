@@ -514,7 +514,6 @@ jobs:
             version: "${{ matrix.k8s_version }}"
             amiType: AL2_x86_64
             name: cluster-$K8S_VERSION_NODOT
-            clusterName: cluster-$K8S_VERSION_NODOT
             clusterRef:
               from:
                 name: cluster-$K8S_VERSION_NODOT       
