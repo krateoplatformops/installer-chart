@@ -795,7 +795,7 @@ krateoplatformops:
     service: 
       annotations: {}
     env:
-      CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS: default
+      CRATEDB_OPERATOR_DEBUG_VOLUME_STORAGE_CLASS: standard
   finopscratedbcustomresource:
     chart:
       name: finops-cratedb-custom-resource
@@ -814,7 +814,7 @@ krateoplatformops:
     resources:
       disk:
         size: 8000MiB
-        storageClass: default
+        storageClass: standard
     image:
       repository: ghcr.io/krateoplatformops/crate
       # Overrides the image tag whose default is the chart appVersion.
