@@ -157,20 +157,20 @@ krateoplatformops:
       # - secretName: frontend-krateo-certificate
       #   hosts:
       #     - app.krateoplatformops.io
-    backend:
+    snowplow:
       className: ""
       annotations: {}
         # cert-manager.io/cluster-issuer: letsencrypt-krateo
-        # external-dns.alpha.kubernetes.io/hostname: "backend.krateoplatformops.io"
+        # external-dns.alpha.kubernetes.io/hostname: "snowplow.krateoplatformops.io"
       hosts:
-        - host: backend.krateoplatformops.io
+        - host: snowplow.krateoplatformops.io
           paths:
             - path: /
               pathType: Prefix
       tls: []
-      # - secretName: backend-krateo-certificate
+      # - secretName: snowplow-krateo-certificate
       #   hosts:
-      #     - backend.krateoplatformops.io
+      #     - snowplow.krateoplatformops.io
     authn:
       className: ""
       annotations: {}
@@ -267,7 +267,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.4.2
+      version: 0.4.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -286,7 +286,7 @@ krateoplatformops:
       repository: ghcr.io/krateoplatformops/snowplow
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 0.4.3
+      tag: ""
     # imagePullSecrets:
     #   - name: image-registry-secret
     service: 
