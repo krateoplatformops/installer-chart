@@ -122,8 +122,8 @@ krateoplatformops:
     #     - name: image-registry-secret
     env: []
   service:
-    type: LoadBalancer
-    externalIpAvailable: true
+    type: NodePort
+    externalIpAvailable: false
     # annotations:
     #   service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Use "nlb" for Network Load Balancer or "clb" for Classic Load Balancer
     #   service.beta.kubernetes.io/aws-load-balancer-internal: "false" # Set to "true" if you want an internal load balancer
@@ -267,7 +267,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.4.2
+      version: 0.4.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -459,7 +459,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.29.7
+      version: 0.30.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -738,7 +738,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.9
+      version: 0.2.10
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -762,8 +762,8 @@ krateoplatformops:
     #   - name: image-registry-secret
     service: 
       annotations: {}
-    env: {} 
-      # DEBUG_LEVEL: info # one of debug, warning, info, or error
+    env:
+      DEBUG_LEVEL: debug # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
   composablefinops:
     enabled: false
@@ -822,7 +822,7 @@ krateoplatformops:
   finopsoperatorexporter:
     chart:
       name: finops-operator-exporter
-      version: 0.4.0
+      version: 0.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
