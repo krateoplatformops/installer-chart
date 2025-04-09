@@ -129,9 +129,6 @@ jobs:
             --namespace=ack-system \
             --type=Opaque
 
-      - name: Clean Up Sensitive Files
-        run: rm -f certificato.txt chiave_privata_decifrata.key ./credentials
-
       - name: Install ACK EC2 Controller on Kind using Helm
         run: |
           helm install --create-namespace -n ack-system ack-ec2-controller \
@@ -700,6 +697,9 @@ jobs:
         run: |
           kubectl get nodegroup/cluster-$K8S_VERSION_NODOT -o yaml
 
+      - name: Get kubeconfig
+        run: AWS_SHARED_CREDENTIALS_FILE=./credentials aws eks update-kubeconfig --region eu-central-1 --name cluster-${K8S_VERSION_NODOT} --profile dev
+
       - name: Get events
         if: always()
         run: kubectl get events -A --sort-by='.lastTimestamp'
@@ -707,3 +707,6 @@ jobs:
       - name: Get deployments
         if: always()
         run: kubectl get deployments -n
+
+      - name: Clean Up Sensitive Files
+        run: rm -f certificato.txt chiave_privata_decifrata.key ./credentials
