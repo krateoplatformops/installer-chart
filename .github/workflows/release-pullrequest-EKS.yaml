@@ -129,9 +129,6 @@ jobs:
             --namespace=ack-system \
             --type=Opaque
 
-      - name: Clean Up Sensitive Files
-        run: rm -f certificato.txt chiave_privata_decifrata.key ./credentials
-
       - name: Install ACK EC2 Controller on Kind using Helm
         run: |
           helm install --create-namespace -n ack-system ack-ec2-controller \
@@ -196,67 +193,218 @@ jobs:
         run: |
           kubectl get vpc/cluster-$K8S_VERSION_NODOT -o yaml
 
-      - name: Deploy Subnet-1 CR via EC2 Controller
+      - name: Create Internet Gateway
         run: |
-          echo "Deploying Subnet-1 resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          echo "Creating Internet Gateway..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: InternetGateway
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-igw
+          spec:
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-igw
+            vpcRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT
+          EOF
+
+      - name: Wait for Internet Gateway Provisioning
+        run: |
+          echo "Waiting for Internet Gateway to become ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=300s internetgateway/cluster-$K8S_VERSION_NODOT-igw
+
+      - name: Create Public Route Table
+        run: |
+          echo "Creating Public Route Table..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: RouteTable
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-public-rt
+          spec:
+            vpcRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-public-rt
+            routes:
+            - destinationCIDRBlock: 0.0.0.0/0
+              gatewayRef:
+                from:
+                  name: cluster-$K8S_VERSION_NODOT-igw
+          EOF
+
+      - name: Wait for Route Table Provisioning
+        run: |
+          echo "Waiting for Route Table to become ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=300s routetable/cluster-$K8S_VERSION_NODOT-public-rt
+
+      - name: Deploy Public Subnet-1 CR via EC2 Controller
+        run: |
+          echo "Deploying Public Subnet-1 resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
           apiVersion: ec2.services.k8s.aws/v1alpha1
           kind: Subnet
           metadata:
-            name: cluster-$K8S_VERSION_NODOT-1
+            name: cluster-$K8S_VERSION_NODOT-public-1
           spec:
             cidrBlock: 10.0.1.0/24
             availabilityZone: eu-central-1a
             vpcRef: 
               from: 
                 name: cluster-$K8S_VERSION_NODOT
+            mapPublicIPOnLaunch: true
             tags:
               - key: Name
-                value: cluster-$K8S_VERSION_NODOT-1
+                value: cluster-$K8S_VERSION_NODOT-public-1
               - key: kubernetes.io/cluster/cluster-$K8S_VERSION_NODOT
                 value: shared
+              - key: kubernetes.io/role/elb
+                value: "1"
+            routeTableRefs:
+            - from:
+                name: cluster-$K8S_VERSION_NODOT-public-rt
           EOF
 
-      - name: Wait for Subnet-1 Provisioning
+      - name: Wait for Public Subnet-1 Provisioning
         run: |
-          echo "Waiting for Subnet-1 resource to become Ready..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-1
+          echo "Waiting for Public Subnet-1 resource to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-public-1
 
-      - name: Check Subnet-1 status
+      - name: Check Public Subnet-1 status
         if: always()
         run: |
-          kubectl get subnet/cluster-$K8S_VERSION_NODOT-1 -o yaml
+          kubectl get subnet/cluster-$K8S_VERSION_NODOT-public-1 -o yaml
 
-      - name: Deploy Subnet-2 CR via EC2 Controller
+      - name: Deploy Public Subnet-2 CR via EC2 Controller
         run: |
-          echo "Deploying Subnet-2 resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          echo "Deploying Public Subnet-2 resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
           apiVersion: ec2.services.k8s.aws/v1alpha1
           kind: Subnet
           metadata:
-            name: cluster-$K8S_VERSION_NODOT-2
+            name: cluster-$K8S_VERSION_NODOT-public-2
           spec:
             cidrBlock: 10.0.2.0/24
             availabilityZone: eu-central-1b
             vpcRef: 
               from: 
                 name: cluster-$K8S_VERSION_NODOT
+            mapPublicIPOnLaunch: true
             tags:
               - key: Name
-                value: cluster-$K8S_VERSION_NODOT-2
+                value: cluster-$K8S_VERSION_NODOT-public-2
               - key: kubernetes.io/cluster/cluster-$K8S_VERSION_NODOT
                 value: shared
+              - key: kubernetes.io/role/elb
+                value: "1"
+            routeTableRefs:
+            - from:
+                name: cluster-$K8S_VERSION_NODOT-public-rt
           EOF
 
-      - name: Wait for Subnet-2 Provisioning
+      - name: Wait for Public Subnet-2 Provisioning
         run: |
-          echo "Waiting for Subnet-2 resource to become Ready..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-2
+          echo "Waiting for Public Subnet-2 resource to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s subnet/cluster-$K8S_VERSION_NODOT-public-2
 
-      - name: Check Subnet-2 status
+      - name: Check Public Subnet-2 status
         if: always()
         run: |
-          kubectl get subnet/cluster-$K8S_VERSION_NODOT-2 -o yaml
+          kubectl get subnet/cluster-$K8S_VERSION_NODOT-public-2 -o yaml
+
+      - name: Create Security Group for EKS Control Plane
+        run: |
+          echo "Creating Security Group for EKS Control Plane..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: SecurityGroup
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-eks-sg
+          spec:
+            vpcRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT
+            description: Security group for EKS Control Plane
+            name: cluster-$K8S_VERSION_NODOT-eks-sg
+            ingressRules:
+              - ipProtocol: tcp
+                fromPort: 443
+                toPort: 443
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+                    description: Allow HTTPS from anywhere
+            egressRules:
+              - ipProtocol: "-1"
+                fromPort: -1
+                toPort: -1
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+                    description: Allow all outbound traffic
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-eks-sg
+          EOF
+
+      - name: Wait for EKS Security Group Provisioning
+        run: |
+          echo "Waiting for EKS Security Group to become ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=300s securitygroup/cluster-$K8S_VERSION_NODOT-eks-sg
+
+      - name: Create Security Group for Worker Nodes
+        run: |
+          echo "Creating Security Group for EKS Worker Nodes..."
+          cat <<EOF | kubectl apply -f -
+          apiVersion: ec2.services.k8s.aws/v1alpha1
+          kind: SecurityGroup
+          metadata:
+            name: cluster-$K8S_VERSION_NODOT-node-sg
+          spec:
+            vpcRef:
+              from:
+                name: cluster-$K8S_VERSION_NODOT
+            description: Security group for EKS Worker Nodes
+            name: cluster-$K8S_VERSION_NODOT-node-sg
+            ingressRules:
+              - ipProtocol: tcp
+                fromPort: 1025
+                toPort: 65535
+                ipRanges:
+                  - cidrIP: 10.0.0.0/16
+                    description: Allow all traffic from within VPC
+              - ipProtocol: tcp
+                fromPort: 443
+                toPort: 443
+                ipRanges:
+                  - cidrIP: 10.0.0.0/16
+                    description: Allow HTTPS from VPC
+              - ipProtocol: tcp
+                fromPort: 22
+                toPort: 22
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+                    description: Allow SSH from anywhere
+            egressRules:
+              - ipProtocol: "-1"
+                fromPort: -1
+                toPort: -1
+                ipRanges:
+                  - cidrIP: 0.0.0.0/0
+                    description: Allow all outbound traffic
+            tags:
+              - key: Name
+                value: cluster-$K8S_VERSION_NODOT-node-sg
+              - key: kubernetes.io/cluster/cluster-$K8S_VERSION_NODOT
+                value: owned
+          EOF
+
+      - name: Wait for Node Security Group Provisioning
+        run: |
+          echo "Waiting for Node Security Group to become ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=300s securitygroup/cluster-$K8S_VERSION_NODOT-node-sg
 
       - name: Create Security Group for VPC Endpoints
         run: |
@@ -291,15 +439,10 @@ jobs:
                 value: cluster-$K8S_VERSION_NODOT-vpce-sg
           EOF
 
-      - name: Wait for Security Group Provisioning
+      - name: Wait for VPC Endpoints Security Group Provisioning
         run: |
-          echo "Waiting forSecurity Group resource to become Ready..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s securitygroup/cluster-$K8S_VERSION_NODOT-vpce-sg
-
-      - name: Check Security Group status
-        if: always()
-        run: |
-          kubectl get securitygroup/cluster-$K8S_VERSION_NODOT-vpce-sg -o yaml
+          echo "Waiting for VPC Endpoints Security Group to become ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=300s securitygroup/cluster-$K8S_VERSION_NODOT-vpce-sg
 
       - name: Deploy VPC Endpoint for EC2
         run: |
@@ -316,9 +459,9 @@ jobs:
                 name: cluster-$K8S_VERSION_NODOT
             subnetRefs:
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-1
+                  name: cluster-$K8S_VERSION_NODOT-public-1
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-2
+                  name: cluster-$K8S_VERSION_NODOT-public-2
             securityGroupRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
@@ -356,9 +499,9 @@ jobs:
                 name: cluster-$K8S_VERSION_NODOT
             subnetRefs:
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-1
+                  name: cluster-$K8S_VERSION_NODOT-public-1
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-2
+                  name: cluster-$K8S_VERSION_NODOT-public-2
             securityGroupRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
@@ -396,9 +539,9 @@ jobs:
                 name: cluster-$K8S_VERSION_NODOT
             subnetRefs:
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-1
+                  name: cluster-$K8S_VERSION_NODOT-public-1
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-2
+                  name: cluster-$K8S_VERSION_NODOT-public-2
             securityGroupRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
@@ -436,9 +579,9 @@ jobs:
                 name: cluster-$K8S_VERSION_NODOT
             subnetRefs:
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-1
+                  name: cluster-$K8S_VERSION_NODOT-public-1
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-2
+                  name: cluster-$K8S_VERSION_NODOT-public-2
             securityGroupRefs:
               - from:
                   name: cluster-$K8S_VERSION_NODOT-vpce-sg
@@ -472,7 +615,7 @@ jobs:
 
       - name: Deploy Cluster CR via EKS Controller
         run: |
-          echo "Deploying Cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          echo "Deploying EKS Cluster resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
           apiVersion: eks.services.k8s.aws/v1alpha1
           kind: Cluster
@@ -483,19 +626,24 @@ jobs:
             roleARN: arn:aws:iam::654654440307:role/EKSClusterRole
             version: "${{ matrix.k8s_version }}"
             resourcesVPCConfig:
-              endpointPrivateAccess: false
+              endpointPrivateAccess: true
               endpointPublicAccess: true
+              publicAccessCIDRs:
+                - 0.0.0.0/0
+              securityGroupRefs:
+                - from:
+                    name: cluster-$K8S_VERSION_NODOT-eks-sg
               subnetRefs:
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-1
+                  name: cluster-$K8S_VERSION_NODOT-public-1
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-2
+                  name: cluster-$K8S_VERSION_NODOT-public-2
           EOF
 
       - name: Wait for Cluster Provisioning
         run: |
-          echo "Waiting for Cluster resource to become Ready..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=600s cluster/cluster-$K8S_VERSION_NODOT
+          echo "Waiting for EKS Cluster resource to become Ready..."
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=900s cluster/cluster-$K8S_VERSION_NODOT
 
       - name: Check Cluster status
         if: always()
@@ -504,7 +652,7 @@ jobs:
 
       - name: Deploy Nodegroup CR via EKS Controller
         run: |
-          echo "Deploying Nodegroup resource with Kubernetes version ${{ matrix.k8s_version }}..."
+          echo "Deploying EKS Nodegroup resource with Kubernetes version ${{ matrix.k8s_version }}..."
           cat <<EOF | kubectl apply -f -
           apiVersion: eks.services.k8s.aws/v1alpha1
           kind: Nodegroup
@@ -520,9 +668,14 @@ jobs:
             nodeRole: arn:aws:iam::654654440307:role/eks-node-role
             subnetRefs:
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-1
+                  name: cluster-$K8S_VERSION_NODOT-public-1
               - from:
-                  name: cluster-$K8S_VERSION_NODOT-2
+                  name: cluster-$K8S_VERSION_NODOT-public-2
+            remoteAccess:
+              ec2SshKey: nodegroups
+              sourceSecurityGroupRefs:
+                - from:
+                    name: cluster-$K8S_VERSION_NODOT-node-sg
             instanceTypes:
               - t3.medium
             diskSize: 50
@@ -530,11 +683,13 @@ jobs:
               minSize: 2
               maxSize: 5
               desiredSize: 3
+            tags:
+              cluster-${K8S_VERSION_NODOT}: owned
           EOF
 
       - name: Wait for Nodegroup Provisioning
         run: |
-          echo "Waiting for Cluster resource to become Ready..."
+          echo "Waiting for EKS Nodegroup resource to become Ready..."
           kubectl wait --for=condition=ACK.ResourceSynced --timeout=1800s nodegroup/cluster-$K8S_VERSION_NODOT
 
       - name: Check Nodegroup status
@@ -542,34 +697,16 @@ jobs:
         run: |
           kubectl get nodegroup/cluster-$K8S_VERSION_NODOT -o yaml
 
+      - name: Get kubeconfig
+        run: AWS_SHARED_CREDENTIALS_FILE=./credentials aws eks update-kubeconfig --region eu-central-1 --name cluster-${K8S_VERSION_NODOT} --profile dev
+
       - name: Get events
         if: always()
         run: kubectl get events -A --sort-by='.lastTimestamp'
 
       - name: Get deployments
         if: always()
-        run: kubectl get deployments -n ack-system
+        run: kubectl get deployments -n
 
-      - name: Get pods
-        if: always()
-        run: kubectl get pods -n ack-system
-
-      - name: Get logs of ACK EC2 Controller pod
-        if: always()
-        run: |
-          POD_NAME=$(kubectl get pods -n ack-system -l app.kubernetes.io/instance=ack-ec2-controller -o jsonpath="{.items[0].metadata.name}")
-          if [[ -n "$POD_NAME" ]]; then
-            kubectl logs -n ack-system "$POD_NAME"
-          else
-            echo "No pod found with label app.kubernetes.io/instance=ack-ec2-controller"
-          fi
-
-      - name: Get logs of ACK ECK Controller pod
-        if: always()
-        run: |
-          POD_NAME=$(kubectl get pods -n ack-system -l app.kubernetes.io/instance=ack-eks-controller -o jsonpath="{.items[0].metadata.name}")
-          if [[ -n "$POD_NAME" ]]; then
-            kubectl logs -n ack-system "$POD_NAME"
-          else
-            echo "No pod found with label app.kubernetes.io/instance=ack-eks-controller"
-          fi
+      - name: Clean Up Sensitive Files
+        run: rm -f certificato.txt chiave_privata_decifrata.key ./credentials
