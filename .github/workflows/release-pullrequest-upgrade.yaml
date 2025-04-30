@@ -1,4 +1,4 @@
-name: release-pullrequest-kind
+name: release-pullrequest-upgrade
 
 on:
   pull_request:
@@ -82,8 +82,17 @@ jobs:
         with:
           node_image: kindest/node:"${{ matrix.k8s_version }}"
 
-      - name: Install Krateo PlatformOps with standard configuration
-        run: helm install installer ./chart --create-namespace -n krateo-system --wait
+      - name: Install latest Krateo PlatformOps with standard configuration
+        run: |
+          helm repo add krateo https://charts.krateo.io
+          helm repo update krateo
+          helm install installer krateo/installer --create-namespace -n krateo-system --wait
+
+      - name: Wait for krateoplatformops krateo to become ready
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
+
+      - name: Upgrade Krateo PlatformOps with standard configuration
+        run: helm upgrade installer ./chart -n krateo-system --wait
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
