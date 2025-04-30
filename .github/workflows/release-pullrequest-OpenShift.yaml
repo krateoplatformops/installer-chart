@@ -274,16 +274,17 @@ jobs:
               serviceCidr: 172.30.0.0/16
             apiserverProfile:
               visibility: Public
-            secrets:
-              adminCredentials:
-                name: adminCredentials
-                key: adminCredentials
-              username:
-                name: credentials
-                key: username
-              password:
-                name: credentials
-                key: password
+            operatorSpec:
+              secrets:
+                adminCredentials:
+                  name: adminCredentials
+                  key: adminCredentials
+                username:
+                  name: credentials
+                  key: username
+                password:
+                  name: credentials
+                  key: password
           EOF
 
       - name: Wait for OpenShiftCluster Provisioning
