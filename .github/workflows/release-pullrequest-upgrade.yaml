@@ -66,13 +66,10 @@ jobs:
           IFS='.' read -r major minor patch <<< "$CHART_VERSION"
           patch=$((patch + 1))
           new_version="${major}.${minor}.${patch}"
-          echo "$new_version" > CHART_VERSION
-          echo "new_version=$new_version" >> $GITHUB_OUTPUT
-
-          echo "NEW CHART_VERSION:$CHART_VERSION"
+          echo "new_version=$new_version" 
 
       - name: Replace Version in Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ steps.bump.outputs.new_version }}/g' ./chart/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./chart/Chart.yaml
 
       - name: Print latest App Version
         run: echo ${{ steps.app_version.outputs.tag }}
