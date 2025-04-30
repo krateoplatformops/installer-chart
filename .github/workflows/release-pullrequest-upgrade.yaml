@@ -99,7 +99,7 @@ jobs:
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
 
       - name: Get krateo version
-        run: helm list --namespace krateo-system
+        run: helm list --namespace krateo-system --filter '^installer$' --output json | jq -r '.[0].chart' | sed 's/.*-//'
 
       - name: Get krateoplatformops yaml
         run: kubectl get krateoplatformops krateo --namespace krateo-system -o yaml > krateo-old.yaml
@@ -109,6 +109,9 @@ jobs:
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
+
+      - name: Get krateo version
+        run: helm list --namespace krateo-system --filter '^installer$' --output json | jq -r '.[0].chart' | sed 's/.*-//'
 
       - name: Get krateoplatformops yaml
         run: kubectl get krateoplatformops krateo --namespace krateo-system -o yaml > krateo-new.yaml
