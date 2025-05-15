@@ -1,7 +1,1 @@
-{{- if .Values.krateoplatformops.vcluster.enabled }}
-Thanks for installing vCluster to host Krateo PlatformOps
-{{- else if not .Values.krateoplatformops.vcluster.enabled }}
 Thanks for installing Krateo PlatformOps
-{{- else }}
-Something is wrong in the evaluation of .Values.krateoplatformops.vcluster.enabled
-{{- end }}
