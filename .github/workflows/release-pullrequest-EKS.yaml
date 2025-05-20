@@ -690,7 +690,7 @@ jobs:
       - name: Wait for Nodegroup Provisioning
         run: |
           echo "Waiting for EKS Nodegroup resource to become Ready..."
-          kubectl wait --for=condition=ACK.ResourceSynced --timeout=1800s nodegroup/cluster-$K8S_VERSION_NODOT
+          kubectl wait --for=condition=ACK.ResourceSynced --timeout=3600s nodegroup/cluster-$K8S_VERSION_NODOT
 
       - name: Check Nodegroup status
         if: always()
@@ -710,3 +710,42 @@ jobs:
 
       - name: Clean Up Sensitive Files
         run: rm -f certificato.txt chiave_privata_decifrata.key ./credentials
+
+      - name: Clean Up Nodegroup Resource
+        if: always()
+        run: kubectl delete nodegroup/cluster-$K8S_VERSION_NODOT
+
+      - name: Clean Up Cluster Resource
+        if: always()
+        run: kubectl delete cluster/cluster-$K8S_VERSION_NODOT
+
+      - name: Clean Up VPC Endpoints Resources
+        run: |
+          kubectl delete vpcendpoint/cluster-$K8S_VERSION_NODOT-ec2-endpoint
+          kubectl delete vpcendpoint/cluster-$K8S_VERSION_NODOT-ecr-api-endpoint
+          kubectl delete vpcendpoint/cluster-$K8S_VERSION_NODOT-ecr-dkr-endpoint
+          kubectl delete vpcendpoint/cluster-$K8S_VERSION_NODOT-sts-endpoint
+
+      - name: Clean Up VPC Endpoints Security Group Resource
+        run: kubectl delete securitygroup/cluster-$K8S_VERSION_NODOT-vpce-sg
+
+      - name: Celan Up Node Security Group Resource
+        run: kubectl delete securitygroup/cluster-$K8S_VERSION_NODOT-node-sg
+
+      - name: Clean Up EKS Security Group Resource
+        run: kubectl delete securitygroup/cluster-$K8S_VERSION_NODOT-eks-sg
+
+      - name: Clean Up Public Subnet-2 Resource
+        run: kubectl delete subnet/cluster-$K8S_VERSION_NODOT-public-2
+
+      - name: Clean Up Public Subnet-1 Resource
+        run: kubectl delete subnet/cluster-$K8S_VERSION_NODOT-public-1
+
+      - name: Clean Up Route Table Resource
+        run: kubectl delete routetable/cluster-$K8S_VERSION_NODOT-public-rt
+
+      - name: Clean Up Internet Gateway Resource
+        run: kubectl delete internetgateway/cluster-$K8S_VERSION_NODOT-igw
+
+      - name: Clean Up VPC Resource
+        run: kubectl delete vpc/cluster-$K8S_VERSION_NODOT

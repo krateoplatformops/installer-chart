@@ -1,4 +1,4 @@
-name: release-pullrequest-kind
+name: release-pullrequest-upgrade
 
 on:
   pull_request:
@@ -58,12 +58,19 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Print Version
+        id: bump
         run: |
           echo APP_VERSION:${{steps.app_version.outputs.tag}}
           echo CHART_VERSION:${{steps.chart_version.outputs.tag}}
 
+          IFS='.' read -r major minor patch <<< "${{ steps.chart_version.outputs.tag }}"
+          patch=$((patch + 1))
+          new_version="${major}.${minor}.${patch}"
+          echo "$new_version" > VERSION
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+
       - name: Replace Version in Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./chart/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ steps.bump.outputs.new_version }}/g' ./chart/Chart.yaml
 
       - name: Print latest App Version
         run: echo ${{ steps.app_version.outputs.tag }}
@@ -82,11 +89,59 @@ jobs:
         with:
           node_image: kindest/node:${{ matrix.k8s_version }}
 
-      - name: Install Krateo PlatformOps with standard configuration
-        run: helm install installer ./chart --create-namespace -n krateo-system --wait
+      - name: Install latest Krateo PlatformOps with standard configuration
+        run: |
+          helm repo add krateo https://charts.krateo.io
+          helm repo update krateo
+          helm install installer krateo/installer --create-namespace -n krateo-system --wait
 
       - name: Wait for krateoplatformops krateo to become ready
         run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
+
+      - name: Get krateo version
+        run: helm list --namespace krateo-system --filter '^installer$' --output json | jq -r '.[0].chart' | sed 's/.*-//'
+
+      - name: Get krateoplatformops yaml
+        run: kubectl get krateoplatformops krateo --namespace krateo-system -o yaml > krateo-old.yaml
+
+      - name: Upgrade Krateo PlatformOps with standard configuration
+        run: helm upgrade installer ./chart -n krateo-system --wait
+
+      - name: Wait for krateoplatformops krateo to become ready
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
+
+      - name: Get krateo version
+        run: helm list --namespace krateo-system --filter '^installer$' --output json | jq -r '.[0].chart' | sed 's/.*-//'
+
+      - name: Get krateoplatformops yaml
+        run: kubectl get krateoplatformops krateo --namespace krateo-system -o yaml > krateo-new.yaml
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml deepdiff
+
+      - name: Compare YAML files
+        run: |
+          python <<EOF
+          import yaml
+          from deepdiff import DeepDiff
+
+          with open('krateo-old.yaml') as f1, open('krateo-new.yaml') as f2:
+              y1 = yaml.safe_load(f1)
+              y2 = yaml.safe_load(f2)
+
+          diff = DeepDiff(y1, y2, ignore_order=True)
+          if diff:
+              print("🔍 Differences found:")
+              print(diff.to_json(indent=2))
+              exit(1)  # fail job if there are differences
+          else:
+              print("✅ No differences found.")
+          EOF
 
       - name: Get events
         if: always()
