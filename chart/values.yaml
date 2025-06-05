@@ -486,7 +486,7 @@ krateoplatformops:
       repository: ghcr.io/krateoplatformops/krateo-frontend
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: ""
+      tag: 2.4.2
     # imagePullSecrets:
     #   - name: image-registry-secret
     overrideconf: false
@@ -534,7 +534,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: composable-portal-basic
-      version: 0.6.2
+      version: 0.6.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -705,7 +705,7 @@ krateoplatformops:
   finopsoperatorfocus:
     chart:
       name: finops-operator-focus
-      version: 0.4.0
+      version: 0.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -733,7 +733,7 @@ krateoplatformops:
   finopsdatabasehandler:
     chart:
       name: finops-database-handler
-      version: 0.4.2
+      version: 0.4.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -761,7 +761,7 @@ krateoplatformops:
   finopscompositiondefinitionparser:
     chart:
       name: finops-composition-definition-parser
-      version: 0.1.1
+      version: 0.1.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -809,6 +809,47 @@ krateoplatformops:
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    service: 
+      annotations: {}
+    env: {}
+  finopspolicies:
+    chart:
+      name: finops-moving-window-policy
+      version: 0.1.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+  opa:
+    chart:
+      name: opa-kube-mgmt
+      version: 0.1.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/opa
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: 1.4.2-static
     service: 
       annotations: {}
     env: {}
