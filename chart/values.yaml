@@ -503,7 +503,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.11
+      version: 0.2.12
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
