@@ -503,7 +503,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.12
+      version: 0.2.13
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -679,7 +679,7 @@ krateoplatformops:
   finopsoperatorexporter:
     chart:
       name: finops-operator-exporter
-      version: 0.4.1
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -789,7 +789,7 @@ krateoplatformops:
   finopsoperatorscraper:
     chart:
       name: finops-operator-scraper
-      version: 0.4.0
+      version: 0.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
