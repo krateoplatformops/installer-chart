@@ -674,8 +674,8 @@ krateoplatformops:
     env: {}
         # http_proxy: http://127.0.0.1:3128
     # storageClassName: standard
-    # openshift:
-    #   enabled: false
+    openshift:
+      enabled: false
   finopsoperatorexporter:
     chart:
       name: finops-operator-exporter
@@ -705,7 +705,7 @@ krateoplatformops:
   finopsoperatorfocus:
     chart:
       name: finops-operator-focus
-      version: 0.4.1
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
