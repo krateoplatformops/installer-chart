@@ -103,20 +103,20 @@ krateoplatformops:
       # - secretName: frontend-krateo-certificate
       #   hosts:
       #     - app.krateoplatformops.io
-    backend:
+    snowplow:
       className: ""
       annotations: {}
         # cert-manager.io/cluster-issuer: letsencrypt-krateo
-        # external-dns.alpha.kubernetes.io/hostname: "backend.krateoplatformops.io"
+        # external-dns.alpha.kubernetes.io/hostname: "snowplow.krateoplatformops.io"
       hosts:
-        - host: backend.krateoplatformops.io
+        - host: snowplow.krateoplatformops.io
           paths:
             - path: /
               pathType: Prefix
       tls: []
-      # - secretName: backend-krateo-certificate
+      # - secretName: snowplow-krateo-certificate
       #   hosts:
-      #     - backend.krateoplatformops.io
+      #     - snowplow.krateoplatformops.io
     authn:
       className: ""
       annotations: {}
@@ -159,16 +159,30 @@ krateoplatformops:
       # - secretName: resoucetreehandler-krateo-certificate
       #   hosts:
       #     - resoucetreehandler.krateoplatformops.io
+    smithery:
+      className: ""
+      annotations: {}
+        # cert-manager.io/cluster-issuer: letsencrypt-krateo
+        # external-dns.alpha.kubernetes.io/hostname: "smithery.krateoplatformops.io"
+      hosts:
+        - host: smithery.krateoplatformops.io
+          paths:
+            - path: /
+              pathType: Prefix
+      tls: []
+      # - secretName: smithery-krateo-certificate
+      #   hosts:
+      #     - smithery.krateoplatformops.io
   composableportal:
     enabled: true
   composableoperations:
     enabled: true
   composablefinops:
-    enabled: false
+    enabled: true
   authn:
     chart:
       name: authn
-      version: 0.19.1
+      version: 0.20.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -259,10 +273,42 @@ krateoplatformops:
       # AUTHN_CORS: "true"
       # AUTHN_DUMP_ENV: "true"
       # http_proxy: http://127.0.0.1:3128
+  smithery:
+    chart:
+      name: smithery
+      version: 0.6.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-token
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/smithery
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: ""
+    # imagePullSecrets:
+    #   - name: image-registry-secret
+    service: 
+      annotations: {}
+    env: {}
+      # DEBUG: "true"
+      # BLIZZARD: "false"
+      # SKIP: "false"
+      # http_proxy: http://127.0.0.1:3128
   snowplow:
     chart:
       name: snowplow
-      version: 0.4.3
+      version: 0.11.6
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -291,72 +337,6 @@ krateoplatformops:
       # BLIZZARD: "false"
       # SKIP: "false"
       # http_proxy: http://127.0.0.1:3128
-  backend:
-    chart:
-      name: backend
-      version: 0.15.3
-      repository: https://charts.krateo.io
-      wait: true
-      waitTimeout: 5m
-      # # Use with private helm registry
-      # credentials:
-      #   username: username
-      #   passwordRef: # reference to a secret
-      #     key: token
-      #     name: helm-registry-secret
-      #     namespace: krateo-system
-    fullnameOverride: ""
-    resources: {}
-    podSecurityContext: {}
-    securityContext: {}
-    image:
-      repository: ghcr.io/krateoplatformops/backend
-      pullPolicy: IfNotPresent
-      # Overrides the image tag whose default is the chart appVersion.
-      tag: ""
-    # imagePullSecrets:
-    #   - name: image-registry-secret
-    env: {}
-      # http_proxy: http://127.0.0.1:3128
-    etcd:
-      chart:
-        name: etcd
-        version: 11.1.3
-        repository: https://charts.krateo.io
-        wait: true
-        waitTimeout: 5m
-        # # Use with private helm registry
-        # credentials:
-        #   username: username
-        #   passwordRef: # reference to a secret
-        #     key: token
-        #     name: helm-registry-token
-        #     namespace: krateo-system
-      auth:
-        rbac:
-          create: false
-      global:
-        imageRegistry: ghcr.io
-        # imagePullSecrets:
-        #   - name: image-registry-secret
-        defaultStorageClass: ""
-        compatibility:
-          openshift:
-            adaptSecurityContext: auto
-      fullnameOverride: ""
-      resources: {}
-      podSecurityContext: {}
-      containerSecurityContext: {}
-      image:
-        repository: krateoplatformops/etcd
-        tag: ""
-        pullPolicy: IfNotPresent
-      env: {}
-        # http_proxy: http://127.0.0.1:3128
-      preUpgradeJob:
-        resources: {}
-        podSecurityContext: {}
-        containerSecurityContext: {}
   eventrouter:
     chart:
       name: eventrouter
@@ -393,7 +373,7 @@ krateoplatformops:
   eventsse:
     chart:
       name: eventsse
-      version: 0.5.1
+      version: 0.5.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -466,8 +446,8 @@ krateoplatformops:
         containerSecurityContext: {}
   frontend:
     chart:
-      name: krateo-frontend
-      version: 2.4.1
+      name: frontend
+      version: 0.0.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -483,7 +463,7 @@ krateoplatformops:
     podSecurityContext: {}
     securityContext: {}
     image:
-      repository: ghcr.io/krateoplatformops/krateo-frontend
+      repository: ghcr.io/krateoplatformops/frontend
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
@@ -492,9 +472,10 @@ krateoplatformops:
     overrideconf: false
     config:
       AUTHN_API_BASE_URL: "" # should be mapped to authn service
-      BACKEND_API_BASE_URL: "" # should be mapped to snowplow service
+      SNOWPLOW_API_BASE_URL: "" # should be mapped to snowplow service
       EVENTS_PUSH_API_BASE_URL: "" # should be mapped to eventsse service
       EVENTS_API_BASE_URL: "" # should be mapped to eventsse service
+      SMITHERY_API_BASE_URL: "" # should be mapped to smithery service
       INIT: ""
     env: {}
       # http_proxy: http://127.0.0.1:3128
@@ -503,7 +484,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.11
+      version: 0.2.16
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -530,11 +511,11 @@ krateoplatformops:
     env:
       DEBUG_LEVEL: debug # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
-  composableportalbasic:
+  composableportalstarter:
     enabled: true
     chart:
-      name: composable-portal-basic
-      version: 0.6.2
+      name: composable-portal-starter
+      version: 0.1.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -548,7 +529,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.31.2
+      version: 0.31.7
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -604,7 +585,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: oasgen-provider
-      version: 0.5.1
+      version: 0.5.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -679,7 +660,7 @@ krateoplatformops:
   finopsoperatorexporter:
     chart:
       name: finops-operator-exporter
-      version: 0.4.1
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -705,7 +686,7 @@ krateoplatformops:
   finopsoperatorfocus:
     chart:
       name: finops-operator-focus
-      version: 0.4.0
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -733,7 +714,7 @@ krateoplatformops:
   finopsdatabasehandler:
     chart:
       name: finops-database-handler
-      version: 0.4.2
+      version: 0.4.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -761,7 +742,7 @@ krateoplatformops:
   finopscompositiondefinitionparser:
     chart:
       name: finops-composition-definition-parser
-      version: 0.1.1
+      version: 0.1.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -789,7 +770,7 @@ krateoplatformops:
   finopsoperatorscraper:
     chart:
       name: finops-operator-scraper
-      version: 0.4.0
+      version: 0.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -809,6 +790,47 @@ krateoplatformops:
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: ""
+    service: 
+      annotations: {}
+    env: {}
+  finopspolicies:
+    chart:
+      name: finops-moving-window-policy
+      version: 0.1.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+  opa:
+    chart:
+      name: opa-kube-mgmt
+      version: 0.1.0
+      repository: https://charts.krateo.io
+      wait: true
+      waitTimeout: 5m
+      # # Use with private helm registry
+      # credentials:
+      #   username: username
+      #   passwordRef: # reference to a secret
+      #     key: token
+      #     name: helm-registry-secret
+      #     namespace: krateo-system
+    fullnameOverride: ""
+    resources: {}
+    podSecurityContext: {}
+    securityContext: {}
+    image:
+      repository: ghcr.io/krateoplatformops/opa
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: 1.4.2-static
     service: 
       annotations: {}
     env: {}
