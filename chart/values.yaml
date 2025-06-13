@@ -327,7 +327,7 @@ krateoplatformops:
       repository: ghcr.io/krateoplatformops/snowplow
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: ""
+      tag: 0.8.1
     # imagePullSecrets:
     #   - name: image-registry-secret
     service: 
