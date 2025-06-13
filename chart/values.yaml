@@ -164,7 +164,7 @@ krateoplatformops:
   composableoperations:
     enabled: true
   composablefinops:
-    enabled: false
+    enabled: true
   authn:
     chart:
       name: authn
@@ -262,7 +262,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.4.3
+      version: 0.6.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -281,7 +281,7 @@ krateoplatformops:
       repository: ghcr.io/krateoplatformops/snowplow
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: ""
+      tag: 0.8.1
     # imagePullSecrets:
     #   - name: image-registry-secret
     service: 
@@ -393,7 +393,7 @@ krateoplatformops:
   eventsse:
     chart:
       name: eventsse
-      version: 0.5.1
+      version: 0.5.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -467,7 +467,7 @@ krateoplatformops:
   frontend:
     chart:
       name: krateo-frontend
-      version: 2.4.1
+      version: 2.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -503,7 +503,7 @@ krateoplatformops:
   resourcetreehandler:
     chart:
       name: resource-tree-handler
-      version: 0.2.11
+      version: 0.2.14
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -534,7 +534,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: composable-portal-basic
-      version: 0.6.2
+      version: 0.6.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -548,7 +548,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.31.2
+      version: 0.31.7
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -604,7 +604,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: oasgen-provider
-      version: 0.5.1
+      version: 0.5.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -679,7 +679,7 @@ krateoplatformops:
   finopsoperatorexporter:
     chart:
       name: finops-operator-exporter
-      version: 0.4.1
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -705,7 +705,7 @@ krateoplatformops:
   finopsoperatorfocus:
     chart:
       name: finops-operator-focus
-      version: 0.4.0
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -733,7 +733,7 @@ krateoplatformops:
   finopsdatabasehandler:
     chart:
       name: finops-database-handler
-      version: 0.4.2
+      version: 0.4.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -761,7 +761,7 @@ krateoplatformops:
   finopscompositiondefinitionparser:
     chart:
       name: finops-composition-definition-parser
-      version: 0.1.1
+      version: 0.1.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -789,7 +789,7 @@ krateoplatformops:
   finopsoperatorscraper:
     chart:
       name: finops-operator-scraper
-      version: 0.4.0
+      version: 0.4.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
