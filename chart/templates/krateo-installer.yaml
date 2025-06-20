@@ -245,8 +245,13 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
+          {{- if .Values.krateoplatformops.authn.service.nodePort }}
+          - name: service.nodePort
+            value: {{ .Values.krateoplatformops.authn.service.nodePort | quote }}
+          {{- else }}
           - name: service.nodePort
             value: "30082"
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
@@ -646,8 +651,13 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
+          {{- if .Values.krateoplatformops.smithery.service.nodePort }}
+          - name: service.nodePort
+            value: {{ .Values.krateoplatformops.smithery.service.nodePort | quote }}
+          {{- else }}
           - name: service.nodePort
             value: "30088"
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
@@ -1043,8 +1053,13 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
+          {{- if .Values.krateoplatformops.snowplow.service.nodePort }}
+          - name: service.nodePort
+            value: {{ .Values.krateoplatformops.snowplow.service.nodePort | quote }}
+          {{- else }}
           - name: service.nodePort
             value: "30081"
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
@@ -2105,8 +2120,13 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
+          {{- if .Values.krateoplatformops.eventsse.service.nodePort }}
+          - name: service.nodePort
+            value: {{ .Values.krateoplatformops.eventsse.service.nodePort | quote }}
+          {{- else }}
           - name: service.nodePort
             value: "30083"
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
@@ -2502,8 +2522,13 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
+          {{- if .Values.krateoplatformops.frontend.service.nodePort }}
+          - name: service.nodePort
+            value: {{ .Values.krateoplatformops.frontend.service.nodePort | quote }}
+          {{- else }}
           - name: service.nodePort
             value: "30080"
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
@@ -2610,6 +2635,13 @@ spec:
           {{- else }}
           - name: config.INIT
             value: /call?resource=navmenus&apiVersion=widgets.templates.krateo.io/v1beta1&name=sidebar-nav-menu&namespace={{ .Release.Namespace }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.frontend.config.ROUTES_LOADER }}
+          - name: config.ROUTES_LOADER
+            value: {{ .Values.krateoplatformops.frontend.config.ROUTES_LOADER }}&namespace={{ .Release.Namespace }}
+          {{- else }}
+          - name: config.ROUTES_LOADER
+            value: /call?resource=routesloaders&apiVersion=widgets.templates.krateo.io/v1beta1&name=routes-loader&namespace={{ .Release.Namespace }}
           {{- end }}
 
     - id: extract-eventsse-internal-port
@@ -2849,8 +2881,13 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
+          {{- if .Values.krateoplatformops.resourcetreehandler.service.nodePort }}
+          - name: service.nodePort
+            value: {{ .Values.krateoplatformops.resourcetreehandler.service.nodePort | quote }}
+          {{- else }}
           - name: service.nodePort
             value: "30085"
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
@@ -4942,8 +4979,13 @@ spec:
           {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
           - name: service.type
             value: NodePort
+          {{- if .Values.krateoplatformops.finopsdatabasehandler.service.nodePort }}
+          - name: service.nodePort
+            value: {{ .Values.krateoplatformops.finopsdatabasehandler.service.nodePort | quote }}
+          {{- else }}
           - name: service.nodePort
             value: "30086"
+          {{- end }}
           {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
           - name: service.type
             value: LoadBalancer
