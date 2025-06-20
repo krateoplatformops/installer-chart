@@ -516,7 +516,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: composable-portal-starter
-      version: 0.1.8
+      version: 0.1.9
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -661,7 +661,7 @@ krateoplatformops:
   finopsoperatorexporter:
     chart:
       name: finops-operator-exporter
-      version: 0.4.4
+      version: 0.4.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
