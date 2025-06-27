@@ -276,7 +276,7 @@ krateoplatformops:
   smithery:
     chart:
       name: smithery
-      version: 0.6.0
+      version: 0.6.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -308,7 +308,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.11.6
+      version: 0.12.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -447,7 +447,7 @@ krateoplatformops:
   frontend:
     chart:
       name: frontend
-      version: 0.0.10
+      version: 0.0.19
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -516,7 +516,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: composable-portal-starter
-      version: 0.1.9
+      version: 0.1.10
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -566,7 +566,8 @@ krateoplatformops:
         tag: ""
       # imagePullSecrets:
       #   - name: image-registry-secret
-      env: {}
+      env:
+        COMPOSITION_CONTROLLER_WORKERS: 5
         # http_proxy: http://127.0.0.1:3128
     chartInspector:
       fullnameOverride: ""
@@ -586,7 +587,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: oasgen-provider
-      version: 0.5.3
+      version: 0.5.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -715,7 +716,7 @@ krateoplatformops:
   finopsdatabasehandler:
     chart:
       name: finops-database-handler
-      version: 0.4.3
+      version: 0.4.4
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
