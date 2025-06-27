@@ -1,1 +1,3 @@
-Thanks for installing Krateo PlatformOps
+Thanks for installing Krateo PlatformOps.
+
+Note: Etcd and CrateDB are pre-configured for non-production environments. Configuration for production use is the responsibility of the user.
