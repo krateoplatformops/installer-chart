@@ -308,7 +308,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.14.1
+      version: 0.14.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -447,7 +447,7 @@ krateoplatformops:
   frontend:
     chart:
       name: frontend
-      version: 0.0.31
+      version: 0.0.32
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
