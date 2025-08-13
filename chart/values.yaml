@@ -78,7 +78,7 @@ tolerations: []
 affinity: {}
 
 env:
-  INSTALLER_PROVIDER_DEBUG: "true"
+  INSTALLER_PROVIDER_DEBUG: "false"
 
 krateoplatformops:
   service:

@@ -115,6 +115,106 @@ spec:
                 type: array
               digest:
                 type: string
+              objectList:
+                items:
+                  properties:
+                    apiVersion:
+                      type: string
+                    kind:
+                      type: string
+                    metadata:
+                      description: A Reference to a named object.
+                      properties:
+                        name:
+                          description: Name of the referenced object.
+                          type: string
+                        namespace:
+                          description: Namespace of the referenced object.
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                    set:
+                      items:
+                        properties:
+                          asString:
+                            type: boolean
+                          name:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      type: array
+                  required:
+                  - apiVersion
+                  - kind
+                  - metadata
+                  type: object
+                type: array
+              releaseList:
+                items:
+                  properties:
+                    appVersion:
+                      type: string
+                    chartName:
+                      type: string
+                    chartVersion:
+                      type: string
+                    namespace:
+                      type: string
+                    releaseName:
+                      type: string
+                    revision:
+                      type: integer
+                    status:
+                      type: string
+                    updated:
+                      format: date-time
+                      type: string
+                  type: object
+                type: array
+              varList:
+                items:
+                  properties:
+                    asString:
+                      type: boolean
+                    name:
+                      type: string
+                    value:
+                      type: string
+                    valueFrom:
+                      properties:
+                        apiVersion:
+                          type: string
+                        kind:
+                          type: string
+                        metadata:
+                          description: A Reference to a named object.
+                          properties:
+                            name:
+                              description: Name of the referenced object.
+                              type: string
+                            namespace:
+                              description: Namespace of the referenced object.
+                              type: string
+                          required:
+                          - name
+                          - namespace
+                          type: object
+                        selector:
+                          type: string
+                      required:
+                      - apiVersion
+                      - kind
+                      - metadata
+                      type: object
+                  required:
+                  - name
+                  type: object
+                type: array
             type: object
         required:
         - spec
