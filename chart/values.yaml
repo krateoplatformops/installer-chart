@@ -308,7 +308,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.14.3
+      version: 0.16.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -447,7 +447,7 @@ krateoplatformops:
   frontend:
     chart:
       name: frontend
-      version: 0.0.32
+      version: 0.0.42
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -513,7 +513,7 @@ krateoplatformops:
       DEBUG_LEVEL: debug # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
   composableportalstarter:
-    enabled: true
+    enabled: false
     chart:
       name: portal
       version: 0.0.1
@@ -530,7 +530,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.32.0
+      version: 0.33.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -587,7 +587,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: oasgen-provider
-      version: 0.5.4
+      version: 0.6.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -773,7 +773,7 @@ krateoplatformops:
     enabled: true
     chart:
       name: finops-notebooks
-      version: 0.1.0
+      version: 0.1.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
