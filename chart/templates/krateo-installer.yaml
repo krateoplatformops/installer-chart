@@ -3,6 +3,7 @@ kind: KrateoPlatformOps
 metadata:
   annotations:
     "krateo.io/connector-verbose": "true"
+    "helm.sh/hook": post-install,post-upgrade
   name: krateo
   namespace: {{ .Release.Namespace }}
 spec:
