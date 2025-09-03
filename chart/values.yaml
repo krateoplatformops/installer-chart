@@ -276,7 +276,7 @@ krateoplatformops:
   smithery:
     chart:
       name: smithery
-      version: 0.7.0
+      version: 0.8.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -308,7 +308,7 @@ krateoplatformops:
   snowplow:
     chart:
       name: snowplow
-      version: 0.16.2
+      version: 0.19.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -332,8 +332,8 @@ krateoplatformops:
     #   - name: image-registry-secret
     service: 
       annotations: {}
-    env: {}
-      # DEBUG: "true"
+    env:
+      DEBUG: true
       # BLIZZARD: "false"
       # SKIP: "false"
       # http_proxy: http://127.0.0.1:3128
@@ -447,7 +447,7 @@ krateoplatformops:
   frontend:
     chart:
       name: frontend
-      version: 0.0.42
+      version: 0.0.45
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -513,10 +513,10 @@ krateoplatformops:
       DEBUG_LEVEL: debug # one of debug, warning, info, or error
       # http_proxy: http://127.0.0.1:3128
   composableportalstarter:
-    enabled: false
+    enabled: true
     chart:
       name: portal
-      version: 0.0.1
+      version: 1.0.0
       repository: https://marketplace.krateo.io
       wait: true
       waitTimeout: 5m
@@ -530,7 +530,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.33.1
+      version: 0.33.3
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -552,7 +552,8 @@ krateoplatformops:
       tag: ""
     # imagePullSecrets:
     #   - name: image-registry-secret
-    env: {}
+    env:
+      CORE_PROVIDER_DEBUG: true
       # http_proxy: http://127.0.0.1:3128
     cdc:
       fullnameOverride: ""
@@ -567,7 +568,8 @@ krateoplatformops:
       # imagePullSecrets:
       #   - name: image-registry-secret
       env:
-        COMPOSITION_CONTROLLER_WORKERS: 5
+        COMPOSITION_CONTROLLER_WORKERS: 20
+        COMPOSITION_CONTROLLER_DEBUG: true
         # http_proxy: http://127.0.0.1:3128
     chartInspector:
       fullnameOverride: ""
@@ -583,6 +585,7 @@ krateoplatformops:
       #   - name: image-registry-secret
       env: {}
         # http_proxy: http://127.0.0.1:3128
+      replicaCount: 5
   oasgenprovider:
     enabled: true
     chart:
@@ -841,7 +844,7 @@ krateoplatformops:
   finopspolicies:
     chart:
       name: finops-moving-window-policy
-      version: 0.1.1
+      version: 0.1.2
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
