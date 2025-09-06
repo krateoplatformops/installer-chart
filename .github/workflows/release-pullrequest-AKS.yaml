@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        k8s_version: [ "1.31.7", "1.32.3" ]
+        k8s_version: [ "1.32.6", "1.33.2" ]
 
     steps:
       - name: Extract and Store Trimmed Repository Name
@@ -73,6 +73,9 @@ jobs:
 
       - name: Set up Helm
         uses: azure/setup-helm@v4.1.0
+
+      - name: Helm Dependency Build
+        run: helm dependency build ./chart
 
       - name: Helm lint
         run: helm lint ./chart
