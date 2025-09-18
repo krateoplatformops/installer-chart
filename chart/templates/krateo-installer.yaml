@@ -5545,6 +5545,20 @@ spec:
             value: {{ $secret.name }}
           {{- end }}
           {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.initImage }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.initImage.repository }}
+          - name: initImage.repository
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.initImage.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.initImage.tag }}
+          - name: initImage.tag
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.initImage.tag }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.finopscompositiondefinitionparser.initImage.pullPolicy }}
+          - name: initImage.pullPolicy
+            value: {{ .Values.krateoplatformops.finopscompositiondefinitionparser.initImage.pullPolicy }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}
           - name: env.URL_DATABASE_HANDLER_PRICING_NOTEBOOK
             value: http://{{ .Values.krateoplatformops.finopsdatabasehandler.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$FINOPS_DATABASE_HANDLER_INTERNAL_PORT/compute/pricingparser
