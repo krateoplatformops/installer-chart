@@ -882,3 +882,8 @@ krateoplatformops:
     service: 
       annotations: {}
     env: {}
+    mgmt:
+      image:
+        repository: ghcr.io/krateoplatformops/kube-mgmt
+        pullPolicy: IfNotPresent
+        tag: "9.0.1"
