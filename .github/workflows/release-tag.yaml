@@ -58,13 +58,16 @@ jobs:
           echo APP_VERSION:${{steps.app_version.outputs.tag}}
           echo CHART_VERSION:${{steps.chart_version.outputs.tag}}
 
-      - name: Replace Version in Chart.yaml
+      - name: Replace CHART_VERSION in chart/Chart.yaml
         run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./chart/Chart.yaml
+
+      - name: Replace CHART_VERSION in chart/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./crd-chart/Chart.yaml
 
       - name: Print latest App Version
         run: echo ${{ steps.app_version.outputs.tag }}
 
-      - name: Replace App Version in Chart.yaml
+      - name: Replace APP_VERSION in Chart.yaml
         run: sed -i 's/APP_VERSION/${{ steps.app_version.outputs.tag }}/g' ./chart/Chart.yaml
 
       - name: Publish Helm chart
