@@ -25,5 +25,5 @@ appVersion: APP_VERSION
 
 dependencies:
   - name: installer-crd
-    version: 0.0.1
+    version: CHART_VERSION
     repository: file://../crd-chart

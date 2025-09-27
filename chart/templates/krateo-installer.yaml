@@ -6045,6 +6045,18 @@ spec:
           - name: image.tag
             value: {{ .Values.krateoplatformops.opa.image.tag }}
           {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.opa.mgmt "image") (hasKey .Values.krateoplatformops.opa.mgmt.image "repository") }}
+          - name: mgmt.image.repository
+            value: {{ .Values.krateoplatformops.opa.mgmt.image.repository }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.opa.mgmt "image") (hasKey .Values.krateoplatformops.opa.mgmt.image "pullPolicy") }}
+          - name: mgmt.image.pullPolicy
+            value: {{ .Values.krateoplatformops.opa.mgmt.image.pullPolicy }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.opa.mgmt "image") (hasKey .Values.krateoplatformops.opa.mgmt.image "tag") }}
+          - name: mgmt.image.tag
+            value: {{ .Values.krateoplatformops.opa.mgmt.image.tag }}
+          {{- end }}
           {{- if .Values.krateoplatformops.opa.env }}
           {{- range $key, $value := .Values.krateoplatformops.opa.env }}
           - name: env.{{ $key }}
