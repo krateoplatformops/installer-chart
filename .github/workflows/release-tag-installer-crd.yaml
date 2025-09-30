@@ -1,4 +1,4 @@
-name: release-tag
+name: release-tag-installer-crd
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
           echo CHART_VERSION:${{ env.CHART_VERSION }}
 
       - name: Replace CHART_VERSION in crd-chart/Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./crd-chart/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ env.CHART_VERSION }}/g' ./crd-chart/Chart.yaml
 
       - name: Publish Helm chart
         uses: stefanprodan/helm-gh-pages@master
