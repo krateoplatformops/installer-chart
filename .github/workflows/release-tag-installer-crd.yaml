@@ -32,11 +32,17 @@ jobs:
       - name: Replace CHART_VERSION in crd-chart/Chart.yaml
         run: sed -i 's/CHART_VERSION/${{ env.CHART_VERSION }}/g' ./crd-chart/Chart.yaml
 
+      # Stage only the chart you want to publish
+      - name: Prepare charts_dir
+        run: |
+          mkdir -p _charts
+          cp -R crd-chart _crd-chart/
+
       - name: Publish Helm chart
         uses: stefanprodan/helm-gh-pages@master
         with:
           token: ${{ steps.authenticate.outputs.token }}
-          charts_dir: crd-chart
+          charts_dir: _crd-chart
           charts_url: https://charts.krateo.io
           owner: krateoplatformops
           repository: helm-charts
