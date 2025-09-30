@@ -1712,6 +1712,7 @@ spec:
             value: {{ $key | quote }}
           - name: extraEnvVars[{{ $index }}].value
             value: {{ index $.Values.krateoplatformops.eventsse.etcd.env $key | quote }}
+            asString: true
           {{- end }}
           {{- end }}
           {{- if and .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.cpu }}
