@@ -59,16 +59,33 @@ jobs:
         id: tags
         shell: bash
         run: |
-          latest_installer="$(git tag -l --sort=-version:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)"
-          latest_installer_crd="$(git tag -l 'installer-crd/*' --sort=-version:refname | head -n1)"
+          set -euo pipefail
+          git fetch --tags --force
 
-          # fall back to fictional 0.0.1 if nothing found
-          latest_installer="${latest_installer:-0.0.0}"
-          latest_installer_crd="${latest_installer_crd:-installer-crd/0.0.0}"
+          # latest plain SemVer like "2.6.0"
+          latest_installer="$(
+            git tag -l --sort=-version:refname \
+            | { grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' || true; } \
+            | head -n1
+          )"
+
+          # latest prefixed like "installer-crd/2.6.0"
+          latest_installer_crd="$(
+            git tag -l 'installer-crd/*' --sort=-version:refname \
+            | head -n1 || true
+          )"
+
+          # fallbacks
+          latest_installer="${latest_installer:-0.0.1}"
+          latest_installer_crd="${latest_installer_crd:-installer-crd/0.0.1}"
+
+          # strip the prefix to get just the version
+          latest_installer_crd_version="${latest_installer_crd#installer-crd/}"
 
           {
             echo "latest_installer=$latest_installer"
             echo "latest_installer_crd=$latest_installer_crd"
+            echo "latest_installer_crd_version=$latest_installer_crd_version"
           } >> "$GITHUB_OUTPUT"
 
       - name: Echo
@@ -76,12 +93,13 @@ jobs:
           echo "APP_VERSION:${{steps.app_version.outputs.tag}}"
           echo "LATEST_INSTALLER=${{ steps.tags.outputs.latest_installer }}"
           echo "LATEST_INSTALLER_CRD=${{ steps.tags.outputs.latest_installer_crd }}"
+          echo "LATEST_INSTALLER_CRD_VERSION=${{ steps.tags.outputs.latest_installer_crd_version }}"
 
       - name: Replace CHART_VERSION in chart/Chart.yaml
         run: sed -i 's/CHART_VERSION/${{ steps.tags.outputs.latest_installer }}/g' ./chart/Chart.yaml
 
       - name: Replace CHART_VERSION in crd-chart/Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ steps.tags.outputs.latest_installer_crd }}/g' ./crd-chart/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ steps.tags.outputs.latest_installer_crd_version }}/g' ./crd-chart/Chart.yaml
 
       - name: Print latest App Version
         run: echo ${{ steps.app_version.outputs.tag }}
