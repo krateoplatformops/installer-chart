@@ -73,7 +73,7 @@ jobs:
 
       - name: Echo
         run: |
-          echo "APP_VERSION:${{steps.app_version.outputs.tag}}""
+          echo "APP_VERSION:${{steps.app_version.outputs.tag}}"
           echo "LATEST_INSTALLER=${{ steps.tags.outputs.latest_installer }}"
           echo "LATEST_INSTALLER_CRD=${{ steps.tags.outputs.latest_installer_crd }}"
 
