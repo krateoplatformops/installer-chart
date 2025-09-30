@@ -438,7 +438,11 @@ krateoplatformops:
         repository: krateoplatformops/etcd
         tag: ""
         pullPolicy: IfNotPresent
-      env: {}
+      env:
+        ETCD_AUTO_COMPACTION_RETENTION: 1h
+        ETCD_QUOTA_BACKEND_BYTES: "6442450944"
+        ETCD_AUTO_COMPACTION_INTERVAL: 1h
+        ETCD_AUTO_COMPACTION_MODE: periodic
         # http_proxy: http://127.0.0.1:3128
       preUpgradeJob:
         resources: {}
@@ -661,7 +665,7 @@ krateoplatformops:
   finopsoperatorexporter:
     chart:
       name: finops-operator-exporter
-      version: 0.5.0
+      version: 0.5.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -715,7 +719,7 @@ krateoplatformops:
   finopsdatabasehandler:
     chart:
       name: finops-database-handler
-      version: 0.4.5
+      version: 0.5.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m

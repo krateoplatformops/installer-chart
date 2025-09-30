@@ -1,9 +1,6 @@
 apiVersion: krateo.io/v1alpha1
 kind: KrateoPlatformOps
 metadata:
-  annotations:
-    "krateo.io/connector-verbose": "true"
-    "helm.sh/hook": post-install,post-upgrade
   name: krateo
   namespace: {{ .Release.Namespace }}
 spec:
@@ -1712,6 +1709,7 @@ spec:
             value: {{ $key | quote }}
           - name: extraEnvVars[{{ $index }}].value
             value: {{ index $.Values.krateoplatformops.eventsse.etcd.env $key | quote }}
+            asString: true
           {{- end }}
           {{- end }}
           {{- if and .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.cpu }}

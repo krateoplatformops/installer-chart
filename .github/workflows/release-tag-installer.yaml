@@ -61,9 +61,6 @@ jobs:
       - name: Replace CHART_VERSION in chart/Chart.yaml
         run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./chart/Chart.yaml
 
-      - name: Replace CHART_VERSION in chart/Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./crd-chart/Chart.yaml
-
       - name: Print latest App Version
         run: echo ${{ steps.app_version.outputs.tag }}
 
@@ -74,7 +71,7 @@ jobs:
         uses: stefanprodan/helm-gh-pages@master
         with:
           token: ${{ steps.authenticate.outputs.token }}
-          charts_dir: ./
+          charts_dir: ./chart
           charts_url: https://charts.krateo.io
           owner: krateoplatformops
           repository: helm-charts
