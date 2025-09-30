@@ -24,6 +24,6 @@ version: CHART_VERSION
 appVersion: APP_VERSION
 
 dependencies:
-  - name: installer-crd
-    version: CHART_VERSION
-    repository: file://../crd-chart
+- name: installer-crd
+  version: "2.6.0"
+  repository: "https://charts.krateo.io"

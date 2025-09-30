@@ -438,7 +438,11 @@ krateoplatformops:
         repository: krateoplatformops/etcd
         tag: ""
         pullPolicy: IfNotPresent
-      env: {}
+      env:
+        ETCD_AUTO_COMPACTION_RETENTION: 1h
+        ETCD_QUOTA_BACKEND_BYTES: "6442450944"
+        ETCD_AUTO_COMPACTION_INTERVAL: 1h
+        ETCD_AUTO_COMPACTION_MODE: periodic
         # http_proxy: http://127.0.0.1:3128
       preUpgradeJob:
         resources: {}
