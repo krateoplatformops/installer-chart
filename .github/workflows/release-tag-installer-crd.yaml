@@ -35,7 +35,7 @@ jobs:
       # Stage only the chart you want to publish
       - name: Prepare charts_dir
         run: |
-          mkdir -p _charts
+          mkdir -p _crd-chart
           cp -R crd-chart _crd-chart/
 
       - name: Publish Helm chart
