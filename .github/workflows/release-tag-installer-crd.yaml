@@ -36,7 +36,7 @@ jobs:
         uses: stefanprodan/helm-gh-pages@master
         with:
           token: ${{ steps.authenticate.outputs.token }}
-          charts_dir: ./crd-chart
+          charts_dir: crd-chart
           charts_url: https://charts.krateo.io
           owner: krateoplatformops
           repository: helm-charts
