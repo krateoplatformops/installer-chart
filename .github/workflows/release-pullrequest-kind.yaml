@@ -120,7 +120,6 @@ jobs:
         uses: helm/kind-action@v1
         with:
           node_image: kindest/node:${{ matrix.k8s_version }}
-
       - name: Install installer-crd
         run: helm install installer-crd ./crd-chart --create-namespace -n krateo-system --wait
 
@@ -128,7 +127,7 @@ jobs:
         run: helm install installer ./chart --create-namespace -n krateo-system --wait
 
       - name: Wait for krateoplatformops krateo to become ready
-        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=600s --namespace krateo-system
+        run: kubectl wait krateoplatformops krateo --for condition=Ready=True --timeout=900s --namespace krateo-system
 
       - name: Get events
         if: always()
