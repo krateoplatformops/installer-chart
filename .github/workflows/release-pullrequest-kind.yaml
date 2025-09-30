@@ -63,8 +63,8 @@ jobs:
           latest_installer_crd="$(git tag -l 'installer-crd/*' --sort=-version:refname | head -n1)"
 
           # fall back to fictional 0.0.1 if nothing found
-          latest_installer="${latest_installer:0.0.0}"
-          latest_installer_crd="${latest_installer_crd:installer-crd/0.0.0}"
+          latest_installer="${latest_installer:-0.0.0}"
+          latest_installer_crd="${latest_installer_crd:-installer-crd/0.0.0}"
 
           {
             echo "latest_installer=$latest_installer"
