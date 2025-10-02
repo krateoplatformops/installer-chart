@@ -1904,7 +1904,7 @@ spec:
           - name: preUpgradeJob.containerSecurityContext.windowsOptions.runAsUserName
             value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions.runAsUserName }}
           {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.defrag.enabled }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd "defrag") (hasKey .Values.krateoplatformops.eventsse.etcd.defrag "enabled") }}
           - name: defrag.enabled
             value: {{ .Values.krateoplatformops.eventsse.etcd.defrag.enabled | quote }}
           {{- end }} 
