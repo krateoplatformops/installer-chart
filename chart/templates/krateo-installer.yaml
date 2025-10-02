@@ -1712,6 +1712,18 @@ spec:
             asString: true
           {{- end }}
           {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.etcd.autoCompactionMode }}
+          - name: autoCompactionMode
+            value: {{ .Values.krateoplatformops.eventsse.etcd.autoCompactionMode }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.etcd.autoCompactionRetention }}
+          - name: autoCompactionRetention
+            value: {{ .Values.krateoplatformops.eventsse.etcd.autoCompactionRetention }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd "preUpgradeJob") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob "enabled") }}
+          - name: preUpgradeJob.enabled
+            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.enabled | quote }}
+          {{- end }} 
           {{- if and .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.cpu }}
           - name: preUpgradeJob.resources.requests.cpu
             value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.cpu | quote }}
@@ -1891,6 +1903,17 @@ spec:
           {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions "runAsUserName") }}
           - name: preUpgradeJob.containerSecurityContext.windowsOptions.runAsUserName
             value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd "defrag") (hasKey .Values.krateoplatformops.eventsse.etcd.defrag "enabled") }}
+          - name: defrag.enabled
+            value: {{ .Values.krateoplatformops.eventsse.etcd.defrag.enabled | quote }}
+          {{- end }} 
+          {{- if .Values.krateoplatformops.eventsse.etcd.args }}
+          {{- range $index, $value := .Values.krateoplatformops.eventsse.etcd.args }}
+          - name: args[{{ $index }}]
+            value: {{ $value | quote }}
+            asString: true
+          {{- end }}
           {{- end }}
 
     - id: install-eventsse
@@ -2657,289 +2680,6 @@ spec:
             name: eventsse-internal
             {{- end }}
           selector: .spec.ports[0].port
-
-    - id: install-resource-tree-handler
-      type: chart
-      with:
-        name: {{ .Values.krateoplatformops.resourcetreehandler.chart.name }}
-        version: {{ .Values.krateoplatformops.resourcetreehandler.chart.version }}
-        repository: {{ .Values.krateoplatformops.resourcetreehandler.chart.repository }}
-        wait: {{ .Values.krateoplatformops.resourcetreehandler.chart.wait }}
-        waitTimeout: {{ .Values.krateoplatformops.resourcetreehandler.chart.waitTimeout }}
-        {{- if and .Values.krateoplatformops.resourcetreehandler.chart.credentials (gt (len .Values.krateoplatformops.resourcetreehandler.chart.credentials) 0) }}
-        credentials:
-          username: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.username }}
-          passwordRef: # reference to a secret
-            key: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.passwordRef.key }}
-            name: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.passwordRef.name }}
-            namespace: {{ .Values.krateoplatformops.resourcetreehandler.chart.credentials.passwordRef.namespace }}
-        {{- end }}
-        set:
-          {{- if .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-          - name: fullnameOverride
-            value: {{ .Values.krateoplatformops.resourcetreehandler.fullnameOverride }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.requests .Values.krateoplatformops.resourcetreehandler.resources.requests.cpu }}
-          - name: resources.requests.cpu
-            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.requests.cpu | quote }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.requests .Values.krateoplatformops.resourcetreehandler.resources.requests.memory }}
-          - name: resources.requests.memory
-            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.requests.memory }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.limits .Values.krateoplatformops.resourcetreehandler.resources.limits.cpu }}
-          - name: resources.limits.cpu
-            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.limits.cpu | quote }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.resourcetreehandler.resources.limits .Values.krateoplatformops.resourcetreehandler.resources.limits.memory }}
-          - name: resources.limits.memory
-            value: {{ .Values.krateoplatformops.resourcetreehandler.resources.limits.memory }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.appArmorProfile "localhostProfile") }}
-          - name: podSecurityContext.appArmorProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.appArmorProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.appArmorProfile "type") }}
-          - name: podSecurityContext.appArmorProfile.type
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.appArmorProfile.type }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.fsGroup }}
-          - name: podSecurityContext.fsGroup
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.fsGroup | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.fsGroupChangePolicy }}
-          - name: podSecurityContext.fsGroupChangePolicy
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.fsGroupChangePolicy }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.runAsGroup }}
-          - name: podSecurityContext.runAsGroup
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.runAsGroup | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.runAsNonRoot }}
-          - name: podSecurityContext.runAsNonRoot
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.runAsNonRoot | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.runAsUser }}
-          - name: podSecurityContext.runAsUser
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.runAsUser | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions "level") }}
-          - name: podSecurityContext.seLinuxOptions.level
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions "role") }}
-          - name: podSecurityContext.seLinuxOptions.role
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions.role }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions "type") }}
-          - name: podSecurityContext.seLinuxOptions.type
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions "user") }}
-          - name: podSecurityContext.seLinuxOptions.user
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seLinuxOptions.user }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seccompProfile "localhostProfile") }}
-          - name: podSecurityContext.seccompProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seccompProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seccompProfile "type") }}
-          - name: podSecurityContext.seccompProfile.type
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.seccompProfile.type }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.supplementalGroups }}
-          {{- range $index, $value := .Values.krateoplatformops.resourcetreehandler.podSecurityContext.supplementalGroups }}
-          - name: podSecurityContext.supplementalGroups[{{ $index }}]
-            value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.supplementalGroupsPolicy }}
-          - name: podSecurityContext.supplementalGroupsPolicy
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.supplementalGroupsPolicy }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.podSecurityContext.sysctls }}
-          {{- range $index, $sysctl := .Values.krateoplatformops.resourcetreehandler.podSecurityContext.sysctls }}
-          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
-            value: {{ $sysctl.value | quote }}
-          {{- end }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
-          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.windowsOptions "hostProcess") }}
-          - name: podSecurityContext.windowsOptions.hostProcess
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.windowsOptions.hostProcess | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.podSecurityContext.windowsOptions "runAsUserName") }}
-          - name: podSecurityContext.windowsOptions.runAsUserName
-            value: {{ .Values.krateoplatformops.resourcetreehandler.podSecurityContext.windowsOptions.runAsUserName }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.securityContext.allowPrivilegeEscalation }}
-          - name: securityContext.allowPrivilegeEscalation
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.allowPrivilegeEscalation | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.appArmorProfile "localhostProfile") }}
-          - name: securityContext.appArmorProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.appArmorProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.appArmorProfile "type") }}
-          - name: securityContext.appArmorProfile.type
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.appArmorProfile.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "capabilities") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.capabilities "add") }}
-          {{- range $index, $value := .Values.krateoplatformops.resourcetreehandler.securityContext.capabilities.add }}
-          - name: securityContext.capabilities.add[{{ $index }}]
-            value: {{ $value }}
-          {{- end }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "capabilities") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.capabilities "drop") }}
-          {{- range $index, $value := .Values.krateoplatformops.resourcetreehandler.securityContext.capabilities.drop }}
-          - name: securityContext.capabilities.drop[{{ $index }}]
-            value: {{ $value }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.securityContext.privileged }}
-          - name: securityContext.privileged
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.privileged }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.securityContext.procMount }}
-          - name: securityContext.procMount
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.procMount }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.securityContext.readOnlyRootFilesystem }}
-          - name: securityContext.readOnlyRootFilesystem
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.readOnlyRootFilesystem | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.securityContext.runAsGroup }}
-          - name: securityContext.runAsGroup
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.runAsGroup | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.securityContext.runAsNonRoot }}
-          - name: securityContext.runAsNonRoot
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.runAsNonRoot | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.securityContext.runAsUser }}
-          - name: securityContext.runAsUser
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.runAsUser | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions "level") }}
-          - name: securityContext.seLinuxOptions.level
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions.level | replace "," "\\," }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions "role") }}
-          - name: securityContext.seLinuxOptions.role
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions.role }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions "type") }}
-          - name: securityContext.seLinuxOptions.type
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions "user") }}
-          - name: securityContext.seLinuxOptions.user
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.seLinuxOptions.user }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.seccompProfile "localhostProfile") }}
-          - name: securityContext.seccompProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.seccompProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.seccompProfile "type") }}
-          - name: securityContext.seccompProfile.type
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.seccompProfile.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.windowsOptions "gmsaCredentialSpecName") }}
-          - name: securityContext.windowsOptions.gmsaCredentialSpecName
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.windowsOptions.gmsaCredentialSpecName }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "hostProcess") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.windowsOptions "hostProcess") }}
-          - name: securityContext.windowsOptions.hostProcess
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.windowsOptions.hostProcess | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.resourcetreehandler.securityContext.windowsOptions "runAsUserName") }}
-          - name: securityContext.windowsOptions.runAsUserName
-            value: {{ .Values.krateoplatformops.resourcetreehandler.securityContext.windowsOptions.runAsUserName }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.image.repository }}
-          - name: image.repository
-            value: {{ .Values.krateoplatformops.resourcetreehandler.image.repository }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.image.pullPolicy }}
-          - name: image.pullPolicy
-            value: {{ .Values.krateoplatformops.resourcetreehandler.image.pullPolicy }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.image.tag }}
-          - name: image.tag
-            value: {{ .Values.krateoplatformops.resourcetreehandler.image.tag }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.imagePullSecrets }}
-          {{- range $index, $secret := .Values.krateoplatformops.resourcetreehandler.imagePullSecrets }}
-          - name: imagePullSecrets.{{ $index }}.name
-            value: {{ $secret.name }}
-          {{- end }}
-          {{- end }}
-          {{- if eq .Values.krateoplatformops.service.type "NodePort" }}
-          - name: service.type
-            value: NodePort
-          {{- if .Values.krateoplatformops.resourcetreehandler.service.nodePort }}
-          - name: service.nodePort
-            value: {{ .Values.krateoplatformops.resourcetreehandler.service.nodePort | quote }}
-          {{- else }}
-          - name: service.nodePort
-            value: "30085"
-          {{- end }}
-          {{- else if eq .Values.krateoplatformops.service.type "LoadBalancer" }}
-          - name: service.type
-            value: LoadBalancer
-          {{- end }}
-          {{- range $key, $value := .Values.krateoplatformops.service.annotations }}
-          - name: service.annotations.{{ $key | replace "." "\\." }}
-            value: {{ $value | quote }}
-            asString: true
-          {{- end }}
-          {{- with .Values.krateoplatformops.resourcetreehandler.service.annotations }}
-          {{- range $key, $value := .Values.krateoplatformops.resourcetreehandler.service.annotations }}
-          - name: service.annotations.{{ $key | replace "." "\\." }}
-            value: {{ $value | quote }}
-            asString: true
-          {{- end }}
-          {{- end }}
-          {{- if eq .Values.krateoplatformops.ingress.enabled true }}
-          - name: ingress.enabled
-            value: "true"
-          - name: ingress.className
-            value: {{ .Values.krateoplatformops.ingress.resourcetreehandler.className }}
-          {{- range $key, $value := .Values.krateoplatformops.ingress.resourcetreehandler.annotations }}
-          - name: ingress.annotations.{{ $key | replace "." "\\." }}
-            value: {{ $value | quote }}
-            asString: true
-          {{- end }}
-          - name: ingress.hosts[0].host
-            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.hosts 0 "host" }}
-          - name: ingress.hosts[0].paths[0].path
-            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.hosts 0 "paths" 0 "path" }}
-          - name: ingress.hosts[0].paths[0].pathType
-            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.hosts 0 "paths" 0 "pathType" }}
-          {{- if and .Values.krateoplatformops.ingress.resourcetreehandler.tls (gt (len .Values.krateoplatformops.ingress.resourcetreehandler.tls) 0) }}
-          - name: ingress.tls[0].secretName
-            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.tls 0 "secretName" }}
-          - name: ingress.tls[0].hosts[0]
-            value: {{ index .Values.krateoplatformops.ingress.resourcetreehandler.tls 0 "hosts" 0 }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.fullnameOverride }}
-          - name: env.URL_SSE
-            value: http://{{ .Values.krateoplatformops.eventsse.fullnameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:$EVENTSSE_INTERNAL_PORT/notifications
-          {{- else }}
-          - name: env.URL_SSE
-            value: http://eventsse-internal.{{ .Release.Namespace }}.svc.cluster.local:$EVENTSSE_INTERNAL_PORT/notifications
-          {{- end }}
-          {{- if .Values.krateoplatformops.resourcetreehandler.env }}
-          {{- range $key, $value := .Values.krateoplatformops.resourcetreehandler.env }}
-          - name: env.{{ $key }}
-            value: {{ $value | quote }}
-            asString: true
-          {{- end }}
-          {{- end }}
 
     # beginning of .Values.krateoplatformops.composableportalstarter.enabled
     {{- if .Values.krateoplatformops.composableportalstarter.enabled }}

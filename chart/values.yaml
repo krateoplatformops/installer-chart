@@ -145,20 +145,6 @@ krateoplatformops:
       # - secretName: eventsse-krateo-certificate
       #   hosts:
       #     - eventsse.krateoplatformops.io
-    resourcetreehandler:
-      className: ""
-      annotations: {}
-        # cert-manager.io/cluster-issuer: letsencrypt-krateo
-        # external-dns.alpha.kubernetes.io/hostname: "resoucetreehandler.krateoplatformops.io"
-      hosts:
-        - host: resoucetreehandler.krateoplatformops.io
-          paths:
-            - path: /
-              pathType: Prefix
-      tls: []
-      # - secretName: resoucetreehandler-krateo-certificate
-      #   hosts:
-      #     - resoucetreehandler.krateoplatformops.io
     smithery:
       className: ""
       annotations: {}
@@ -182,7 +168,7 @@ krateoplatformops:
   authn:
     chart:
       name: authn
-      version: 0.20.2
+      version: 0.21.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -438,16 +424,21 @@ krateoplatformops:
         repository: krateoplatformops/etcd
         tag: ""
         pullPolicy: IfNotPresent
-      env:
-        ETCD_AUTO_COMPACTION_RETENTION: 1h
-        ETCD_QUOTA_BACKEND_BYTES: "6442450944"
-        ETCD_AUTO_COMPACTION_INTERVAL: 1h
-        ETCD_AUTO_COMPACTION_MODE: periodic
+      autoCompactionMode: periodic
+      autoCompactionRetention: 24h
+      env: {}
         # http_proxy: http://127.0.0.1:3128
       preUpgradeJob:
+        enabled: false
         resources: {}
         podSecurityContext: {}
         containerSecurityContext: {}
+      defrag:
+        enabled: true
+      args:
+      - /opt/bitnami/scripts/etcd/run.sh
+      - --quota-backend-bytes
+      - "6442450944"
   frontend:
     chart:
       name: frontend
@@ -486,36 +477,6 @@ krateoplatformops:
       # http_proxy: http://127.0.0.1:3128
     service: 
       annotations: {}
-  resourcetreehandler:
-    chart:
-      name: resource-tree-handler
-      version: 0.3.0
-      repository: https://charts.krateo.io
-      wait: true
-      waitTimeout: 5m
-      # # Use with private helm registry
-      # credentials:
-      #   username: username
-      #   passwordRef: # reference to a secret
-      #     key: token
-      #     name: helm-registry-secret
-      #     namespace: krateo-system
-    fullnameOverride: ""
-    resources: {}
-    podSecurityContext: {}
-    securityContext: {}
-    image:
-      repository: ghcr.io/krateoplatformops/resource-tree-handler
-      pullPolicy: IfNotPresent
-      # Overrides the image tag whose default is the chart appVersion.
-      tag: ""
-    # imagePullSecrets:
-    #   - name: image-registry-secret
-    service: 
-      annotations: {}
-    env: {}
-      # DEBUG_LEVEL: debug # one of debug, warning, info, or error
-      # http_proxy: http://127.0.0.1:3128
   composableportalstarter:
     enabled: true
     chart:
@@ -719,7 +680,7 @@ krateoplatformops:
   finopsdatabasehandler:
     chart:
       name: finops-database-handler
-      version: 0.5.0
+      version: 0.5.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -747,7 +708,7 @@ krateoplatformops:
   finopsdatabasehandleruploader:
     chart:
       name: finops-database-handler-uploader
-      version: 0.1.1
+      version: 0.2.0
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
