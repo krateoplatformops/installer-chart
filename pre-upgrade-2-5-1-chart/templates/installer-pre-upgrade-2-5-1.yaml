@@ -1,0 +1,73 @@
+{{- $sa := lookup "v1" "ServiceAccount" .Release.Namespace "helm-runner" }}
+{{- if not $sa }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-runner
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+---
+{{- end }}
+
+{{- $crb := lookup "rbac.authorization.k8s.io/v1" "ClusterRoleBinding" "" "helm-runner-cluster-admin" }}
+{{- if not $crb }}
+# For simplicity, cluster-admin. Tighten later if needed.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-runner-cluster-admin
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: helm-runner
+    namespace: {{ .Release.Namespace }}
+---
+{{- end }}
+
+{{- $job := lookup "batch/v1" "Job" .Release.Namespace "krateo-pre-upgrade-2-5-1" }}
+{{- if not $job }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: krateo-pre-upgrade-2-5-1
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "2"
+spec:
+  backoffLimit: 4
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      serviceAccountName: helm-runner
+      restartPolicy: OnFailure
+      containers:
+        - name: runner
+          image: dtzar/helm-kubectl:3.14.4
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-lc"]
+          args:
+            - |
+              set -euo pipefail
+
+              echo "Step 1) Annotate CRD ..."
+              kubectl annotate crd krateoplatformops.krateo.io \
+                meta.helm.sh/release-name=installer \
+                meta.helm.sh/release-namespace={{ .Release.Namespace }} \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite
+
+              echo "Step 2) Label CRD ..."
+              kubectl label crd krateoplatformops.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite
+
+              echo "Pre-upgrade 2.5.1 job done ✅"
+{{- end }}

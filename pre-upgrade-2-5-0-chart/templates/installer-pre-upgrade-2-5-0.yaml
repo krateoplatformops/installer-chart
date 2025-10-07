@@ -1,0 +1,86 @@
+{{- $sa := lookup "v1" "ServiceAccount" .Release.Namespace "helm-runner" }}
+{{- if not $sa }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-runner
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+---
+{{- end }}
+
+{{- $crb := lookup "rbac.authorization.k8s.io/v1" "ClusterRoleBinding" "" "helm-runner-cluster-admin" }}
+{{- if not $crb }}
+# For simplicity, cluster-admin. Tighten later if needed.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-runner-cluster-admin
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: helm-runner
+    namespace: {{ .Release.Namespace }}
+---
+{{- end }}
+
+{{- $job := lookup "batch/v1" "Job" .Release.Namespace "krateo-pre-upgrade-2-5-0" }}
+{{- if not $job }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: krateo-pre-upgrade-2-5-0
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "2"
+spec:
+  backoffLimit: 4
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      serviceAccountName: helm-runner
+      restartPolicy: OnFailure
+      containers:
+        - name: runner
+          image: dtzar/helm-kubectl:3.14.4
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-lc"]
+          args:
+            - |
+              set -euo pipefail
+
+              echo "Annotate/label CRD compositionreferences.resourcetrees.krateo.io..."
+              kubectl annotate crd compositionreferences.resourcetrees.krateo.io \
+                meta.helm.sh/release-name=resource-tree-handler \
+                meta.helm.sh/release-namespace={{ .Release.Namespace }} \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite
+
+              kubectl label crd compositionreferences.resourcetrees.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite
+
+              echo "Annotate secret admin-password in {{ .Release.Namespace }}..."
+              kubectl annotate secret admin-password -n {{ .Release.Namespace }} \
+                meta.helm.sh/release-name=composable-portal-starter \
+                meta.helm.sh/release-namespace={{ .Release.Namespace }} \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite
+
+              echo "Annotate user admin in {{ .Release.Namespace }}..."
+              kubectl annotate user admin -n {{ .Release.Namespace }} \
+                meta.helm.sh/release-name=composable-portal-starter \
+                meta.helm.sh/release-namespace={{ .Release.Namespace }} \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite
+
+              echo "Pre-upgrade 2.5.0 job done ✅"
+{{- end }}
