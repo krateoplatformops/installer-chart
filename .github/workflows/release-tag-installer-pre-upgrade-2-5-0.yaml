@@ -29,20 +29,20 @@ jobs:
         run: |
           echo CHART_VERSION:${{ env.CHART_VERSION }}
 
-      - name: Replace CHART_VERSION in pre-upgrade-2-5-0/Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ env.CHART_VERSION }}/g' ./pre-upgrade-2-5-0/Chart.yaml
+      - name: Replace CHART_VERSION in pre-upgrade-2-5-0-chart/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ env.CHART_VERSION }}/g' ./pre-upgrade-2-5-0-chart/Chart.yaml
 
       # Stage only the chart you want to publish
       - name: Prepare charts_dir
         run: |
-          mkdir -p _pre-upgrade-2-5-0
-          cp -R pre-upgrade-2-5-0 _pre-upgrade-2-5-0/
+          mkdir -p _pre-upgrade-2-5-0-chart
+          cp -R pre-upgrade-2-5-0-chart _pre-upgrade-2-5-0-chart/
 
       - name: Publish Helm chart
         uses: stefanprodan/helm-gh-pages@master
         with:
           token: ${{ steps.authenticate.outputs.token }}
-          charts_dir: _pre-upgrade-2-5-0
+          charts_dir: _pre-upgrade-2-5-0-chart
           charts_url: https://charts.krateo.io
           owner: krateoplatformops
           repository: helm-charts
