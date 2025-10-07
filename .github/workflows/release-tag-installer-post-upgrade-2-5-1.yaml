@@ -1,0 +1,49 @@
+name: release-tag-installer-post-upgrade-2-5-1
+
+on:
+  push:
+    tags: 
+    - 'post-upgrade-2-5-1/[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Authenticate with GitHub App
+        id: authenticate
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Extract version
+        run: |
+          CHART_VERSION=${GITHUB_REF#refs/tags/post-upgrade-2-5-1/}
+          echo "CHART_VERSION=$CHART_VERSION" >> $GITHUB_ENV
+
+      - name: Print Version
+        run: |
+          echo CHART_VERSION:${{ env.CHART_VERSION }}
+
+      - name: Replace CHART_VERSION in post-upgrade-2-5-1/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ env.CHART_VERSION }}/g' ./post-upgrade-2-5-1/Chart.yaml
+
+      # Stage only the chart you want to publish
+      - name: Prepare charts_dir
+        run: |
+          mkdir -p _post-upgrade-2-5-1
+          cp -R post-upgrade-2-5-1 _post-upgrade-2-5-1/
+
+      - name: Publish Helm chart
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          token: ${{ steps.authenticate.outputs.token }}
+          charts_dir: _post-upgrade-2-5-1
+          charts_url: https://charts.krateo.io
+          owner: krateoplatformops
+          repository: helm-charts
+          branch: gh-pages
