@@ -58,29 +58,34 @@ spec:
             - |
               set -euo pipefail
 
-              echo "Annotate/label CRD compositionreferences.resourcetrees.krateo.io..."
+              echo "Step 1) Annotate CRD compositionreferences.resourcetrees.krateo.io..."
               kubectl annotate crd compositionreferences.resourcetrees.krateo.io \
                 meta.helm.sh/release-name=resource-tree-handler \
                 meta.helm.sh/release-namespace={{ .Release.Namespace }} \
                 app.kubernetes.io/managed-by=Helm \
-                --overwrite
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD compositionreferences.resourcetrees.krateo.io"
 
+              echo "Step 2) Label CRD compositionreferences.resourcetrees.krateo.io..."
               kubectl label crd compositionreferences.resourcetrees.krateo.io \
-                app.kubernetes.io/managed-by=Helm --overwrite
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD compositionreferences.resourcetrees.krateo.io"
 
-              echo "Annotate secret admin-password in {{ .Release.Namespace }}..."
+              echo "Step 3) Annotate secret admin-password in {{ .Release.Namespace }}..."
               kubectl annotate secret admin-password -n {{ .Release.Namespace }} \
                 meta.helm.sh/release-name=composable-portal-starter \
                 meta.helm.sh/release-namespace={{ .Release.Namespace }} \
                 app.kubernetes.io/managed-by=Helm \
-                --overwrite
+                --overwrite \
+                || echo "WARN: Failed to annotate secret admin-password"
 
-              echo "Annotate user admin in {{ .Release.Namespace }}..."
+              echo "Step 4) Annotate user admin in {{ .Release.Namespace }}..."
               kubectl annotate user admin -n {{ .Release.Namespace }} \
                 meta.helm.sh/release-name=composable-portal-starter \
                 meta.helm.sh/release-namespace={{ .Release.Namespace }} \
                 app.kubernetes.io/managed-by=Helm \
-                --overwrite
+                --overwrite \
+                || echo "WARN: Failed to annotate user admin"
 
-              echo "Pre-upgrade 2.5.0 job done ✅"
+              echo "Pre-upgrade 2.5.0 job done ✅ (errors above, if any, were non-blocking)"
 {{- end }}

@@ -58,16 +58,18 @@ spec:
             - |
               set -euo pipefail
 
-              echo "Step 1) Annotate CRD ..."
+              echo "Step 1) Annotate CRD krateoplatformops.krateo.io..."
               kubectl annotate crd krateoplatformops.krateo.io \
                 meta.helm.sh/release-name=installer \
                 meta.helm.sh/release-namespace={{ .Release.Namespace }} \
                 app.kubernetes.io/managed-by=Helm \
-                --overwrite
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD krateoplatformops.krateo.io"
 
-              echo "Step 2) Label CRD ..."
+              echo "Step 2) Label CRD krateoplatformops.krateo.io..."
               kubectl label crd krateoplatformops.krateo.io \
-                app.kubernetes.io/managed-by=Helm --overwrite
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD krateoplatformops.krateo.io"
 
-              echo "Pre-upgrade 2.5.1 job done ✅"
+              echo "Pre-upgrade 2.5.1 job done ✅ (errors above, if any, were non-blocking)"
 {{- end }}
