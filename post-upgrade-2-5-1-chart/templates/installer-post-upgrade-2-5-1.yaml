@@ -58,14 +58,14 @@ spec:
             - |
               set -euo pipefail
 
-              echo "Step 4) Add & update 'marketplace' repo ..."
+              echo "Step 1) Add & update 'marketplace' repo ..."
               helm repo add marketplace https://marketplace.krateo.io
               helm repo update marketplace
 
-              echo "Step 5) Uninstall old 'portal' release if present ..."
+              echo "Step 2) Uninstall old 'portal' release if present ..."
               helm uninstall portal -n {{ .Release.Namespace }} || true
 
-              echo "Step 6) Install 'portal' from marketplace ..."
+              echo "Step 3) Install 'portal' from marketplace ..."
               helm install portal marketplace/portal \
                 -n {{ .Release.Namespace }} \
                 --version 1.0.0 \
