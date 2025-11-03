@@ -5538,32 +5538,6 @@ spec:
           {{- end }}
           {{- end }}
 
-    - id: install-policies
-      type: chart
-      with:
-        name: {{ .Values.krateoplatformops.finopspolicies.chart.name }}
-        version: {{ .Values.krateoplatformops.finopspolicies.chart.version }}
-        repository: {{ .Values.krateoplatformops.finopspolicies.chart.repository }}
-        wait: {{ .Values.krateoplatformops.finopspolicies.chart.wait }}
-        waitTimeout: {{ .Values.krateoplatformops.finopspolicies.chart.waitTimeout }}
-        {{- if and (hasKey .Values.krateoplatformops.finopspolicies.chart "credentials") (gt (len .Values.krateoplatformops.finopspolicies.chart.credentials) 0) }}
-        credentials:
-          username: {{ .Values.krateoplatformops.finopspolicies.chart.credentials.username }}
-          passwordRef: # reference to a secret
-            key: {{ .Values.krateoplatformops.finopspolicies.chart.credentials.passwordRef.key }}
-            name: {{ .Values.krateoplatformops.finopspolicies.chart.credentials.passwordRef.name }}
-            namespace: {{ .Values.krateoplatformops.finopspolicies.chart.credentials.passwordRef.namespace }}
-        {{- end }}
-        set:
-          {{- if .Values.krateoplatformops.finopspolicies.fullnameOverride }}
-          - name: fullnameOverride
-            value: {{ .Values.krateoplatformops.finopspolicies.fullnameOverride }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.opa.fullnameOverride }}
-          - name: opaReleaseName
-            value: {{ .Values.krateoplatformops.opa.fullnameOverride }}
-          {{- end }}
-
     - id: install-opa
       type: chart
       with:
