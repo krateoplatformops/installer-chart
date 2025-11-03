@@ -1,0 +1,470 @@
+{{- $sa := lookup "v1" "ServiceAccount" .Release.Namespace "helm-runner" }}
+{{- if not $sa }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-runner
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+---
+{{- end }}
+
+{{- $crb := lookup "rbac.authorization.k8s.io/v1" "ClusterRoleBinding" "" "helm-runner-cluster-admin" }}
+{{- if not $crb }}
+# For simplicity, cluster-admin. Tighten later if needed.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-runner-cluster-admin
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: helm-runner
+    namespace: {{ .Release.Namespace }}
+---
+{{- end }}
+
+{{- $job := lookup "batch/v1" "Job" .Release.Namespace "krateo-pre-upgrade-2-6-0" }}
+{{- if not $job }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: krateo-pre-upgrade-2-6-0
+  namespace: krateo-system
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      serviceAccountName: helm-runner
+      restartPolicy: OnFailure
+      containers:
+        - name: runner
+          image: dtzar/helm-kubectl:3.14.4
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-lc"]
+          args:
+            - |
+              set -euo pipefail
+
+              kubectl annotate crd users.basic.authn.krateo.io \
+                meta.helm.sh/release-name=authn \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD users.basic.authn.krateo.io"
+
+              kubectl label crd users.basic.authn.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD users.basic.authn.krateo.io"
+
+              kubectl annotate crd ldapconfigs.ldap.authn.krateo.io \
+                meta.helm.sh/release-name=authn \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD ldapconfigs.ldap.authn.krateo.io"
+
+              kubectl label crd ldapconfigs.ldap.authn.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD ldapconfigs.ldap.authn.krateo.io"
+
+              kubectl annotate crd oauthconfigs.oauth.authn.krateo.io \
+                meta.helm.sh/release-name=authn \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD oauthconfigs.oauth.authn.krateo.io"
+
+              kubectl label crd oauthconfigs.oauth.authn.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD oauthconfigs.oauth.authn.krateo.io"
+
+              kubectl annotate crd oidcconfigs.oidc.authn.krateo.io \
+                meta.helm.sh/release-name=authn \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD oidcconfigs.oidc.authn.krateo.io"
+
+              kubectl label crd oidcconfigs.oidc.authn.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD oidcconfigs.oidc.authn.krateo.io"
+
+              kubectl annotate crd restactions.templates.krateo.io \
+                meta.helm.sh/release-name=snowplow \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD restactions.templates.krateo.io"
+
+              kubectl label crd restactions.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD restactions.templates.krateo.io"
+
+              kubectl annotate crd registrations.eventrouter.krateo.io \
+                meta.helm.sh/release-name=eventrouter \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD registrations.eventrouter.krateo.io"
+
+              kubectl label crd registrations.eventrouter.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD registrations.eventrouter.krateo.io"
+
+              kubectl annotate crd barcharts.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD barcharts.widgets.templates.krateo.io"
+
+              kubectl label crd barcharts.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD barcharts.widgets.templates.krateo.io"
+
+              kubectl annotate crd buttons.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD buttons.widgets.templates.krateo.io"
+
+              kubectl label crd buttons.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD buttons.widgets.templates.krateo.io"
+
+              kubectl annotate crd columns.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD columns.widgets.templates.krateo.io"
+
+              kubectl label crd columns.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD columns.widgets.templates.krateo.io"
+
+              kubectl annotate crd datagrids.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD datagrids.widgets.templates.krateo.io"
+
+              kubectl label crd datagrids.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD datagrids.widgets.templates.krateo.io"
+
+              kubectl annotate crd eventlists.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD eventlists.widgets.templates.krateo.io"
+
+              kubectl label crd eventlists.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD eventlists.widgets.templates.krateo.io"
+
+              kubectl annotate crd filters.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD filters.widgets.templates.krateo.io"
+
+              kubectl label crd filters.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD filters.widgets.templates.krateo.io"
+
+              kubectl annotate crd flowcharts.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD flowcharts.widgets.templates.krateo.io"
+
+              kubectl label crd flowcharts.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD flowcharts.widgets.templates.krateo.io"
+
+              kubectl annotate crd forms.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD forms.widgets.templates.krateo.io"
+
+              kubectl label crd forms.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD forms.widgets.templates.krateo.io"
+
+              kubectl annotate crd linecharts.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD linecharts.widgets.templates.krateo.io"
+
+              kubectl label crd linecharts.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD linecharts.widgets.templates.krateo.io"
+
+              kubectl annotate crd markdowns.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD markdowns.widgets.templates.krateo.io"
+
+              kubectl label crd markdowns.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD markdowns.widgets.templates.krateo.io"
+
+              kubectl annotate crd navmenus.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD navmenus.widgets.templates.krateo.io"
+
+              kubectl label crd navmenus.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD navmenus.widgets.templates.krateo.io"
+
+              kubectl annotate crd navmenuitems.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD navmenuitems.widgets.templates.krateo.io"
+
+              kubectl label crd navmenuitems.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD navmenuitems.widgets.templates.krateo.io"
+
+              kubectl annotate crd pages.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD pages.widgets.templates.krateo.io"
+
+              kubectl label crd pages.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD pages.widgets.templates.krateo.io"
+
+              kubectl annotate crd panels.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD panels.widgets.templates.krateo.io"
+
+              kubectl label crd panels.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD panels.widgets.templates.krateo.io"
+
+              kubectl annotate crd paragraphs.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD paragraphs.widgets.templates.krateo.io"
+
+              kubectl label crd paragraphs.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD paragraphs.widgets.templates.krateo.io"
+
+              kubectl annotate crd piecharts.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD piecharts.widgets.templates.krateo.io"
+
+              kubectl label crd piecharts.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD piecharts.widgets.templates.krateo.io"
+
+              kubectl annotate crd routes.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD routes.widgets.templates.krateo.io"
+
+              kubectl label crd routes.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD routes.widgets.templates.krateo.io"
+
+              kubectl annotate crd routesloaders.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD routesloaders.widgets.templates.krateo.io"
+
+              kubectl label crd routesloaders.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD routesloaders.widgets.templates.krateo.io"
+
+              kubectl annotate crd rows.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD rows.widgets.templates.krateo.io"
+
+              kubectl label crd rows.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD rows.widgets.templates.krateo.io"
+
+              kubectl annotate crd tablists.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD tablists.widgets.templates.krateo.io"
+
+              kubectl label crd tablists.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD tablists.widgets.templates.krateo.io"
+
+              kubectl annotate crd tables.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD tables.widgets.templates.krateo.io"
+
+              kubectl label crd tables.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD tables.widgets.templates.krateo.io"
+
+              kubectl annotate crd yamlviewers.widgets.templates.krateo.io \
+                meta.helm.sh/release-name=frontend \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD yamlviewers.widgets.templates.krateo.io"
+
+              kubectl label crd yamlviewers.widgets.templates.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD yamlviewers.widgets.templates.krateo.io"
+
+              kubectl annotate crd compositiondefinitions.core.krateo.io \
+                meta.helm.sh/release-name=core-provider \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD compositiondefinitions.core.krateo.io"
+
+              kubectl label crd compositiondefinitions.core.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD compositiondefinitions.core.krateo.io"
+
+              kubectl annotate crd restdefinitions.ogen.krateo.io \
+                meta.helm.sh/release-name=oasgen-provider \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD restdefinitions.ogen.krateo.io"
+
+              kubectl label crd restdefinitions.ogen.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD restdefinitions.ogen.krateo.io"
+
+              kubectl annotate crd databaseconfigs.finops.krateo.io \
+                meta.helm.sh/release-name=finops-operator-exporter \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD databaseconfigs.finops.krateo.io"
+
+              kubectl label crd databaseconfigs.finops.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD databaseconfigs.finops.krateo.io"
+
+              kubectl annotate crd exporterscraperconfigs.finops.krateo.io \
+                meta.helm.sh/release-name=finops-operator-exporter \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD exporterscraperconfigs.finops.krateo.io"
+
+              kubectl label crd exporterscraperconfigs.finops.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD exporterscraperconfigs.finops.krateo.io"
+
+              kubectl annotate crd focusconfigs.finops.krateo.io \
+                meta.helm.sh/release-name=finops-operator-focus \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD focusconfigs.finops.krateo.io"
+
+              kubectl label crd focusconfigs.finops.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD focusconfigs.finops.krateo.io"
+
+              kubectl annotate crd notebooks.finops.krateo.io \
+                meta.helm.sh/release-name=finops-database-handler-uploader \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD notebooks.finops.krateo.io"
+
+              kubectl label crd notebooks.finops.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD notebooks.finops.krateo.io"
+
+              kubectl annotate crd scraperconfigs.finops.krateo.io \
+                meta.helm.sh/release-name=finops-operator-scraper \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD scraperconfigs.finops.krateo.io"
+
+              kubectl label crd scraperconfigs.finops.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD scraperconfigs.finops.krateo.io"
+
+              kubectl annotate crd krateoplatformops.krateo.io \
+                meta.helm.sh/release-name=installer-crd \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                --overwrite \
+                || echo "WARN: Failed to annotate CRD krateoplatformops.krateo.io"
+
+              kubectl label crd krateoplatformops.krateo.io \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label CRD krateoplatformops.krateo.io"
+
+              kubectl annotate krateoplatformops krateo -n krateo-system \
+                meta.helm.sh/release-name=installer \
+                meta.helm.sh/release-namespace=krateo-system \
+                app.kubernetes.io/managed-by=Helm \
+                helm.sh/hook- \
+                --overwrite \
+                || echo "WARN: Failed to annotate krateoplatformops/krateo in krateo-system"
+
+              kubectl label krateoplatformops krateo -n krateo-system \
+                app.kubernetes.io/managed-by=Helm --overwrite \
+                || echo "WARN: Failed to label krateoplatformops/krateo in krateo-system"
+
+              kubectl -n krateo-system delete secret -l owner=helm,name=installer \
+                || echo "WARN: Failed to delete Helm-owned installer secrets in krateo-system"
+
+              echo "Pre-upgrade 2.6.0 job done ✅ (errors above, if any, were non-blocking)"
+{{- end }}

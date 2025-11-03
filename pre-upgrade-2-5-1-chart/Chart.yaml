@@ -1,6 +1,6 @@
 apiVersion: v2
 name: installer-pre-upgrade-2-5-1
-description: Krateo PlatformOps Chart to execute pre upgrade to version 2.5.0
+description: Krateo PlatformOps Chart to execute pre upgrade to version 2.5.1
 
 # A chart can be either an 'application' or a 'library' chart.
 #
