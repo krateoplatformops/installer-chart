@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        k8s_version: [ "1.32.7", "1.33.3" ]
+        k8s_version: [ "1.32.9", "1.33.5" ]
 
     steps:
       - name: Extract and Store Trimmed Repository Name
