@@ -1717,31 +1717,6 @@ spec:
             namespace: {{ .Values.krateoplatformops.eventsse.etcd.chart.credentials.passwordRef.namespace }}
         {{- end }}
         set:
-          {{- if .Values.krateoplatformops.eventsse.etcd.auth.rbac.create }}
-          - name: auth.rbac.create
-            value: "true"
-          {{- else }}
-          - name: auth.rbac.create
-            value: "false"
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.global.imagePullSecrets }}
-          {{- range $index, $secret := .Values.krateoplatformops.eventsse.etcd.global.imagePullSecrets }}
-          - name: global.imagePullSecrets.{{ $index }}.name
-            value: {{ $secret.name }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.global.compatibility.openshift.adaptSecurityContext }}
-          - name: global.compatibility.openshift.adaptSecurityContext
-            value: {{ .Values.krateoplatformops.eventsse.etcd.global.compatibility.openshift.adaptSecurityContext }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.global.imageRegistry }}
-          - name: global.imageRegistry
-            value: {{ .Values.krateoplatformops.eventsse.etcd.global.imageRegistry }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.global.defaultStorageClass }}
-          - name: global.defaultStorageClass
-            value: {{ .Values.krateoplatformops.eventsse.etcd.global.defaultStorageClass }}
-          {{- end }}
           {{- if .Values.krateoplatformops.eventsse.etcd.fullnameOverride }}
           - name: fullnameOverride
             value: {{ .Values.krateoplatformops.eventsse.etcd.fullnameOverride }}
@@ -1944,187 +1919,27 @@ spec:
             value: {{ $key | quote }}
           - name: extraEnvVars[{{ $index }}].value
             value: {{ index $.Values.krateoplatformops.eventsse.etcd.env $key | quote }}
+            asString: true
           {{- end }}
           {{- end }}
-          {{- if and .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.cpu }}
-          - name: preUpgradeJob.resources.requests.cpu
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.cpu | quote }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.memory }}
-          - name: preUpgradeJob.resources.requests.memory
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.requests.memory }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.limits .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.limits.cpu }}
-          - name: preUpgradeJob.resources.limits.cpu
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.limits.cpu | quote }}
-          {{- end }}
-          {{- if and .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.limits .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.limits.memory }}
-          - name: preUpgradeJob.resources.limits.memory
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.resources.limits.memory }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.appArmorProfile "localhostProfile") }}
-          - name: preUpgradeJob.podSecurityContext.appArmorProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.appArmorProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.appArmorProfile "type") }}
-          - name: preUpgradeJob.podSecurityContext.appArmorProfile.type
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.appArmorProfile.type }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.fsGroup }}
-          - name: preUpgradeJob.podSecurityContext.fsGroup
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.fsGroup | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.fsGroupChangePolicy }}
-          - name: preUpgradeJob.podSecurityContext.fsGroupChangePolicy
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.fsGroupChangePolicy }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.runAsGroup }}
-          - name: preUpgradeJob.podSecurityContext.runAsGroup
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.runAsGroup | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.runAsNonRoot }}
-          - name: preUpgradeJob.podSecurityContext.runAsNonRoot
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.runAsNonRoot | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.runAsUser }}
-          - name: preUpgradeJob.podSecurityContext.runAsUser
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.runAsUser | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions "level") }}
-          - name: preUpgradeJob.podSecurityContext.seLinuxOptions.level
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions "role") }}
-          - name: preUpgradeJob.podSecurityContext.seLinuxOptions.role
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions.role }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions "type") }}
-          - name: preUpgradeJob.podSecurityContext.seLinuxOptions.type
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions "user") }}
-          - name: preUpgradeJob.podSecurityContext.seLinuxOptions.user
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seLinuxOptions.user }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seccompProfile "localhostProfile") }}
-          - name: preUpgradeJob.podSecurityContext.seccompProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seccompProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seccompProfile "type") }}
-          - name: preUpgradeJob.podSecurityContext.seccompProfile.type
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.seccompProfile.type }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.supplementalGroups }}
-          {{- range $index, $value := .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.supplementalGroups }}
-          - name: preUpgradeJob.podSecurityContext.supplementalGroups[{{ $index }}]
+          {{- if .Values.krateoplatformops.eventsse.etcd.args }}
+          {{- range $index, $value := .Values.krateoplatformops.eventsse.etcd.args }}
+          - name: args[{{ $index }}]
             value: {{ $value | quote }}
+            asString: true
           {{- end }}
           {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.supplementalGroupsPolicy }}
-          - name: preUpgradeJob.podSecurityContext.supplementalGroupsPolicy
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.supplementalGroupsPolicy }}
+          {{- if .Values.krateoplatformops.eventsse.etcd.persistence.size }}
+          - name: persistence.size
+            value: {{ .Values.krateoplatformops.eventsse.etcd.persistence.size | quote }}
           {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.sysctls }}
-          {{- range $index, $sysctl := .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.sysctls }}
-          - name: preUpgradeJob.podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
-            value: {{ $sysctl.value | quote }}
+          {{- if .Values.krateoplatformops.eventsse.etcd.persistence.storageClass }}
+          - name: persistence.storageClass
+            value: {{ .Values.krateoplatformops.eventsse.etcd.persistence.storageClass | quote}}
           {{- end }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
-          - name: preUpgradeJob.podSecurityContext.windowsOptions.gmsaCredentialSpecName
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.windowsOptions "hostProcess") }}
-          - name: preUpgradeJob.podSecurityContext.windowsOptions.hostProcess
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.windowsOptions.hostProcess | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.windowsOptions "runAsUserName") }}
-          - name: preUpgradeJob.podSecurityContext.windowsOptions.runAsUserName
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.podSecurityContext.windowsOptions.runAsUserName }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.allowPrivilegeEscalation }}
-          - name: preUpgradeJob.containerSecurityContext.allowPrivilegeEscalation
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.allowPrivilegeEscalation | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.appArmorProfile "localhostProfile") }}
-          - name: preUpgradeJob.containerSecurityContext.appArmorProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.appArmorProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.appArmorProfile "type") }}
-          - name: preUpgradeJob.containerSecurityContext.appArmorProfile.type
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.appArmorProfile.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "capabilities") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.capabilities "add") }}
-          {{- range $index, $value := .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.capabilities.add }}
-          - name: preUpgradeJob.containerSecurityContext.capabilities.add[{{ $index }}]
-            value: {{ $value }}
-          {{- end }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "capabilities") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.capabilities "drop") }}
-          {{- range $index, $value := .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.capabilities.drop }}
-          - name: preUpgradeJob.containerSecurityContext.capabilities.drop[{{ $index }}]
-            value: {{ $value }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.privileged }}
-          - name: preUpgradeJob.containerSecurityContext.privileged
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.privileged }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.procMount }}
-          - name: preUpgradeJob.containerSecurityContext.procMount
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.procMount }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.readOnlyRootFilesystem }}
-          - name: preUpgradeJob.containerSecurityContext.readOnlyRootFilesystem
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.readOnlyRootFilesystem | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.runAsGroup }}
-          - name: preUpgradeJob.containerSecurityContext.runAsGroup
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.runAsGroup | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.runAsNonRoot }}
-          - name: preUpgradeJob.containerSecurityContext.runAsNonRoot
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.runAsNonRoot | quote }}
-          {{- end }}
-          {{- if .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.runAsUser }}
-          - name: preUpgradeJob.containerSecurityContext.runAsUser
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.runAsUser | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions "level") }}
-          - name: preUpgradeJob.containerSecurityContext.seLinuxOptions.level
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions.level | replace "," "\\," }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions "role") }}
-          - name: preUpgradeJob.containerSecurityContext.seLinuxOptions.role
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions.role }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions "type") }}
-          - name: preUpgradeJob.containerSecurityContext.seLinuxOptions.type
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions "user") }}
-          - name: preUpgradeJob.containerSecurityContext.seLinuxOptions.user
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seLinuxOptions.user }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seccompProfile "localhostProfile") }}
-          - name: preUpgradeJob.containerSecurityContext.seccompProfile.localhostProfile
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seccompProfile.localhostProfile }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seccompProfile "type") }}
-          - name: preUpgradeJob.containerSecurityContext.seccompProfile.type
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.seccompProfile.type }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
-          - name: preUpgradeJob.containerSecurityContext.windowsOptions.gmsaCredentialSpecName
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions.gmsaCredentialSpecName }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions "hostProcess") }}
-          - name: preUpgradeJob.containerSecurityContext.windowsOptions.hostProcess
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions.hostProcess | quote }}
-          {{- end }}
-          {{- if and (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions "runAsUserName") }}
-          - name: preUpgradeJob.containerSecurityContext.windowsOptions.runAsUserName
-            value: {{ .Values.krateoplatformops.eventsse.etcd.preUpgradeJob.containerSecurityContext.windowsOptions.runAsUserName }}
+          {{- if .Values.krateoplatformops.eventsse.etcd.quotaBackendBytes }}
+          - name: quotaBackendBytes
+            value: {{ .Values.krateoplatformops.eventsse.etcd.quotaBackendBytes | quote }}
           {{- end }}
 
     - id: install-eventsse
@@ -2527,6 +2342,226 @@ spec:
             {{- end }}
           selector: .spec.rules[0].host
     {{- end }}
+
+    - id: install-sweeper
+      type: chart
+      with:
+        name: {{ .Values.krateoplatformops.eventsse.sweeper.chart.name }}
+        version: {{ .Values.krateoplatformops.eventsse.sweeper.chart.version }}
+        repository: {{ .Values.krateoplatformops.eventsse.sweeper.chart.repository }}
+        wait: {{ .Values.krateoplatformops.eventsse.sweeper.chart.wait }}
+        waitTimeout: {{ .Values.krateoplatformops.eventsse.sweeper.chart.waitTimeout }}
+        {{- if and .Values.krateoplatformops.eventsse.sweeper.chart.credentials (gt (len .Values.krateoplatformops.eventsse.sweeper.chart.credentials) 0) }}
+        credentials:
+          username: {{ .Values.krateoplatformops.eventsse.sweeper.chart.credentials.username }}
+          passwordRef: # reference to a secret
+            key: {{ .Values.krateoplatformops.eventsse.sweeper.chart.credentials.passwordRef.key }}
+            name: {{ .Values.krateoplatformops.eventsse.sweeper.chart.credentials.passwordRef.name }}
+            namespace: {{ .Values.krateoplatformops.eventsse.sweeper.chart.credentials.passwordRef.namespace }}
+        {{- end }}
+        set:
+          {{- if .Values.krateoplatformops.eventsse.sweeper.imagePullSecrets }}
+          {{- range $index, $secret := .Values.krateoplatformops.eventsse.sweeper.imagePullSecrets }}
+          - name: imagePullSecrets.{{ $index }}.name
+            value: {{ $secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.fullnameOverride }}
+          - name: fullnameOverride
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.fullnameOverride }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.sweeper.resources.requests .Values.krateoplatformops.eventsse.sweeper.resources.requests.cpu }}
+          - name: resources.requests.cpu
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.resources.requests.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.sweeper.resources.requests .Values.krateoplatformops.eventsse.sweeper.resources.requests.memory }}
+          - name: resources.requests.memory
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.resources.requests.memory }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.sweeper.resources.limits .Values.krateoplatformops.eventsse.sweeper.resources.limits.cpu }}
+          - name: resources.limits.cpu
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.resources.limits.cpu | quote }}
+          {{- end }}
+          {{- if and .Values.krateoplatformops.eventsse.sweeper.resources.limits .Values.krateoplatformops.eventsse.sweeper.resources.limits.memory }}
+          - name: resources.limits.memory
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.resources.limits.memory }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.appArmorProfile "localhostProfile") }}
+          - name: podSecurityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.appArmorProfile "type") }}
+          - name: podSecurityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.fsGroup }}
+          - name: podSecurityContext.fsGroup
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.fsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.fsGroupChangePolicy }}
+          - name: podSecurityContext.fsGroupChangePolicy
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.fsGroupChangePolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.runAsGroup }}
+          - name: podSecurityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.runAsNonRoot }}
+          - name: podSecurityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.runAsUser }}
+          - name: podSecurityContext.runAsUser
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions "level") }}
+          - name: podSecurityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions.level | replace "," "\\,"  }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions "role") }}
+          - name: podSecurityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions "type") }}
+          - name: podSecurityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions "user") }}
+          - name: podSecurityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seccompProfile "localhostProfile") }}
+          - name: podSecurityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seccompProfile "type") }}
+          - name: podSecurityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.supplementalGroups }}
+          {{- range $index, $value := .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.supplementalGroups }}
+          - name: podSecurityContext.supplementalGroups[{{ $index }}]
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.supplementalGroupsPolicy }}
+          - name: podSecurityContext.supplementalGroupsPolicy
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.supplementalGroupsPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.sysctls }}
+          {{- range $index, $sysctl := .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.sysctls }}
+          - name: podSecurityContext.sysctls[{{ $index }}].{{ $sysctl.name }}
+            value: {{ $sysctl.value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: podSecurityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "hostProcess") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.windowsOptions "hostProcess") }}
+          - name: podSecurityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext "windowsOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.windowsOptions "runAsUserName") }}
+          - name: podSecurityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.podSecurityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.securityContext.allowPrivilegeEscalation }}
+          - name: securityContext.allowPrivilegeEscalation
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.allowPrivilegeEscalation | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.appArmorProfile "localhostProfile") }}
+          - name: securityContext.appArmorProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.appArmorProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "appArmorProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.appArmorProfile "type") }}
+          - name: securityContext.appArmorProfile.type
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.appArmorProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "capabilities") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.capabilities "add") }}
+          {{- range $index, $value := .Values.krateoplatformops.eventsse.sweeper.securityContext.capabilities.add }}
+          - name: securityContext.capabilities.add[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "capabilities") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.capabilities "drop") }}
+          {{- range $index, $value := .Values.krateoplatformops.eventsse.sweeper.securityContext.capabilities.drop }}
+          - name: securityContext.capabilities.drop[{{ $index }}]
+            value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.securityContext.privileged }}
+          - name: securityContext.privileged
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.privileged }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.securityContext.procMount }}
+          - name: securityContext.procMount
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.procMount }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.securityContext.readOnlyRootFilesystem }}
+          - name: securityContext.readOnlyRootFilesystem
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.readOnlyRootFilesystem | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.securityContext.runAsGroup }}
+          - name: securityContext.runAsGroup
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.runAsGroup | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.securityContext.runAsNonRoot }}
+          - name: securityContext.runAsNonRoot
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.runAsNonRoot | quote }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.securityContext.runAsUser }}
+          - name: securityContext.runAsUser
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.runAsUser | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions "level") }}
+          - name: securityContext.seLinuxOptions.level
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions.level | replace "," "\\," }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions "role") }}
+          - name: securityContext.seLinuxOptions.role
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions.role }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions "type") }}
+          - name: securityContext.seLinuxOptions.type
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "seLinuxOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions "user") }}
+          - name: securityContext.seLinuxOptions.user
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.seLinuxOptions.user }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.seccompProfile "localhostProfile") }}
+          - name: securityContext.seccompProfile.localhostProfile
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.seccompProfile.localhostProfile }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "seccompProfile") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.seccompProfile "type") }}
+          - name: securityContext.seccompProfile.type
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.seccompProfile.type }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "gmsaCredentialSpecName") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.windowsOptions "gmsaCredentialSpecName") }}
+          - name: securityContext.windowsOptions.gmsaCredentialSpecName
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.windowsOptions.gmsaCredentialSpecName }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "hostProcess") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.windowsOptions "hostProcess") }}
+          - name: securityContext.windowsOptions.hostProcess
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.windowsOptions.hostProcess | quote }}
+          {{- end }}
+          {{- if and (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext "windowsOptions") (hasKey .Values.krateoplatformops.eventsse.sweeper.securityContext.windowsOptions "runAsUserName") }}
+          - name: securityContext.windowsOptions.runAsUserName
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.securityContext.windowsOptions.runAsUserName }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.image.repository }}
+          - name: image.repository
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.image.repository }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.image.pullPolicy }}
+          - name: image.pullPolicy
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.image.pullPolicy }}
+          {{- end }}
+          {{- if .Values.krateoplatformops.eventsse.sweeper.image.tag }}
+          - name: image.tag
+            value: {{ .Values.krateoplatformops.eventsse.sweeper.image.tag }}
+          {{- end }}
 
     - id: install-frontend
       type: chart

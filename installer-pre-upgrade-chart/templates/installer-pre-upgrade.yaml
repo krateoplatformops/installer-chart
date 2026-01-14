@@ -1,0 +1,64 @@
+{{- $sa := lookup "v1" "ServiceAccount" .Release.Namespace "helm-runner" }}
+{{- if not $sa }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-runner
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+---
+{{- end }}
+
+{{- $crb := lookup "rbac.authorization.k8s.io/v1" "ClusterRoleBinding" "" "helm-runner-cluster-admin" }}
+{{- if not $crb }}
+# For simplicity, cluster-admin. Tighten later if needed.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-runner-cluster-admin
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: helm-runner
+    namespace: {{ .Release.Namespace }}
+---
+{{- end }}
+
+{{- $versionSuffix := .Chart.Version | replace "." "-" -}}
+{{- $jobName := printf "krateo-pre-upgrade-%s" $versionSuffix -}}
+{{- $job := lookup "batch/v1" "Job" .Release.Namespace $jobName -}}
+{{- if not $job }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: krateo-pre-upgrade-{{ .Chart.Version | replace "." "-" }}
+  namespace: krateo-system
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      serviceAccountName: helm-runner
+      restartPolicy: OnFailure
+      containers:
+        - name: runner
+          image: dtzar/helm-kubectl:3.14.4
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-lc"]
+          args:
+            - |
+              set -euo pipefail
+
+              helm uninstall eventsse-etcd -n {{ .Values.krateoNamespace }} \
+                || echo "WARN: Failed to uninstall eventsse-etcd release in {{ .Values.krateoNamespace }}"
+
+              echo "Pre-upgrade {{ .Chart.Version }} job done ✅ (errors above, if any, were non-blocking)"
+{{- end }}

@@ -1,4 +1,4 @@
-name: release-tag
+name: release-tag-installer
 
 on:
   push:
@@ -7,12 +7,28 @@ on:
 jobs:
   package:
     runs-on: ubuntu-latest
+    # Define the MODULE variable here so it is available to all steps
+    env:
+      MODULE: installer
 
     steps:
+      # 1. CHECKOUT MUST BE FIRST
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Required to fetch all tags for the git commands below
+
+      - name: Authenticate with GitHub App
+        id: authenticate
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Extract and Store Trimmed Repository Name
         run: |
           REPO_CHART_NAME="${{ github.repository }}"
-          REPO_APP_NAME=$(echo "$REPO_CHART_NAME" | sed 's/-chart$//')  # Remove "-chart" suffix if present
+          REPO_APP_NAME=$(echo "$REPO_CHART_NAME" | sed 's/-chart$//')
           
           # Check if the trimmed repo exists
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
@@ -27,51 +43,71 @@ jobs:
             echo "REPO_APP_NAME=$REPO_CHART_NAME" >> $GITHUB_ENV
           fi
 
-      - name: Use the Stored Variable
+      - name: Extract App Version from Remote Repo
         run: |
-          echo "Trimmed Repository Name: ${{ env.REPO_APP_NAME }}"
+          set -euo pipefail
+          
+          echo "=== Target Remote Repo: ${{ env.REPO_APP_NAME }} ==="
 
-      - name: Authenticate with GitHub App
-        id: authenticate
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.PRIVATE_KEY }}
+          # Construct the remote URL using the App Token for authentication
+          # We use the computed REPO_APP_NAME (e.g., owner/installer)
+          REMOTE_URL="https://x-access-token:${{ steps.authenticate.outputs.token }}@github.com/${{ env.REPO_APP_NAME }}.git"
+          
+          echo "=== querying remote tags for pattern: ${{ env.MODULE }}/* ==="
+          
+          # Use git ls-remote to list tags from the remote repo without cloning it.
+          # --sort='-v:refname' ensures we get the highest version first.
+          # We filter specifically for tags matching "refs/tags/installer/*"
+          LATEST_TAG_REF=$(git ls-remote --tags --refs --sort='-v:refname' "$REMOTE_URL" "refs/tags/${{ env.MODULE }}/*" | head -n 1)
 
-      - name: Extract latest App Version
-        uses: tdemin/find-latest-tag@v1
-        id: app_version
-        with:
-          repo: https://${{ steps.authenticate.outputs.token }}@github.com/${{ env.REPO_APP_NAME }}.git
+          if [ -z "$LATEST_TAG_REF" ]; then
+            echo "No tags found matching pattern in remote repo!"
+            echo "Using fallback..."
+            APP_VERSION="0.0.1"
+          else
+            # The output format is: "hash    refs/tags/installer/0.6.3"
+            # We strip everything up to the last slash to get "0.6.3"
+            APP_VERSION=${LATEST_TAG_REF##*/}
+            echo "Found tag: $APP_VERSION"
+          fi
 
-      - name: Extract latest Chart Version
-        uses: tdemin/find-latest-tag@v1
-        id: chart_version
-        with:
-          repo: https://${{ steps.authenticate.outputs.token }}@github.com/${{ github.repository }}.git
-
-      - name: Checkout
-        uses: actions/checkout@v3
+          echo "=== Final APP_VERSION ==="
+          echo "APP_VERSION=$APP_VERSION"
+          echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
 
       - name: Print Version
         run: |
-          echo APP_VERSION:${{steps.app_version.outputs.tag}}
-          echo CHART_VERSION:${{steps.chart_version.outputs.tag}}
+          # Use the env variable, not the steps output
+          echo APP_VERSION:${{ env.APP_VERSION }}
+          echo CHART_VERSION:${{ github.ref_name }}
 
-      - name: Replace Version in Chart.yaml
-        run: sed -i 's/CHART_VERSION/${{ steps.chart_version.outputs.tag }}/g' ./chart/Chart.yaml
+      - name: Replace CHART_VERSION in chart/Chart.yaml
+        run: sed -i 's/CHART_VERSION/${{ github.ref_name }}/g' ./chart/Chart.yaml
 
-      - name: Print latest App Version
-        run: echo ${{ steps.app_version.outputs.tag }}
+      - name: Replace APP_VERSION in Chart.yaml
+        run: sed -i 's/APP_VERSION/${{ env.APP_VERSION }}/g' ./chart/Chart.yaml
 
-      - name: Replace App Version in Chart.yaml
-        run: sed -i 's/APP_VERSION/${{ steps.app_version.outputs.tag }}/g' ./chart/Chart.yaml
+      # Assuming this file exists in your repo
+      - name: Replace CHART_VERSION in pre-upgrade-chart
+        run: sed -i 's/CHART_VERSION/${{ github.ref_name }}/g' ./${{ env.MODULE }}-pre-upgrade-chart/Chart.yaml
+
+      - name: Prepare charts_dir
+        run: |
+          # Create a directory to hold the charts
+          mkdir -p _charts_to_publish
+          
+          # Copy the main chart
+          cp -R chart _charts_to_publish/${{ env.MODULE }}-chart
+          
+          # Copy the pre-upgrade chart
+          cp -R ${{ env.MODULE }}-pre-upgrade-chart _charts_to_publish/
 
       - name: Publish Helm chart
         uses: stefanprodan/helm-gh-pages@master
         with:
           token: ${{ steps.authenticate.outputs.token }}
-          charts_dir: ./
+          # This must match the directory created in the previous step
+          charts_dir: _charts_to_publish
           charts_url: https://charts.krateo.io
           owner: krateoplatformops
           repository: helm-charts
