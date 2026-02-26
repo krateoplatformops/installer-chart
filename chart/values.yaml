@@ -568,7 +568,7 @@ krateoplatformops:
   coreprovider:
     chart:
       name: core-provider
-      version: 0.31.7
+      version: 0.31.71
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
