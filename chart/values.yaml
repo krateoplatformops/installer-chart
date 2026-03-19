@@ -360,7 +360,7 @@ krateoplatformops:
   eventrouter:
     chart:
       name: eventrouter
-      version: 0.5.8
+      version: 0.6.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
