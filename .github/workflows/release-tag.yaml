@@ -87,21 +87,6 @@ jobs:
       - name: Replace APP_VERSION in Chart.yaml
         run: sed -i 's/APP_VERSION/${{ env.APP_VERSION }}/g' ./chart/Chart.yaml
 
-      # Assuming this file exists in your repo
-      - name: Replace CHART_VERSION in pre-upgrade-chart
-        run: sed -i 's/CHART_VERSION/${{ github.ref_name }}/g' ./${{ env.MODULE }}-pre-upgrade-chart/Chart.yaml
-
-      - name: Prepare charts_dir
-        run: |
-          # Create a directory to hold the charts
-          mkdir -p _charts_to_publish
-          
-          # Copy the main chart
-          cp -R chart _charts_to_publish/${{ env.MODULE }}-chart
-          
-          # Copy the pre-upgrade chart
-          cp -R ${{ env.MODULE }}-pre-upgrade-chart _charts_to_publish/
-
       - name: Publish Helm chart
         uses: stefanprodan/helm-gh-pages@master
         with:
