@@ -360,7 +360,7 @@ krateoplatformops:
   eventrouter:
     chart:
       name: eventrouter
-      version: 0.5.8
+      version: 0.6.1
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
@@ -572,6 +572,9 @@ krateoplatformops:
       repository: https://charts.krateo.io
       wait: true
       waitTimeout: 5m
+      env:
+        CORE_PROVIDER__TLS_CERTIFICATE_DURATION: "4320h" # 180 days
+        CORE_PROVIDER_TLS_CERTIFICATE_LEASE_EXPIRATION_MARGIN: "4300h" # 179 days and 10 hours, to ensure cert renewal happens well before expiration
       # # Use with private helm registry
       # credentials:
       #   username: username
